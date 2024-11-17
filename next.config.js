@@ -1,6 +1,8 @@
+// next.config.js
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export', // Elimina o comenta esta línea
   eslint: {
     ignoreDuringBuilds: true,
   },
