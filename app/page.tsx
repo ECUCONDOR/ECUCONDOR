@@ -69,7 +69,7 @@ export default function LandingPage() {
             <CardContent className="p-6 text-center">
               <DollarSign className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
               <h3 className="text-xl font-bold text-white mb-2">Mejores Tasas</h3>
-              <p className="text-white/80">Cotización actual: {exchangeRate.toFixed(2)} ARS/USDT</p>
+              <p className="text-white/80">Cotización actual: {exchangeRate.toFixed(2)} ARS/USD</p>
             </CardContent>
           </Card>
           <Card className="bg-[#00264D]/50 backdrop-blur-sm border-cyan-400/20">
