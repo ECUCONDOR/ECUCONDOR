@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, DollarSign, Shield, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { FeatureCard } from './components/FeatureCard'
+import { FeatureCard as FeatureCardComponent } from './components/FeatureCard'
 
 const BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=USDTARS'
 
@@ -69,19 +69,19 @@ export default function LandingPage() {
         </section>
 
         <section className="grid md:grid-cols-3 gap-8 mb-20">
-          <FeatureCard
+          <FeatureCardComponent
             icon={DollarSign}
             title="Mejores Tasas"
             description={`Cotización actual: ${exchangeRate.toFixed(2)} ARS/USD`}
             iconColor="text-yellow-400"
           />
-          <FeatureCard
+          <FeatureCardComponent
             icon={Shield}
             title="100% Seguro"
             description="Transacciones protegidas y verificadas"
             iconColor="text-cyan-400"
           />
-          <FeatureCard
+          <FeatureCardComponent
             icon={Clock}
             title="Rápido"
             description="Transferencias procesadas en minutos"
