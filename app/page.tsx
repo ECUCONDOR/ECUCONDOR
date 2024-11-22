@@ -4,25 +4,21 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, DollarSign, Shield, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import FeatureCard from './components/FeatureCard'
+import { Card, CardContent } from "@/components/ui/card"
 
 const BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=USDTARS'
 
 export default function LandingPage() {
   const [exchangeRate, setExchangeRate] = useState(0)
-  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
         const response = await fetch(BINANCE_API_URL)
-        if (!response.ok) throw new Error('Network response was not ok')
         const data = await response.json()
         setExchangeRate(parseFloat(data.price))
-        setError(null)
       } catch (error) {
         console.error('Error fetching exchange rate:', error)
-        setError('No se pudo obtener la cotización, por favor intente más tarde.')
       }
     }
 
@@ -69,26 +65,28 @@ export default function LandingPage() {
         </section>
 
         <section className="grid md:grid-cols-3 gap-8 mb-20">
-          <FeatureCard
-            icon={DollarSign}
-            title="Mejores Tasas"
-            description={`Cotización actual: ${exchangeRate.toFixed(2)} ARS/USD`}
-            iconColor="text-yellow-400"
-          />
-          <FeatureCard
-            icon={Shield}
-            title="100% Seguro"
-            description="Transacciones protegidas y verificadas"
-            iconColor="text-cyan-400"
-          />
-          <FeatureCard
-            icon={Clock}
-            title="Rápido"
-            description="Transferencias procesadas en minutos"
-            iconColor="text-pink-500"
-          />
+          <Card className="bg-[#00264D]/50 backdrop-blur-sm border-cyan-400/20">
+            <CardContent className="p-6 text-center">
+              <DollarSign className="w-12 h-12 mx-auto mb-4 text-yellow-400" />
+              <h3 className="text-xl font-bold text-white mb-2">Mejores Tasas</h3>
+              <p className="text-white/80">Cotización actual: {exchangeRate.toFixed(2)} ARS/USD</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-[#00264D]/50 backdrop-blur-sm border-cyan-400/20">
+            <CardContent className="p-6 text-center">
+              <Shield className="w-12 h-12 mx-auto mb-4 text-cyan-400" />
+              <h3 className="text-xl font-bold text-white mb-2">100% Seguro</h3>
+              <p className="text-white/80">Transacciones protegidas y verificadas</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-[#00264D]/50 backdrop-blur-sm border-cyan-400/20">
+            <CardContent className="p-6 text-center">
+              <Clock className="w-12 h-12 mx-auto mb-4 text-pink-500" />
+              <h3 className="text-xl font-bold text-white mb-2">Rápido</h3>
+              <p className="text-white/80">Transferencias procesadas en minutos</p>
+            </CardContent>
+          </Card>
         </section>
-        {error && <p className="text-red-500 text-center mb-6">{error}</p>}
       </main>
 
       <footer className="bg-[#00264D]/90 backdrop-blur-sm text-white py-8">
@@ -99,18 +97,3 @@ export default function LandingPage() {
     </div>
   )
 }
-
-// components/FeatureCard.js
-import { Card, CardContent } from "@/components/ui/card"
-
-export default function FeatureCard({ icon: Icon, title, description, iconColor }) {
-  return (
-    <Card className="bg-[#00264D]/50 backdrop-blur-sm border-cyan-400/20">
-      <CardContent className="p-6 text-center">
-        <Icon className={`w-12 h-12 mx-auto mb-4 ${iconColor}`} />
-        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-        <p className="text-white/80">{description}</p>
-      </CardContent>
-    </Card>
-  )
-} 
