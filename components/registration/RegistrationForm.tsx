@@ -180,7 +180,9 @@ export default function RegistrationForm() {
           accept=".pdf,.jpeg,.png"
           className="mt-1 block w-full text-gray-300 file:bg-gray-700 file:text-gray-300"
         />
-        {errors.receipt && <p className="text-red-500">{errors.receipt.message}</p>}
+        {errors.receipt && (
+          <p className="text-red-500">{String(errors.receipt.message)}</p>
+        )}
       </div>
 
       <button
