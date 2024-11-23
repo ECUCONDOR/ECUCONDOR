@@ -1,34 +1,25 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { z } from 'zod'
 import { useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { AmountInput } from './AmountInput'
-import { SenderInfo } from './SenderInfo'
-import { BeneficiaryInfo } from './BeneficiaryInfo'
-import { BankSelector } from './BankSelector'
-import { ReceiptUpload } from './ReceiptUpload'
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=USDTARS'
 
+// Validación con Zod
 const formSchema = z.object({
-  amount: z.number().min(1, 'El monto es requerido'),
-  senderName: z.string().min(1, 'El nombre es requerido'),
-  senderEmail: z.string().email('Email inválido'),
+  amountUSD: z.number().min(1, 'El monto en USD es requerido'),
+  amountARS: z.number().optional(),
   beneficiaryName: z.string().min(1, 'El nombre del beneficiario es requerido'),
-  beneficiaryDNI: z.string().min(7, 'DNI inválido'),
-  beneficiaryCBU: z.string().regex(/^\d{22}$/, 'CBU debe tener 22 dígitos'),
-  beneficiaryAlias: z.string().min(6, 'Alias inválido').optional(),
-  ecucondorBank: z.string().min(1, 'Seleccione un banco'),
+  cbuOrAlias: z.string().min(6, 'CBU o Alias es requerido'),
+  bank: z.string().min(1, 'Seleccione un banco'),
   receipt: z.any()
     .refine((file) => file?.length > 0, 'El comprobante es requerido')
     .refine(
       (file) => file?.[0]?.size <= MAX_FILE_SIZE,
-      'El archivo no debe superar 5MB'
+      'El archivo no debe superar 2MB'
     )
     .refine(
       (file) => ['application/pdf', 'image/jpeg', 'image/png'].includes(file?.[0]?.type),
@@ -38,36 +29,29 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-const BINANCE_API_URL = 'https://api.binance.com/api/v3/ticker/price?symbol=USDTARS'
-
-export function RegistrationForm() {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export default function RegistrationForm() {
   const [exchangeRate, setExchangeRate] = useState(0)
-  const [arsAmount, setArsAmount] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const {
-    control,
     register,
     watch,
     handleSubmit,
+    control,
     formState: { errors }
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: 0,
-      senderName: '',
-      senderEmail: '',
+      amountUSD: 0,
       beneficiaryName: '',
-      beneficiaryDNI: '',
-      beneficiaryCBU: '',
-      beneficiaryAlias: '',
-      ecucondorBank: ''
+      cbuOrAlias: '',
+      bank: ''
     }
   })
 
-  const amount = watch('amount')
+  const amountUSD = watch('amountUSD')
 
+  // Fetch Exchange Rate
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
@@ -80,33 +64,26 @@ export function RegistrationForm() {
     }
 
     fetchExchangeRate()
-    const interval = setInterval(fetchExchangeRate, 20000)
-    return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (amount && exchangeRate) {
-      const calculatedAmount = amount * exchangeRate * 0.965
-      setArsAmount(calculatedAmount)
-    } else {
-      setArsAmount(0)
-    }
-  }, [amount, exchangeRate])
+  // Calcular Monto en ARS
+  const amountARS = amountUSD && exchangeRate ? amountUSD * exchangeRate * 0.965 : 0
 
+  // Submit Handler
   const onSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true)
       const formData = new FormData()
-      
+
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'receipt' && value[0]) {
           formData.append('receipt', value[0])
-        } else if (value !== undefined && value !== null) {
+        } else {
           formData.append(key, value.toString())
         }
       })
 
-      formData.append('arsAmount', arsAmount.toString())
+      formData.append('amountARS', amountARS.toFixed(2)) // Agregar monto en ARS
 
       const response = await fetch('/api/register', {
         method: 'POST',
@@ -117,7 +94,7 @@ export function RegistrationForm() {
         throw new Error('Error al enviar el formulario')
       }
 
-      router.push('/thank-you')
+      alert('Formulario enviado con éxito')
     } catch (error) {
       console.error('Error submitting form:', error)
       alert('Error al enviar el formulario. Por favor, inténtelo de nuevo.')
@@ -127,38 +104,92 @@ export function RegistrationForm() {
   }
 
   return (
-    <Card className="bg-gradient-to-b from-zinc-900/50 to-black/50 backdrop-blur-sm border-white/10">
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold text-white">
-          Formulario de Registro
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <AmountInput register={register} errors={errors} arsAmount={arsAmount} />
-          <SenderInfo register={register} errors={errors} />
-          <BeneficiaryInfo register={register} errors={errors} />
-          <Controller
-            name="ecucondorBank"
-            control={control}
-            render={({ field }) => (
-              <BankSelector
-                onChange={field.onChange}
-                error={errors.ecucondorBank?.message}
-              />
-            )}
-          />
-          <ReceiptUpload register={register} errors={errors} />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div>
+        <label htmlFor="amountUSD" className="block text-sm font-medium text-gray-300">
+          Monto en USD
+        </label>
+        <input
+          type="number"
+          id="amountUSD"
+          {...register('amountUSD', { valueAsNumber: true })}
+          className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-white"
+        />
+        {errors.amountUSD && <p className="text-red-500">{errors.amountUSD.message}</p>}
+      </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-white via-white to-white/90 text-black font-bold hover:opacity-90 disabled:opacity-50"
-          >
-            {isSubmitting ? 'Enviando...' : 'Enviar Registro'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <div>
+        <label className="block text-sm font-medium text-gray-300">
+          Monto en ARS (3.5% descuento)
+        </label>
+        <input
+          type="text"
+          value={amountARS.toFixed(2)}
+          readOnly
+          className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-white"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="beneficiaryName" className="block text-sm font-medium text-gray-300">
+          Nombre del Beneficiario
+        </label>
+        <input
+          type="text"
+          id="beneficiaryName"
+          {...register('beneficiaryName')}
+          className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-white"
+        />
+        {errors.beneficiaryName && <p className="text-red-500">{errors.beneficiaryName.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="cbuOrAlias" className="block text-sm font-medium text-gray-300">
+          CBU o Alias (opcional)
+        </label>
+        <input
+          type="text"
+          id="cbuOrAlias"
+          {...register('cbuOrAlias')}
+          className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-white"
+        />
+        {errors.cbuOrAlias && <p className="text-red-500">{errors.cbuOrAlias.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="bank" className="block text-sm font-medium text-gray-300">
+          Banco en Argentina
+        </label>
+        <input
+          type="text"
+          id="bank"
+          {...register('bank')}
+          className="mt-1 block w-full rounded-md border-gray-700 bg-gray-800 text-white"
+        />
+        {errors.bank && <p className="text-red-500">{errors.bank.message}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="receipt" className="block text-sm font-medium text-gray-300">
+          Comprobante de Pago
+        </label>
+        <input
+          type="file"
+          id="receipt"
+          {...register('receipt')}
+          accept=".pdf,.jpeg,.png"
+          className="mt-1 block w-full text-gray-300 file:bg-gray-700 file:text-gray-300"
+        />
+        {errors.receipt && <p className="text-red-500">{errors.receipt.message}</p>}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        {isSubmitting ? 'Enviando...' : 'Enviar Registro'}
+      </button>
+    </form>
   )
 }
