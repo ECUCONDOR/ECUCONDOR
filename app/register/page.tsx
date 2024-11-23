@@ -2,7 +2,7 @@
 
 import { RegistrationForm } from '@/components/registration/RegistrationForm'
 
-export default function RegisterPage() {
+export default function RegistrationForm() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#001F3F] to-[#003366] p-8">
       <div className="max-w-4xl mx-auto">
