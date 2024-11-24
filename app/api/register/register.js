@@ -1,16 +1,9 @@
-// app/api/registro.js
 import multer from 'multer';
 import nextConnect from 'next-connect';
 
 // Configuración de multer para almacenamiento de archivos
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: './uploads/',
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + '-' + file.originalname);
-    },
-  }),
+  storage: multer.memoryStorage(), // Almacenamiento en memoria para trabajar mejor con plataformas como Vercel
   limits: { fileSize: 5 * 1024 * 1024 }, // Límite de 5MB para archivos
 });
 
@@ -23,12 +16,15 @@ apiRoute.use(upload.single('receipt'));
 // Controlador para el POST de registro
 apiRoute.post((req, res) => {
   try {
-    const { nombreCompleto, correoElectronico } = req.body;
+    const { amountUSD, amountARS, beneficiaryName, cbuOrAlias, bank } = req.body;
     const fileInfo = req.file;
 
     console.log('Datos recibidos:', {
-      nombreCompleto,
-      correoElectronico,
+      amountUSD,
+      amountARS,
+      beneficiaryName,
+      cbuOrAlias,
+      bank,
       archivo: fileInfo,
     });
 
