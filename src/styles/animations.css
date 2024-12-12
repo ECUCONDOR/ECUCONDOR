@@ -1,0 +1,26 @@
+@keyframes fall {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}
+
+/* Gradientes para los botones */
+.from-red-to-green {
+  background: linear-gradient(to right, #ef4444, #22c55e);
+}
+
+.hover\:from-red-to-green:hover {
+  background: linear-gradient(to right, #dc2626, #16a34a);
+}

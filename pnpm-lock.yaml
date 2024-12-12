@@ -11,6 +11,9 @@ dependencies:
   '@radix-ui/react-alert-dialog':
     specifier: ^1.1.2
     version: 1.1.2(@types/react-dom@18.3.5)(@types/react@18.3.16)(react-dom@18.3.1)(react@18.3.1)
+  '@tanstack/react-query':
+    specifier: ^5.62.7
+    version: 5.62.7(react@18.3.1)
   axios:
     specifier: ^1.7.9
     version: 1.7.9
@@ -53,6 +56,9 @@ dependencies:
   zod:
     specifier: ^3.22.4
     version: 3.24.1
+  zustand:
+    specifier: ^5.0.2
+    version: 5.0.2(@types/react@18.3.16)(react@18.3.1)
 
 devDependencies:
   '@types/node':
@@ -74,7 +80,7 @@ devDependencies:
     specifier: ^4.2.1
     version: 4.3.4(vite@5.4.11)
   autoprefixer:
-    specifier: ^10.4.20
+    specifier: ^10.4.16
     version: 10.4.20(postcss@8.4.49)
   eslint:
     specifier: ^8.55.0
@@ -86,13 +92,13 @@ devDependencies:
     specifier: ^0.4.5
     version: 0.4.16(eslint@8.57.1)
   postcss:
-    specifier: ^8.4.49
+    specifier: ^8.4.32
     version: 8.4.49
   tailwindcss:
-    specifier: ^3.4.16
+    specifier: ^3.3.6
     version: 3.4.16
   typescript:
-    specifier: ^5.3.3
+    specifier: ^5.2.2
     version: 5.7.2
   vite:
     specifier: ^5.0.8
@@ -1164,6 +1170,19 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@tanstack/query-core@5.62.7:
+    resolution: {integrity: sha512-fgpfmwatsrUal6V+8EC2cxZIQVl9xvL7qYa03gsdsCy985UTUlS4N+/3hCzwR0PclYDqisca2AqR1BVgJGpUDA==}
+    dev: false
+
+  /@tanstack/react-query@5.62.7(react@18.3.1):
+    resolution: {integrity: sha512-+xCtP4UAFDTlRTYyEjLx0sRtWyr5GIk7TZjZwBu4YaNahi3Rt2oMyRqfpfVrtwsqY2sayP4iXVCwmC+ZqqFmuw==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.62.7
+      react: 18.3.1
+    dev: false
 
   /@ts-morph/common@0.19.0:
     resolution: {integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==}
@@ -3535,4 +3554,26 @@ packages:
 
   /zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
+    dev: false
+
+  /zustand@5.0.2(@types/react@18.3.16)(react@18.3.1):
+    resolution: {integrity: sha512-8qNdnJVJlHlrKXi50LDqqUNmUbuBjoKLrYQBnoChIbVph7vni+sY+YpvdjXG9YLd/Bxr6scMcR+rm5H3aSqPaw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+    dependencies:
+      '@types/react': 18.3.16
+      react: 18.3.1
     dev: false
