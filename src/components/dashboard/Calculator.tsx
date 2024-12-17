@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchPrices } from '@/services/binance';
+import { fetchBinancePrices } from '@/services/binance';
 
 type Operation = {
   id: string;
@@ -52,7 +52,7 @@ export default function Calculator() {
   useEffect(() => {
     const updateRates = async () => {
       try {
-        const prices = await fetchPrices();
+        const prices = await fetchBinancePrices();
         setRates(prices);
       } catch (error) {
         console.error('Error fetching rates:', error);
