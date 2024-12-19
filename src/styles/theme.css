@@ -1,0 +1,23 @@
+.text-gold {
+  color: #FFD700;
+}
+
+.bg-gold {
+  background-color: #FFD700;
+}
+
+.hover\:bg-gold-dark:hover {
+  background-color: #DAA520;
+}
+
+.border-gold {
+  border-color: #FFD700;
+}
+
+.focus\:ring-gold:focus {
+  --tw-ring-color: #FFD700;
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+}
