@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNegociacion } from '@/hooks/useNegociacion';
 import NegociacionForm from '@/components/NegociacionForm';
+<<<<<<< HEAD
 import { Negociacion } from '@/types/negociacion';
 
 const getStatusColor = (estado: EstadoNegociacion) => {
@@ -37,6 +38,11 @@ const getStatusText = (estado: EstadoNegociacion) => {
     }
 }
 
+=======
+import NegociacionStatus from '@/components/NegociacionStatus';
+import { Negociacion } from '@/types/negociacion';
+
+>>>>>>> 385d21d198da5dc0d1b1ef1810662532e206719a
 const NegociacionesPage: React.FC = () => {
   const { listarNegociaciones, loading } = useNegociacion();
   const [negociaciones, setNegociaciones] = useState<Negociacion[]>([]);
@@ -79,11 +85,15 @@ const NegociacionesPage: React.FC = () => {
                     <span className="font-medium">
                       {negociacion.monedaOrigen} → {negociacion.monedaDestino}
                     </span>
+<<<<<<< HEAD
                     <span
                       className={`px-2 py-1 rounded-lg text-sm ${getStatusColor(negociacion.estado)}`}
                     >
                       {getStatusText(negociacion.estado)}
                     </span>
+=======
+                    <NegociacionStatus estado={negociacion.estado} />
+>>>>>>> 385d21d198da5dc0d1b1ef1810662532e206719a
                   </div>
                   <div className="text-sm text-gray-600">
                     <p>Monto: {negociacion.montoOrigen} {negociacion.monedaOrigen}</p>
