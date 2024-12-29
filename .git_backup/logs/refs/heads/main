@@ -1,0 +1,18 @@
+0000000000000000000000000000000000000000 c2a95b2edc100541310a5b69ee2c0977cc6033d5 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735246825 -0300	commit (initial): Initial commit
+c2a95b2edc100541310a5b69ee2c0977cc6033d5 c2a95b2edc100541310a5b69ee2c0977cc6033d5 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735246843 -0300	Branch: renamed refs/heads/ysa@0378d.onmicrosoft.com to refs/heads/main
+c2a95b2edc100541310a5b69ee2c0977cc6033d5 72c4994bc6acb68239a3437ee45c5b996e61703d TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735246894 -0300	commit (merge): Merge remote-tracking branch 'origin/main'
+72c4994bc6acb68239a3437ee45c5b996e61703d 2cbc00d3098721045e59beee68b7455b0c75e519 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735393824 -0300	commit: Agregar validaciones y ajustes en la base de datos
+2cbc00d3098721045e59beee68b7455b0c75e519 fe6a3b74f15dba93e6e8a23a586abdb8cf126632 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735394093 -0300	commit: Actualizar pnpm-lock.yaml
+fe6a3b74f15dba93e6e8a23a586abdb8cf126632 a4b5667196b1fdda0bd8ddf958466788c9c55fe2 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735394779 -0300	commit: Actualizar pnpm-lock.yaml
+a4b5667196b1fdda0bd8ddf958466788c9c55fe2 53c852e1b3b8b9442770dc7cf0bbf5ff10dab241 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735396465 -0300	commit: Agregar jsconfig.json para resolver problemas de importación
+53c852e1b3b8b9442770dc7cf0bbf5ff10dab241 74d08088e21caa0c8f286c871519d6bfaaeb118d TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735396814 -0300	commit: Corregir importaciones y agregar next-auth
+74d08088e21caa0c8f286c871519d6bfaaeb118d 31b5a49cb7842b6eda44f52c11326bf73b902dea TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735397032 -0300	commit: Migrar autenticación de next-auth a Supabase Auth
+31b5a49cb7842b6eda44f52c11326bf73b902dea be3d9bbddfc88cf5a86b603f04e854b190e18432 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735397512 -0300	commit: Agregar dependencia react-qr-code
+be3d9bbddfc88cf5a86b603f04e854b190e18432 2d10a4f423a1724f279acbadd4bd361d825d9ff2 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735397791 -0300	commit: Corregir exportaciones y agregar dependencias de TypeScript
+2d10a4f423a1724f279acbadd4bd361d825d9ff2 267275bea3f1ea577426ee63553997edc6d6ef07 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735400207 -0300	commit: Actualizar package.json y agregar postinstall script
+267275bea3f1ea577426ee63553997edc6d6ef07 6d73b37b2765aea8b6ac9e70960a91398a440a38 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735400829 -0300	commit: Eliminar pnpm-lock.yaml y usar npm
+6d73b37b2765aea8b6ac9e70960a91398a440a38 23eff3da1b169b6fd3b023d8ddfac5f71af68342 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735401813 -0300	commit: Agregar dependencia mercadopago y corregir importación de AnimatedBackground
+23eff3da1b169b6fd3b023d8ddfac5f71af68342 63127a560b2e74c8a591439e308668d3aa02f5d5 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735406009 -0300	commit: Fix type error in useBinanceWebSocket destructuring
+63127a560b2e74c8a591439e308668d3aa02f5d5 3aea887baa5c5104cde24302ae6d5c596b76b047 TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735408526 -0300	commit: Fix TypeScript errors and improve Supabase integration
+3aea887baa5c5104cde24302ae6d5c596b76b047 3c478f096a0befff80c9dd85ea1051a56de04a3c TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735408956 -0300	commit: feat: Add email system and update particles
+3c478f096a0befff80c9dd85ea1051a56de04a3c f2963cc0a0585c1a7e988cb361be0b04c073571d TuNombreUsuario <EDUARDOMARQUES@CAMPUS.FMED.UBA.AR> 1735442906 -0300	commit: "Despliegue inicial en GitHub"

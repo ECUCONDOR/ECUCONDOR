@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 25% 5%;
+    --foreground: 210 40% 98%;
+
+    --card: 230 25% 7%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 230 25% 7%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 328 73% 59%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 262 83% 58%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 230 25% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 191 97% 47%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 230 25% 15%;
+    --input: 230 25% 15%;
+    --ring: 328 73% 59%;
+
+    --radius: 0.5rem;
+
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+}
+
+@layer base {
+  * {
+    @apply border-[hsl(var(--border))];
+    transition: all 0.2s ease-in-out;
+  }
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  /* Estilos globales para el tema festivo */
+  .glass-card {
+    @apply bg-black/20 backdrop-blur-lg border border-white/10 rounded-lg;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500;
+    background-size: 200% auto;
+    animation: shine 2s linear infinite;
+  }
+
+  .gradient-border {
+    @apply relative;
+  }
+
+  .gradient-border::before {
+    content: '';
+    @apply absolute -inset-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-lg blur opacity-30 transition-opacity duration-300;
+    z-index: -1;
+  }
+
+  .gradient-border:hover::before {
+    @apply opacity-100;
+  }
+
+  .gradient-button {
+    @apply bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white hover:opacity-90 transition-opacity;
+  }
+
+  /* Navegación */
+  .nav-link {
+    @apply relative text-white/90 hover:text-white transition-colors group;
+  }
+
+  .nav-link span {
+    @apply relative z-10;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-pink-500 to-purple-500 transform scale-x-0 transition-transform origin-left;
+  }
+
+  .nav-link:hover::after {
+    @apply scale-x-100;
+  }
+
+  /* Inputs y formularios */
+  .input-gradient {
+    @apply bg-black/50 border-white/10 text-white placeholder:text-white/50 focus:ring-2 focus:ring-purple-500;
+  }
+
+  /* Cards */
+  .stat-card {
+    @apply group relative;
+  }
+
+  .stat-card::before {
+    content: '';
+    @apply absolute -inset-0.5 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 rounded-lg blur opacity-30 transition-opacity duration-300;
+    z-index: -1;
+  }
+
+  .stat-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .stat-card-content {
+    @apply relative bg-black/50 p-8 rounded-lg backdrop-blur-xl border border-white/10;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer utilities {
+  /* Animaciones */
+  .animate-gradient {
+    background-size: 200% auto;
+    animation: gradient 3s linear infinite;
+  }
+
+  /* Fondo de estrellas */
+  .stars-background {
+    @apply absolute inset-0 overflow-hidden;
+  }
+
+  .stars {
+    @apply fixed top-0 left-0 w-full h-full pointer-events-none;
+  }
+
+  .stars::after {
+    content: '';
+    @apply absolute -top-1/2 -left-1/2;
+    width: 200%;
+    height: 200%;
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+      radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: twinkle 4s ease-in-out infinite;
+    transform-origin: 0 0;
+  }
+
+  /* Burbujas flotantes */
+  .bubbles {
+    @apply fixed w-full h-full z-0 overflow-hidden top-0 left-0;
+  }
+
+  .bubble {
+    @apply absolute -bottom-[100px] w-10 h-10 rounded-full opacity-0;
+    background: linear-gradient(45deg, #ff0080, #7928ca, #0070f3);
+    animation: rise 10s infinite ease-in;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes twinkle {
+  0% { transform: scale(0.5); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(0.5); opacity: 0.3; }
+}
+
+@keyframes rise {
+  0% {
+    bottom: -100px;
+    transform: translateX(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(100px, -500px);
+    opacity: 0.8;
+  }
+  100% {
+    bottom: 1080px;
+    transform: translateX(-200px);
+    opacity: 0;
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}

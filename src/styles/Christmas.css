@@ -1,0 +1,157 @@
+/* Snowfall Effect */
+.snowfall {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.snowflake {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-100vh) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+/* Christmas Lights */
+.christmas-lights {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.light {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: twinkle 1s infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Decorative Elements */
+.gift-box {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.lid {
+  position: absolute;
+  top: -10px;
+  width: 100%;
+  height: 15px;
+  background: #FFC436;
+  border-radius: 4px;
+}
+
+.box {
+  position: absolute;
+  top: 5px;
+  width: 100%;
+  height: 50px;
+  background: #FFB000;
+  border-radius: 4px;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 10px;
+  height: 70px;
+  background: #FF6C22;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Sparkles Effect */
+.sparkles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #FFC436;
+  border-radius: 50%;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* Countdown Timer */
+.countdown-timer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 196, 54, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 196, 54, 0.2);
+}
+
+.countdown-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FFC436;
+}
+
+.countdown-label {
+  font-size: 0.875rem;
+  color: rgba(255, 196, 54, 0.8);
+}
+
+/* Glass Effect */
+.glass-effect {
+  background: rgba(43, 39, 48, 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 196, 54, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}

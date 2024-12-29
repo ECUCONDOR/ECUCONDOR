@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model P2POrder {
+  id            String   @id @default(cuid())
+  type          String   // 'buy' or 'sell'
+  currency      String   // 'USD', 'ARS', 'BRL', 'WLD'
+  amount        Float
+  price         Float
+  status        String   // 'open', 'in_progress', 'completed', 'cancelled'
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  paymentMethod String?  // Payment method details
+  bankInfo      String?  // Bank information
+  country       String?  // Country of the order
+  minAmount     Float?   // Minimum transaction amount
+  maxAmount     Float?   // Maximum transaction amount
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([currency, type, status])
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String?   @unique
+  completedTrades Int       @default(0)
+  successRate     Float     @default(100)
+  orders          P2POrder[]
+  country         String?
+  bankAccounts    String[]  // Array of verified bank accounts
+  paymentMethods  String[]  // Array of verified payment methods
+  kycVerified     Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+}

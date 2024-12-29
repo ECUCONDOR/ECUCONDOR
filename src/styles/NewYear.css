@@ -1,0 +1,163 @@
+/* New Year Theme Styles */
+.new-year-background {
+  background: linear-gradient(135deg, #2C3639 0%, #3F4E4F 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.new-year-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://images.unsplash.com/photo-1467810563316-b5476525c0f9?auto=format&fit=crop&q=80') center/cover;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.champagne-glass {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  animation: float 3s ease-in-out infinite;
+  opacity: 0.2;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.countdown-container {
+  background: rgba(44, 54, 57, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(220, 215, 201, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.countdown-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #DCD7C9;
+  text-shadow: 0 0 10px rgba(162, 123, 92, 0.5);
+}
+
+.countdown-label {
+  font-size: 0.875rem;
+  color: #A27B5C;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.glass-effect {
+  background: rgba(63, 78, 79, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(220, 215, 201, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.new-year-title {
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #DCD7C9, #A27B5C);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #DCD7C9;
+  border-radius: 50%;
+  animation: sparkle 1.5s linear infinite;
+}
+
+@keyframes sparkle {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+.input-new-year {
+  background: rgba(63, 78, 79, 0.3);
+  border: 1px solid rgba(220, 215, 201, 0.2);
+  color: #DCD7C9;
+  transition: all 0.3s ease;
+}
+
+.input-new-year:focus {
+  border-color: #A27B5C;
+  box-shadow: 0 0 0 2px rgba(162, 123, 92, 0.2);
+}
+
+.btn-new-year {
+  background: linear-gradient(135deg, #A27B5C, #3F4E4F);
+  border: none;
+  color: #DCD7C9;
+  transition: all 0.3s ease;
+}
+
+.btn-new-year:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(162, 123, 92, 0.3);
+}
+
+.company-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #DCD7C9, #A27B5C, #FFD700);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+  animation: titleGlow 2s ease-in-out infinite;
+}
+
+.company-subtitle {
+  font-family: 'Inter', sans-serif;
+  color: #DCD7C9;
+  font-size: 1.1rem;
+  max-width: 80%;
+  margin: 1rem auto;
+  line-height: 1.5;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.register-link {
+  color: #DCD7C9;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(220, 215, 201, 0.2);
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  backdrop-filter: blur(4px);
+  background: rgba(162, 123, 92, 0.1);
+}
+
+.register-link:hover {
+  background: rgba(162, 123, 92, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(220, 215, 201, 0.5),
+                 0 0 20px rgba(162, 123, 92, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(220, 215, 201, 0.7),
+                 0 0 25px rgba(162, 123, 92, 0.5);
+  }
+}
