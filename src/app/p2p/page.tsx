@@ -4,7 +4,15 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/auth-context';
 import { useP2PStore, p2pService } from '@/services/p2pService';
-import { type CreateOrderDTO, type OrderType, type Currency, type PaymentMethod } from '@/types/p2p';
+import { 
+  OrderTypeEnum,
+  CurrencyCode,
+  PaymentMethodType,
+  type CreateOrderDTO, 
+  type Currency, 
+  type P2POrder,
+  type PaymentMethod
+} from '@/types/p2p';
 import {
   Card,
   CardContent,
@@ -23,12 +31,16 @@ const P2PPage = () => {
   const supabase = createClientComponentClient();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [orderType, setOrderType] = useState<OrderType>('buy');
-  const [currency, setCurrency] = useState<Currency>('USD');
+  const [orderType, setOrderType] = useState<OrderTypeEnum>(OrderTypeEnum.Buy);
+  const [currency, setCurrency] = useState<Currency>({
+    code: CurrencyCode.USD,
+    name: 'US Dollar',
+    symbol: '$'
+  });
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<P2POrder[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
 
   useEffect(() => {
@@ -40,7 +52,7 @@ const P2PPage = () => {
       setLoadingOrders(true);
       const activeOrders = await p2pService.getOrders({ currency, type: orderType });
       setOrders(activeOrders);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cargando órdenes:', error);
       toast({
         title: '❌ Error',
@@ -78,7 +90,12 @@ const P2PPage = () => {
         currency,
         amount: parseFloat(amount),
         price: parseFloat(price),
-        payment_method: 'TRANSFERENCIA_BANCARIA'
+        payment_method: {
+          id: 'transfer-1',
+          type: PaymentMethodType.TransferenciaBancaria,
+          name: 'Transferencia Bancaria',
+          enabled: true
+        }
       };
 
       await p2pService.createOrder(orderData);
@@ -91,7 +108,7 @@ const P2PPage = () => {
       setAmount('');
       setPrice('');
       loadOrders();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creando orden:', error);
       toast({
         title: '❌ Error',
@@ -104,7 +121,7 @@ const P2PPage = () => {
   };
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider>
       <div className="min-h-screen bg-background">
         <div className="container mx-auto p-4 space-y-6">
           <div className="flex items-center justify-between">
@@ -122,9 +139,9 @@ const P2PPage = () => {
               <div className="flex space-x-4 mb-6">
                 <Button
                   className="flex-1 h-12"
-                  variant={orderType === 'buy' ? 'default' : 'outline'}
+                  variant={orderType === OrderTypeEnum.Buy ? 'default' : 'outline'}
                   onClick={() => {
-                    setOrderType('buy');
+                    setOrderType(OrderTypeEnum.Buy);
                     toast({
                       title: "💡 Consejo para Comprar",
                       description: "Revisa las ofertas disponibles y elige la que mejor se ajuste a tu presupuesto. ¡Es muy fácil!",
@@ -135,9 +152,9 @@ const P2PPage = () => {
                 </Button>
                 <Button
                   className="flex-1 h-12"
-                  variant={orderType === 'sell' ? 'default' : 'outline'}
+                  variant={orderType === OrderTypeEnum.Sell ? 'default' : 'outline'}
                   onClick={() => {
-                    setOrderType('sell');
+                    setOrderType(OrderTypeEnum.Sell);
                     toast({
                       title: "💡 Consejo para Vender",
                       description: "Publica tu oferta especificando el precio y la cantidad. ¡Otros usuarios podrán contactarte!",
@@ -154,8 +171,12 @@ const P2PPage = () => {
                     Moneda
                   </label>
                   <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value as any)}
+                    value={currency.code}
+                    onChange={(e) => setCurrency({
+                      code: e.target.value as any,
+                      name: 'US Dollar',
+                      symbol: '$'
+                    })}
                     className="w-full p-3 border rounded-lg bg-background focus:ring-2 focus:ring-primary"
                   >
                     <option value="USD">USD</option>
@@ -202,7 +223,7 @@ const P2PPage = () => {
                       Procesando...
                     </>
                   ) : (
-                    orderType === 'buy' ? 'Crear Orden de Compra' : 'Publicar Orden de Venta'
+                    orderType === OrderTypeEnum.Buy ? 'Crear Orden de Compra' : 'Publicar Orden de Venta'
                   )}
                 </Button>
               </div>
@@ -232,9 +253,9 @@ const P2PPage = () => {
                       {orders.map((order) => (
                         <tr key={order.id} className="border-b">
                           <td className="px-4 py-3">{order.user?.name || 'Usuario'}</td>
-                          <td className="px-4 py-3">{order.price} {order.currency}</td>
+                          <td className="px-4 py-3">{order.price} {order.currency.code}</td>
                           <td className="px-4 py-3">{order.amount}</td>
-                          <td className="px-4 py-3">{(order.price * order.amount).toFixed(2)} {order.currency}</td>
+                          <td className="px-4 py-3">{(order.price * order.amount).toFixed(2)} {order.currency.code}</td>
                           <td className="px-4 py-3">
                             <Button
                               variant="outline"
@@ -245,7 +266,7 @@ const P2PPage = () => {
                                 });
                               }}
                             >
-                              {orderType === 'buy' ? 'Comprar' : 'Vender'}
+                              {orderType === OrderTypeEnum.Buy ? 'Comprar' : 'Vender'}
                             </Button>
                           </td>
                         </tr>

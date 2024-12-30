@@ -15,11 +15,31 @@ import {
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 export function NotificationCenter() {
-  const { notifications, markAsRead, removeNotification, clearNotifications } = useNotifications();
+  // Usamos el contexto actualizado que maneja la integración con la API
+  const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
-  const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Manejador para marcar una notificación como leída
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      await markAsRead(id.toString()); 
+    } catch (error) {
+      toast.error('No se pudo marcar la notificación como leída');
+    }
+  };
+
+  // Manejador para marcar todas las notificaciones como leídas
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+      setIsOpen(false);
+    } catch (error) {
+      toast.error('No se pudieron marcar todas las notificaciones como leídas');
+    }
+  };
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -59,27 +79,18 @@ export function NotificationCenter() {
                 onSelect={(e) => {
                   e.preventDefault();
                   if (!notification.read) {
-                    markAsRead(notification.id);
+                    handleMarkAsRead(notification.id);
                   }
                 }}
               >
                 <div className="flex w-full justify-between items-start mb-1">
                   <span className="font-medium">{notification.title}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeNotification(notification.id);
-                    }}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    ×
-                  </button>
                 </div>
                 <span className="text-sm text-muted-foreground">
                   {notification.message}
                 </span>
                 <span className="text-xs text-muted-foreground mt-1">
-                  {formatDistanceToNow(new Date(notification.timestamp), {
+                  {formatDistanceToNow(new Date(notification.timestamp), { 
                     addSuffix: true,
                     locale: es,
                   })}
@@ -88,14 +99,14 @@ export function NotificationCenter() {
             ))
           )}
         </DropdownMenuGroup>
-        {notifications.length > 0 && (
+        {notifications.length > 0 && unreadCount > 0 && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-center text-sm"
-              onSelect={() => clearNotifications()}
+              onSelect={handleMarkAllAsRead}
             >
-              Limpiar todas
+              Marcar todas como leídas
             </DropdownMenuItem>
           </>
         )}

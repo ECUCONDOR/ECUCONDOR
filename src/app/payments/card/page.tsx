@@ -1,10 +1,11 @@
 'use client';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Session } from '@supabase/supabase-js';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { PaymentService } from '@/services/payment.service';
@@ -20,7 +21,9 @@ interface FormularioTarjeta {
 export default function PagoTarjeta() {
   const supabase = createClientComponentClient();
   const router = useRouter();
-  const [session, setSession] = useState(null);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +46,12 @@ export default function PagoTarjeta() {
 
     checkSession();
   }, [supabase, router]);
+
+  const createQueryString = (name: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(name, value);
+    return params.toString();
+  };
 
   // Formateadores de entrada
   const formatearNumeroTarjeta = (valor: string): string => {
@@ -128,7 +137,8 @@ export default function PagoTarjeta() {
       });
 
       // Redireccionar a página de éxito
-      router.push(`/payments/success?id=${resultado.id}`);
+      const queryString = createQueryString('id', resultado.id);
+      router.push('/payments/success' + (queryString ? `?${queryString}` : '') as any);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al procesar el pago');
     } finally {

@@ -45,11 +45,7 @@ function LoginFormContent() {
           description: error.message,
           variant: 'destructive',
         });
-        addNotification(
-          'error',
-          'Error de inicio de sesión',
-          error.message
-        );
+        addNotification('error', 'Error de acceso', 'No se pudo iniciar sesión. Verifica tus credenciales.');
         return;
       }
 
@@ -59,11 +55,7 @@ function LoginFormContent() {
           description: 'Has iniciado sesión correctamente',
           variant: 'default',
         });
-        addNotification(
-          'success',
-          'Inicio de sesión exitoso',
-          'Bienvenido de vuelta a ECUCONDOR'
-        );
+        addNotification('success', 'Bienvenido', 'Has iniciado sesión correctamente');
         router.refresh();
         await new Promise(resolve => setTimeout(resolve, 100));
         router.push('/dashboard');
@@ -74,11 +66,7 @@ function LoginFormContent() {
         description: 'Ocurrió un error al iniciar sesión. Por favor, intenta nuevamente.',
         variant: 'destructive',
       });
-      addNotification(
-        'error',
-        'Error inesperado',
-        'Ocurrió un error al iniciar sesión. Por favor, intenta nuevamente.'
-      );
+      addNotification('error', 'Error de acceso', 'No se pudo iniciar sesión. Verifica tus credenciales.');
     } finally {
       setIsLoading(false);
     }
@@ -146,6 +134,8 @@ function LoginFormContent() {
 }
 
 export default function LoginPage() {
+  const { addNotification } = useNotifications();
+
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-blue-950 via-blue-900 to-black text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">

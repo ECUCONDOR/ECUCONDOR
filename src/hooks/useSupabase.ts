@@ -1,24 +1,26 @@
 'use client'
 
-import { createClient } from '@/lib/supabase'
-import { useEffect, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase/client'
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js'
 
-export function useSupabaseSession() {
+export function useSupabase() {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   useEffect(() => {
-    // Verificar sesión actual
+    // Obtener sesión inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
-    // Suscribirse a cambios en la sesión
+    // Escuchar cambios en la autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event: AuthChangeEvent, session: Session | null) => {
+        setSession(session)
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -27,41 +29,7 @@ export function useSupabaseSession() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase])
+  }, [])
 
-  return {
-    user,
-    loading,
-    supabase
-  }
-}
-
-export function useSupabaseAuth() {
-  const { supabase } = useSupabaseSession()
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
-      if (error) throw error
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-    } catch (error) {
-      throw error
-    }
-  }
-
-  return {
-    signIn,
-    signOut
-  }
+  return { user, session, loading }
 }

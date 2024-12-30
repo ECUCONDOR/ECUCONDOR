@@ -1,32 +1,44 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
+// Mejoramos la interfaz para manejar mejor los errores y tipos de retorno
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
-  signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ 
+    error: AuthError | null;
+    user: User | null;  // Añadimos el usuario al retorno
+  }>;
+  signUp: (email: string, password: string) => Promise<{ 
+    error: AuthError | null;
+    user: User | null;  // Añadimos el usuario al retorno
+  }>;
+  signOut: () => Promise<{ error: AuthError | null }>;  // Añadimos manejo de errores
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+// Creamos el contexto con undefined para forzar el uso dentro del Provider
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check active sessions and sets the user
     const getSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error fetching session:', error.message);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error al obtener la sesión:', error.message);
+        }
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Error inesperado:', error);
+      } finally {
+        setLoading(false);
       }
-      setUser(session?.user ?? null);
-      setLoading(false);
     };
 
     getSession();
@@ -44,21 +56,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     signIn: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { error };
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        return { user: data.user, error };
+      } catch (error) {
+        return { user: null, error: error as AuthError };
+      }
     },
     signUp: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      return { error };
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        return { user: data.user, error };
+      } catch (error) {
+        return { user: null, error: error as AuthError };
+      }
     },
     signOut: async () => {
-      await supabase.auth.signOut();
+      try {
+        const { error } = await supabase.auth.signOut();
+        return { error };
+      } catch (error) {
+        return { error: error as AuthError };
+      }
     },
   };
 
@@ -72,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
 };

@@ -1,7 +1,14 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
 import type { Database } from '@/types/supabase';
-import { OrderType, Currency, OrderStatus, CreateOrderDTO, P2POrder, UserLimits } from '@/types/p2p';
+import { 
+  OrderTypeEnum,
+  Currency,
+  OrderStatusEnum,
+  CreateOrderDTO,
+  P2POrder,
+  UserLimits
+} from '@/types/p2p';
 import { validateOrder } from '@/utils/validation';
 import { handleServiceError, P2PServiceError, P2PErrorCodes } from '@/utils/errors';
 import { supabase } from '@/config/supabase';
@@ -37,8 +44,8 @@ class P2PService {
 
   async getOrders(filters?: {
     currency?: Currency;
-    type?: OrderType;
-    status?: OrderStatus;
+    type?: OrderTypeEnum;
+    status?: OrderStatusEnum;
   }) {
     try {
       let query = this.supabase
@@ -71,38 +78,34 @@ class P2PService {
   async createOrder(orderData: CreateOrderDTO) {
     try {
       const { data: session } = await this.supabase.auth.getSession();
-      if (!session?.session?.user) {
-        throw new P2PServiceError(
-          'No estás autorizado para crear órdenes',
-          P2PErrorCodes.UNAUTHORIZED
-        );
+      const user = session?.session?.user;
+      if (!user) {
+        throw new P2PServiceError('UNAUTHORIZED', 'No estás autorizado para crear órdenes');
+      }
+
+      if (!user.user_metadata?.emailVerified) {
+        throw new P2PServiceError('UNAUTHORIZED', 'Necesitas verificar tu cuenta para crear órdenes');
       }
 
       // Validate order data
       const validatedData = validateOrder(orderData);
 
       // Get user limits
-      const userLimits = await this.getUserLimits();
-      if (!userLimits?.verified) {
-        throw new P2PServiceError(
-          'Necesitas verificar tu cuenta para crear órdenes',
-          P2PErrorCodes.UNAUTHORIZED
-        );
+      const userLimits = await this.getUserLimits(user.id);
+      if (!userLimits) {
+        throw new P2PServiceError('NOT_FOUND', 'No se encontraron límites para el usuario');
       }
 
       // Check amount limits
       if (validatedData.amount > userLimits.max_order_amount) {
-        throw new P2PServiceError(
-          `El monto excede tu límite máximo de ${userLimits.max_order_amount}`,
-          P2PErrorCodes.LIMIT_EXCEEDED
-        );
+        throw new P2PServiceError('LIMIT_EXCEEDED', `El monto excede tu límite máximo de ${userLimits.max_order_amount}`);
       }
 
       const { data, error } = await this.supabase
         .from('ordenes_p2p')
         .insert([
           {
-            user_id: session.session.user.id,
+            user_id: user.id,
             moneda: validatedData.currency,
             tipo: validatedData.type,
             cantidad: validatedData.amount,
@@ -126,27 +129,18 @@ class P2PService {
     }
   }
 
-  async getUserLimits(): Promise<UserLimits> {
+  async getUserLimits(userId: string): Promise<UserLimits> {
     try {
-      const { data: session } = await this.supabase.auth.getSession();
-      if (!session?.session?.user) {
-        throw new P2PServiceError(
-          'No estás autorizado',
-          P2PErrorCodes.UNAUTHORIZED
-        );
-      }
-
       const { data, error } = await this.supabase
         .from('user_limits')
         .select('*')
-        .eq('user_id', session.session.user.id)
+        .eq('user_id', userId)
         .single();
 
       if (error) throw error;
       if (!data) {
         throw new P2PServiceError(
-          'No se encontraron límites para el usuario',
-          P2PErrorCodes.DATABASE_ERROR
+          'NOT_FOUND', 'No se encontraron límites para el usuario'
         );
       }
 

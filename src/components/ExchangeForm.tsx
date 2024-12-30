@@ -70,8 +70,8 @@ export function ExchangeForm({ rate, fromCurrency, toCurrency }: ExchangeFormPro
 
       // Notificar al usuario
       addNotification(
-        'exchange',
-        'Nueva solicitud de cambio',
+        'success',
+        'Solicitud de cambio registrada',
         `Tu solicitud de cambio de ${numericAmount} ${fromCurrency} a ${exchangeAmount.toFixed(2)} ${toCurrency} ha sido registrada.`,
         {
           fromAmount: numericAmount,
@@ -94,6 +94,7 @@ export function ExchangeForm({ rate, fromCurrency, toCurrency }: ExchangeFormPro
 
     } catch (error) {
       console.error('Error al procesar la solicitud:', error);
+      addNotification('error', 'Error al procesar la solicitud', 'Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.');
       toast({
         title: 'Error',
         description: 'Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.',

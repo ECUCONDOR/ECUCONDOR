@@ -21,7 +21,7 @@ const Navbar = () => {
                   Perfil
                 </Link>
                 <button
-                  onClick={() => authService.logout()}
+                  onClick={() => authService.signOut()}
                   className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
                 >
                   Cerrar Sesión

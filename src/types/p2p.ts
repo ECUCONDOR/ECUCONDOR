@@ -1,7 +1,55 @@
-export type OrderType = 'buy' | 'sell';
-export type OrderStatus = 'open' | 'matched' | 'in_progress' | 'completed' | 'cancelled';
-export type Currency = 'USD' | 'ARS' | 'BRL' | 'WLD';
-export type PaymentMethod = 'TRANSFERENCIA_BANCARIA' | 'MERCADOPAGO' | 'PAYPAL';
+// Basic type enums
+export enum OrderTypeEnum {
+  Buy = 'buy',
+  Sell = 'sell'
+}
+
+export enum OrderStatusEnum {
+  Open = 'open',
+  Matched = 'matched',
+  InProgress = 'in_progress',
+  Completed = 'completed',
+  Cancelled = 'cancelled'
+}
+
+export enum CurrencyCode {
+  USD = 'USD',
+  ARS = 'ARS',
+  BRL = 'BRL',
+  WLD = 'WLD'
+}
+
+export enum PaymentMethodType {
+  TransferenciaBancaria = 'TRANSFERENCIA_BANCARIA',
+  MercadoPago = 'MERCADOPAGO',
+  PayPal = 'PAYPAL'
+}
+
+// Detailed type interfaces
+export interface Currency {
+  code: CurrencyCode;
+  name: string;
+  symbol: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: PaymentMethodType;
+  name: string;
+  description?: string;
+  enabled: boolean;
+}
+
+export interface OrderType {
+  id: string;
+  type: OrderTypeEnum;
+  amount: number;
+  price: number;
+  currency: Currency;
+  status: OrderStatusEnum;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface UserLimits {
   id: string;
@@ -16,11 +64,11 @@ export interface UserLimits {
 
 export interface P2POrder {
   id: string;
-  type: OrderType;
+  type: OrderTypeEnum;
   currency: Currency;
   amount: number;
   price: number;
-  status: OrderStatus;
+  status: OrderStatusEnum;
   user_id: string;
   payment_method: PaymentMethod;
   bank_info?: string;
@@ -54,7 +102,7 @@ export interface User {
 }
 
 export interface CreateOrderDTO {
-  type: OrderType;
+  type: OrderTypeEnum;
   currency: Currency;
   amount: number;
   price: number;
@@ -66,7 +114,7 @@ export interface CreateOrderDTO {
 }
 
 export interface UpdateOrderDTO {
-  status?: OrderStatus;
+  status?: OrderStatusEnum;
   price?: number;
   amount?: number;
   payment_method?: PaymentMethod;

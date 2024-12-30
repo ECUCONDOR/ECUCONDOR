@@ -25,12 +25,17 @@ const ExchangePage = () => {
   const binancePairs = ['btcusdt', 'wldusdt', 'usdtbrl', 'usdtars'];
   const { prices } = useBinanceWebSocket(binancePairs);
 
+  const getPrice = (symbol: string) => {
+    const price = prices?.find(p => p.symbol === symbol.toUpperCase());
+    return price ? parseFloat(price.price) : 0;
+  };
+
   // Función para obtener el precio formateado
   const getFormattedPrice = useCallback((symbol: string) => {
-    const price = prices.find(p => p.symbol === symbol.toUpperCase());
+    const price = getPrice(symbol);
     return price ? {
-      value: price.price,
-      change24h: price.change24h,
+      value: price,
+      change24h: 0,
       lastUpdate: new Date()
     } : null;
   }, [prices]);
@@ -61,7 +66,7 @@ const ExchangePage = () => {
       newRates['BRL-USD'] = {
         value: 1 / usdtBrl.value,
         lastUpdate: new Date(),
-        change24h: -usdtBrl.change24h
+        change24h: 0
       };
     }
 

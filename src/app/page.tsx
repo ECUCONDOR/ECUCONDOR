@@ -11,14 +11,26 @@ import { useToast } from '@/components/ui/use-toast';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import TrendIndicator from '@/components/TrendIndicator';
 import { COLORS } from '@/constants/colors';
-import { exchangeOptions, initialRates } from '@/constants/exchangeOptions';
-import type { ExchangePair, ExchangeRate, ExchangeOption } from '@/types/exchange';
+import { exchangeOptions as initialExchangeOptions, initialRates } from '@/constants/exchangeOptions';
+import type { ExchangePair, ExchangeRate } from '@/types/exchange';
+import type { ExchangeOption } from '@/types/exchange';
 import { formatTime } from '@/utils/timeUtils';
 import dynamic from 'next/dynamic';
 import Icon from '@/components/ui/icon';
 import { PublicNavbar } from '@/components/public-navbar';
 import { Shield, Bolt, Globe } from 'lucide-react';
 import NewYearFireworks from '@/components/NewYearFireworks';
+
+interface BinancePrice {
+  symbol: string;
+  price: string;
+  lastUpdate?: Date;
+}
+
+interface ExtendedExchangeOption extends ExchangeOption {
+  price?: number;
+  lastUpdate?: Date;
+}
 
 // Create a client-only TimeDisplay component
 const TimeDisplay = dynamic(() => Promise.resolve(({ date }: { date: Date }) => (
@@ -32,12 +44,39 @@ export default function Home() {
   const { toast } = useToast();
   const [rates, setRates] = useState<Record<ExchangePair, ExchangeRate>>(initialRates);
   const binancePairs = ['btcusdt', 'wldusdt', 'usdtbrl', 'usdtars'];
-  const { prices, error } = useBinanceWebSocket(exchangeOptions.map(opt => opt.symbol));
-  const [selectedExchange, setSelectedExchange] = useState(exchangeOptions[0]);
+  const { prices, error } = useBinanceWebSocket(initialExchangeOptions.map(opt => opt.symbol));
+  const [exchangeOptions, setExchangeOptions] = useState<ExtendedExchangeOption[]>(initialExchangeOptions.map(opt => ({
+    ...opt,
+    price: undefined,
+    lastUpdate: undefined
+  })));
+  const [selectedExchange, setSelectedExchange] = useState<ExtendedExchangeOption>(exchangeOptions[0]);
   const [amount, setAmount] = useState('');
   const [convertedAmount, setConvertedAmount] = useState('');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [currentSymbolIndex, setCurrentSymbolIndex] = useState(0);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error connecting to Binance",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (prices) {
+      prices.forEach((priceData: BinancePrice) => {
+        const option = exchangeOptions.find(opt => opt.symbol === priceData.symbol);
+        if (option) {
+          option.price = parseFloat(priceData.price);
+          option.lastUpdate = priceData.lastUpdate || new Date();
+        }
+      });
+    }
+  }, [prices, exchangeOptions]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -47,7 +86,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleExchangeSelect = (exchange: ExchangeOption) => {
+  const handleExchangeSelect = (exchange: ExtendedExchangeOption) => {
     setSelectedExchange(exchange);
     setAmount('');
     setConvertedAmount('');
@@ -55,27 +94,38 @@ export default function Home() {
 
   const handleAmountChange = (value: string) => {
     setAmount(value);
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue)) {
-      const rate = rates[selectedExchange.pair]?.rate || 1;
-      setConvertedAmount((numericValue * rate).toFixed(2));
+  };
+
+  useEffect(() => {
+    if (amount && !isNaN(parseFloat(amount))) {
+      const rate = selectedExchange.id in rates ? rates[selectedExchange.id].value : 1;
+      setConvertedAmount((parseFloat(amount) * rate).toFixed(2));
     } else {
       setConvertedAmount('');
     }
-  };
+  }, [amount, selectedExchange, rates]);
 
   useEffect(() => {
     if (prices) {
       const newRates: Record<ExchangePair, ExchangeRate> = { ...rates };
-      prices.forEach((priceData) => {
+      prices.forEach((priceData: BinancePrice) => {
         const option = exchangeOptions.find(opt => opt.symbol.toLowerCase() === priceData.symbol.toLowerCase());
-        if (option) {
-          newRates[option.pair] = {
-            rate: priceData.price,
-            lastUpdate: priceData.lastUpdate,
+        if (option && option.id) {
+          newRates[option.id as ExchangePair] = {
+            value: parseFloat(priceData.price),
+            lastUpdate: priceData.lastUpdate || new Date(),
+            change24h: 0, // You might want to calculate this value properly
           };
         }
       });
+      const binancePrice = prices.find(p => p.symbol === 'BTCUSDT');
+      if (binancePrice) {
+        newRates['BTC-USD'] = {
+          value: parseFloat(binancePrice.price),
+          lastUpdate: new Date(),
+          change24h: 0
+        };
+      }
       setRates(newRates);
       setLastUpdate(new Date());
     }
@@ -125,11 +175,11 @@ export default function Home() {
             </h2>
             <div className="space-y-4">
               {exchangeOptions.map((option, index) => {
-                const rate = rates[option.pair]?.rate;
+                const rate = rates[option.id as ExchangePair]?.value;
                 const isActive = index === currentSymbolIndex;
                 return (
                   <div
-                    key={option.pair}
+                    key={option.id}
                     className={`p-4 rounded-lg transition-all duration-300 ${
                       isActive ? 'bg-blue-500/20 scale-105' : 'bg-white/5 hover:bg-white/10'
                     }`}
@@ -143,7 +193,7 @@ export default function Home() {
                         <span className="text-2xl font-semibold">
                           {rate ? rate.toFixed(2) : '-'}
                         </span>
-                        <TrendIndicator rate={rates[selectedExchange.pair]} />
+                        <TrendIndicator rate={rates[option.id as ExchangePair]} />
                       </div>
                     </div>
                   </div>

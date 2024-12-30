@@ -1,26 +1,80 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { componentLoggers } from './src/lib/logger';
+import { randomUUID } from 'crypto';
+
+const { api: logger } = componentLoggers;
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ req: request, res: response });
+  const requestStart = Date.now();
+  const requestId = randomUUID();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  try {
+    logger.info('Incoming request', {
+      method: request.method,
+      url: request.url,
+      requestId,
+      userAgent: request.headers.get('user-agent'),
+    });
 
-  // Si el usuario no está autenticado y trata de acceder a una ruta protegida
-  if (!session && request.nextUrl.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+    const response = NextResponse.next();
+    const supabase = createMiddlewareClient({ req: request, res: response });
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const protectedRoutes = ['/dashboard', '/profile'];
+    const isProtectedRoute = protectedRoutes.some(route => 
+      request.nextUrl.pathname.startsWith(route)
+    );
+
+    if (isProtectedRoute && !session) {
+      logger.warn('Unauthorized access attempt', {
+        path: request.nextUrl.pathname,
+        requestId,
+      });
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    if (session && (request.nextUrl.pathname.startsWith('/auth'))) {
+      logger.info('Redirecting authenticated user', {
+        path: request.nextUrl.pathname,
+        userId: session.user.id,
+        requestId,
+      });
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    const duration = Date.now() - requestStart;
+    logger.info('Request completed', {
+      method: request.method,
+      url: request.url,
+      status: response.status,
+      duration,
+      requestId,
+      userId: session?.user?.id,
+    });
+
+    response.headers.set('X-Request-ID', requestId);
+    response.headers.set('X-Response-Time', `${duration}ms`);
+
+    return response;
+  } catch (error) {
+    const duration = Date.now() - requestStart;
+    logger.error('Request failed', {
+      method: request.method,
+      url: request.url,
+      duration,
+      requestId,
+    }, error as Error);
+
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
-
-  // Si el usuario está autenticado y trata de acceder a las páginas de auth
-  if (session && (request.nextUrl.pathname.startsWith('/auth'))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  return response;
 }
 
 export const config = {

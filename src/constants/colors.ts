@@ -13,5 +13,6 @@ export const COLORS = {
   success: '#38A169',
   error: '#E53E3E',
   bitcoin: '#F7931A',
-  worldcoin: '#00AEFF'
+  worldcoin: '#00AEFF',
+  input: '#FFFFFF'  // Agregando la propiedad input con el mismo color que surface
 };

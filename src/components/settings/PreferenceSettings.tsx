@@ -126,9 +126,11 @@ export default function PreferenceSettings() {
               <Label htmlFor="colorScheme">Esquema de Color</Label>
               <Select
                 value={settings.colorScheme}
-                onValueChange={(value: 'blue' | 'green' | 'purple' | 'orange') => 
-                  handleChange('colorScheme', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === 'blue' || value === 'green' || value === 'purple' || value === 'orange') {
+                    handleChange('colorScheme', value);
+                  }
+                }}
               >
                 <SelectTrigger id="colorScheme">
                   <SelectValue placeholder="Selecciona un esquema de color" />
@@ -198,9 +200,11 @@ export default function PreferenceSettings() {
               <Label htmlFor="dashboardLayout">Diseño del Dashboard</Label>
               <Select
                 value={settings.dashboardLayout}
-                onValueChange={(value: 'grid' | 'list') => 
-                  handleChange('dashboardLayout', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === 'grid' || value === 'list') {
+                    handleChange('dashboardLayout', value);
+                  }
+                }}
               >
                 <SelectTrigger id="dashboardLayout">
                   <SelectValue placeholder="Selecciona un diseño" />
@@ -226,9 +230,11 @@ export default function PreferenceSettings() {
               <Label htmlFor="defaultView">Vista Predeterminada</Label>
               <Select
                 value={settings.defaultView}
-                onValueChange={(value: 'month' | 'week' | 'day') => 
-                  handleChange('defaultView', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === 'month' || value === 'week' || value === 'day') {
+                    handleChange('defaultView', value);
+                  }
+                }}
               >
                 <SelectTrigger id="defaultView">
                   <SelectValue placeholder="Selecciona una vista" />

@@ -1,11 +1,57 @@
 import { supabase } from './supabase';
-import type { 
-  CurrencyType, 
-  CustodyAccount, 
-  CustodyOperation, 
-  ExchangeRate, 
-  OperationStep 
+import { 
+  CurrencyType,
+  ExchangeRate,
+  OperationStep
 } from '@/types/custody';
+
+interface CustodyOperation {
+  id?: string;
+  timestamp: string;
+  amount: number;
+  type: string;
+  sourceAmount?: number;
+  targetAmount?: number;
+  sourceAccountId?: string;
+  targetAccountId?: string;
+}
+
+interface CustodyAccount {
+  id: string;
+  bank: string;
+  accountNumber: string;
+  cbu: string;
+  type: string;
+  alias?: string;
+  dailyLimit: number;
+  monthlyLimit: number;
+  recentOperations: CustodyOperation[];
+}
+
+interface CustodyAccountData extends Omit<CustodyAccount, 'id'> {
+  owner?: string;
+  ownerDocument?: string;
+  balance?: number;
+  status?: string;
+  createdAt?: Date;
+}
+
+interface CustodyOperationData extends Omit<CustodyOperation, 'id'> {
+  sourceCurrency?: string;
+  targetCurrency?: string;
+  exchangeRate?: number;
+  status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  steps?: OperationStep[];
+}
+
+class CustodyError extends Error {
+  constructor(public message: string, public details?: unknown) {
+    super(message);
+    this.name = 'CustodyError';
+  }
+}
 
 class CustodyService {
   private limits = {
@@ -27,11 +73,11 @@ class CustodyService {
     owner: string;
     ownerDocument: string;
   }): Promise<CustodyAccount> {
-    const account: Omit<CustodyAccount, 'id'> = {
-      type,
+    const accountData: CustodyAccountData = {
       bank: data.bank,
       accountNumber: data.accountNumber,
       cbu: data.cbu,
+      type: type,
       alias: data.alias,
       owner: data.owner,
       ownerDocument: data.ownerDocument,
@@ -45,7 +91,7 @@ class CustodyService {
 
     const { data: newAccount, error } = await supabase
       .from('custody_accounts')
-      .insert([account])
+      .insert([accountData])
       .select()
       .single();
 
@@ -64,7 +110,7 @@ class CustodyService {
     // Verificar límites
     const withinLimits = await this.checkLimits(data.sourceAccountId, data.sourceAmount);
     if (!withinLimits) {
-      throw new Error('Operation exceeds established limits');
+      throw new CustodyError('Operation exceeds established limits');
     }
 
     const exchangeRate = await this.getExchangeRate();
@@ -74,13 +120,15 @@ class CustodyService {
       exchangeRate
     );
 
-    const operation: Omit<CustodyOperation, 'id'> = {
+    const operationData: CustodyOperationData = {
+      timestamp: new Date().toISOString(),
+      amount: data.sourceAmount,
       type: data.type,
       sourceCurrency: data.sourceCurrency,
       targetCurrency: data.targetCurrency,
       sourceAmount: data.sourceAmount,
       targetAmount,
-      exchangeRate,
+      exchangeRate: typeof exchangeRate === 'number' ? exchangeRate : exchangeRate.buy,
       sourceAccountId: data.sourceAccountId,
       targetAccountId: data.targetAccountId,
       status: 'PENDING',
@@ -96,7 +144,7 @@ class CustodyService {
 
     const { data: newOperation, error } = await supabase
       .from('custody_operations')
-      .insert([operation])
+      .insert([operationData])
       .select()
       .single();
 
@@ -112,11 +160,11 @@ class CustodyService {
       .single();
 
     if (fetchError) throw fetchError;
-    if (!operation) throw new Error('Operation not found');
+    if (!operation) throw new CustodyError('Operation not found');
 
     // Validar comprobante
     if (!this.validateReceipt(receipt)) {
-      throw new Error('Invalid or incomplete receipt');
+      throw new CustodyError('Invalid or incomplete receipt');
     }
 
     const newStep: OperationStep = {
@@ -150,7 +198,7 @@ class CustodyService {
       .single();
 
     if (fetchError) throw fetchError;
-    if (!operation) throw new Error('Operation not found');
+    if (!operation) throw new CustodyError('Operation not found');
 
     try {
       // Realizar transferencia bancaria
@@ -190,7 +238,7 @@ class CustodyService {
         step: 'COMPANY_TRANSFER',
         date: new Date(),
         status: 'ERROR',
-        details: error.message
+        details: error instanceof Error ? error.message : 'Unknown error'
       };
 
       const { data: failedOperation } = await supabase
@@ -227,32 +275,55 @@ class CustodyService {
       : sourceAmount * exchangeRate.sell;
   }
 
-  private async checkLimits(accountId: string, amount: number): Promise<boolean> {
-    const { data: account, error } = await supabase
-      .from('custody_accounts')
-      .select('type, recentOperations')
-      .eq('id', accountId)
-      .single();
+  private async validateDailyLimit(account: CustodyAccount, amount: number): Promise<boolean> {
+    try {
+      const today = new Date();
+      const todayOperations = account.recentOperations?.filter(op => {
+        const opDate = new Date(op.timestamp);
+        return opDate.toDateString() === today.toDateString();
+      }) || [];
 
-    if (error) throw error;
-
-    // Verificar límite diario
-    const today = new Date().toISOString().split('T')[0];
-    const todayOperations = account.recentOperations.filter(
-      op => op.date.split('T')[0] === today
-    );
-    const dailyTotal = todayOperations.reduce((sum, op) => sum + op.amount, 0);
-    if (dailyTotal + amount > this.limits.daily[account.type]) {
-      return false;
+      const dailyTotal = todayOperations.reduce((sum, op) => sum + op.amount, 0);
+      return (dailyTotal + amount) <= account.dailyLimit;
+    } catch (error) {
+      throw new CustodyError('Error validando límite diario', error);
     }
+  }
 
-    // Verificar límite mensual
-    const currentMonth = new Date().getMonth();
-    const monthOperations = account.recentOperations.filter(
-      op => new Date(op.date).getMonth() === currentMonth
-    );
-    const monthlyTotal = monthOperations.reduce((sum, op) => sum + op.amount, 0);
-    return monthlyTotal + amount <= this.limits.monthly[account.type];
+  private async validateMonthlyLimit(account: CustodyAccount, amount: number): Promise<boolean> {
+    try {
+      const today = new Date();
+      const monthOperations = account.recentOperations?.filter(op => {
+        const opDate = new Date(op.timestamp);
+        return opDate.getMonth() === today.getMonth() &&
+               opDate.getFullYear() === today.getFullYear();
+      }) || [];
+
+      const monthlyTotal = monthOperations.reduce((sum, op) => sum + op.amount, 0);
+      return (monthlyTotal + amount) <= account.monthlyLimit;
+    } catch (error) {
+      throw new CustodyError('Error validando límite mensual', error);
+    }
+  }
+
+  private async checkLimits(accountId: string, amount: number): Promise<boolean> {
+    try {
+      const { data: account, error } = await supabase
+        .from('custody_accounts')
+        .select('type, recentOperations')
+        .eq('id', accountId)
+        .single();
+
+      if (error) throw error;
+
+      const withinDailyLimit = await this.validateDailyLimit(account as CustodyAccount, amount);
+      if (!withinDailyLimit) return false;
+
+      const withinMonthlyLimit = await this.validateMonthlyLimit(account as CustodyAccount, amount);
+      return withinMonthlyLimit;
+    } catch (error) {
+      throw new CustodyError('Error checking limits', error);
+    }
   }
 
   private validateReceipt(receipt: string): boolean {
@@ -272,16 +343,18 @@ class CustodyService {
 
   private async updateAccountBalances(operation: CustodyOperation): Promise<void> {
     // Actualizar cuenta origen
-    const { error: sourceError } = await supabase
+    const { data, error: sourceError } = await supabase
       .from('custody_accounts')
       .update({
         balance: supabase.rpc('decrement_balance', { amount: operation.sourceAmount }),
-        recentOperations: supabase.raw('array_append(recentOperations, ?)', [{
-          date: new Date(),
-          type: 'DEBIT',
-          amount: operation.sourceAmount,
-          operationId: operation.id
-        }])
+        recentOperations: supabase.rpc('append_operation', { 
+          operation: {
+            date: new Date(),
+            type: 'DEBIT',
+            amount: operation.sourceAmount,
+            id: operation.id
+          }
+        })
       })
       .eq('id', operation.sourceAccountId);
 
@@ -292,19 +365,21 @@ class CustodyService {
       .from('custody_accounts')
       .update({
         balance: supabase.rpc('increment_balance', { amount: operation.targetAmount }),
-        recentOperations: supabase.raw('array_append(recentOperations, ?)', [{
-          date: new Date(),
-          type: 'CREDIT',
-          amount: operation.targetAmount,
-          operationId: operation.id
-        }])
+        recentOperations: supabase.rpc('append_operation', {
+          operation: {
+            date: new Date(),
+            type: 'CREDIT',
+            amount: operation.targetAmount,
+            id: operation.id
+          }
+        })
       })
       .eq('id', operation.targetAccountId);
 
     if (targetError) throw targetError;
   }
 
-  async generateDailyReport(): Promise<DailyReport> {
+  async generateDailyReport(): Promise<any> {
     const today = new Date().toISOString().split('T')[0];
     const { data: operations, error } = await supabase
       .from('custody_operations')
@@ -325,6 +400,22 @@ class CustodyService {
       completedOperations: operations.filter(op => op.status === 'COMPLETED').length,
       pendingOperations: operations.filter(op => op.status === 'PENDING').length
     };
+  }
+
+  async updateAccountOperations(accountId: string, operation: any) {
+    try {
+      const { data, error } = await supabase
+        .from('custody_accounts')
+        .update({
+          recentOperations: operation
+        })
+        .eq('id', accountId);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw new CustodyError('Error actualizando operaciones de la cuenta', error);
+    }
   }
 }
 

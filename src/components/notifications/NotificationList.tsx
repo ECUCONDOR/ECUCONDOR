@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { Card, CardContent } from '@/components/ui/card'
 import { Bell, CheckCircle, AlertCircle, CreditCard } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-
-const supabase = createClient()
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
 
 interface Notification {
   id: string
@@ -52,7 +51,7 @@ export default function NotificationList() {
           schema: 'public',
           table: 'notificaciones'
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<{ [key: string]: any }>) => {
           setNotifications(prev => [payload.new as Notification, ...prev])
         }
       )

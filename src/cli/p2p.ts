@@ -1,9 +1,16 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { p2pService } from '../services/p2pService';
-import { Currency, OrderType, PaymentMethod } from '@/types/p2p';
-import chalk from 'chalk';
+import { Currency, OrderTypeEnum, PaymentMethod } from '@/types/p2p';
 import Table from 'cli-table3';
+import { supabase } from '@/lib/supabase/client';
+
+interface UserLimits {
+  max_order_amount: number;
+  daily_limit: number;
+  monthly_limit: number;
+  verified: boolean;
+}
 
 const program = new Command();
 
@@ -28,7 +35,7 @@ program
     try {
       const order = await p2pService.createOrder({
         currency: options.currency as Currency,
-        type: options.type as OrderType,
+        type: options.type as OrderTypeEnum,
         amount: Number(options.amount),
         price: Number(options.price),
         payment_method: options.payment as PaymentMethod,
@@ -38,19 +45,17 @@ program
         max_amount: options.maxAmount ? Number(options.maxAmount) : undefined
       });
 
-      console.log(chalk.green('✓ Orden creada exitosamente'));
-      console.log(chalk.cyan('Detalles de la orden:'));
-      console.table({
-        ID: order.id,
-        Moneda: order.moneda,
-        Tipo: order.tipo,
-        Cantidad: order.cantidad,
-        Precio: order.precio,
-        'Método de Pago': order.metodo_pago,
-        Estado: order.estado
-      });
+      console.log('\n✓ Orden creada exitosamente:');
+      console.log('------------------------');
+      console.log(`ID: ${order.id}`);
+      console.log(`Moneda: ${order.moneda}`);
+      console.log(`Tipo: ${order.tipo}`);
+      console.log(`Cantidad: ${order.cantidad}`);
+      console.log(`Precio: ${order.precio}`);
+      console.log(`Método de pago: ${order.metodo_pago}`);
+      console.log(`Estado: ${order.estado}`);
     } catch (error) {
-      console.error(chalk.red('✗ Error al crear la orden:'), error.message);
+      console.error('\n✗ Error al crear la orden:', error instanceof Error ? error.message : 'Unknown error');
       process.exit(1);
     }
   });
@@ -65,35 +70,29 @@ program
     try {
       const orders = await p2pService.getOrders({
         currency: options.currency as Currency,
-        type: options.type as OrderType,
+        type: options.type as OrderTypeEnum,
         status: options.status as any
       });
 
       if (orders.length === 0) {
-        console.log(chalk.yellow('No se encontraron órdenes'));
+        console.log('\nNo se encontraron órdenes');
         return;
       }
 
-      const table = new Table({
-        head: ['ID', 'Moneda', 'Tipo', 'Cantidad', 'Precio', 'Método', 'Estado'].map(h => chalk.cyan(h)),
-        colWidths: [8, 8, 6, 10, 10, 15, 10]
-      });
-
+      console.log('\nÓrdenes encontradas:');
+      console.log('------------------------');
       orders.forEach(order => {
-        table.push([
-          order.id,
-          order.moneda,
-          order.tipo,
-          order.cantidad.toString(),
-          order.precio.toString(),
-          order.metodo_pago,
-          order.estado
-        ]);
+        console.log(`\nID: ${order.id}`);
+        console.log(`Moneda: ${order.moneda}`);
+        console.log(`Tipo: ${order.tipo}`);
+        console.log(`Cantidad: ${order.cantidad}`);
+        console.log(`Precio: ${order.precio}`);
+        console.log(`Método de pago: ${order.metodo_pago}`);
+        console.log(`Estado: ${order.estado}`);
+        console.log('------------------------');
       });
-
-      console.log(table.toString());
     } catch (error) {
-      console.error(chalk.red('✗ Error al listar órdenes:'), error.message);
+      console.error('\n✗ Error al obtener las órdenes:', error instanceof Error ? error.message : 'Unknown error');
       process.exit(1);
     }
   });
@@ -103,17 +102,19 @@ program
   .description('Obtener límites del usuario')
   .action(async () => {
     try {
-      const limits = await p2pService.getUserLimits();
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user) {
+        throw new Error('No authenticated user');
+      }
+      const limits: UserLimits = await p2pService.getUserLimits(session.session.user.id);
       
-      console.log(chalk.cyan('Límites del usuario:'));
-      console.table({
-        'Verificado': limits.verified ? '✓ Sí' : '✗ No',
-        'Límite por orden': limits.max_order_amount,
-        'Límite diario': limits.daily_limit,
-        'Límite mensual': limits.monthly_limit
-      });
+      console.log('\nLímites del usuario:');
+      console.log('------------------------');
+      console.log(`Límite por orden: ${limits.max_order_amount}`);
+      console.log(`Límite diario: ${limits.daily_limit}`);
+      console.log(`Límite mensual: ${limits.monthly_limit}`);
     } catch (error) {
-      console.error(chalk.red('✗ Error al obtener límites:'), error.message);
+      console.error('\n✗ Error al obtener límites:', error instanceof Error ? error.message : 'Unknown error');
       process.exit(1);
     }
   });

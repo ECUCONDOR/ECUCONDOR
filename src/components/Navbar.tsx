@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { authService } from '@/api/auth';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Navbar = () => {
             Servicios
           </button>
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => authService.signOut()}
             className="text-lg font-semibold bg-gradient-to-r from-red-600 to-green-600 px-6 py-2 rounded-full text-white hover:from-red-700 hover:to-green-700 transition-all shadow-lg hover:shadow-xl"
           >
             Conectar

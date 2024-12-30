@@ -1,13 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+declare global {
+  interface ImportMetaEnv {
+    NEXT_PUBLIC_SUPABASE_URL: string
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: string
+  }
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Faltan las variables de entorno de Supabase')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export type AuthError = {
   message: string;
@@ -47,3 +54,6 @@ export const authService = {
     return user;
   },
 };
+
+// Verify the correct method to access data
+const data = supabase.from('tableName').select('*');

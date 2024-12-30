@@ -51,7 +51,7 @@ export default function DashboardContent() {
                 Balance disponible en tu cuenta
               </p>
               <div className="mt-4">
-                <Link href="/payments/deposit" className="w-full">
+                <Link href="/payments/deposit" legacyBehavior={false} className="w-full">
                   <Button variant="outline" className="w-full">
                     Depositar Fondos
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -86,12 +86,12 @@ export default function DashboardContent() {
               <QrCode className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <Button asChild variant="outline" className="w-full">
-                <Link href="/qr">
+              <Link href="/qr" className="w-full">
+                <Button variant="outline" className="w-full">
                   Ver código QR
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>

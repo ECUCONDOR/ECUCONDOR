@@ -1,116 +1,129 @@
 'use client';
 
 import { useState } from 'react';
-import { PaymentService } from '@/services/payment';
+import { PaymentService } from '@/services/PaymentService';
 import { PaymentTransaction, QRCode } from '@/types/payment.types';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from './use-toast';
 
-export const usePayments = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const { toast, addToast } = useToast();
+export function usePayments() {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-    const createPixPayment = async (amount: number, currency: string) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await PaymentService.createPixPayment(
-                'USER_ID', // Replace with actual user ID
-                amount,
-                currency
-            );
-            addToast('PIX Payment Created. Check your PIX app to complete the payment');
-            return result;
-        } catch (err: any) {
-            setError(err.message);
-            addToast(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const createPixPayment = async (amount: number, description: string, userId: string) => {
+    setLoading(true);
+    try {
+      const result = await PaymentService.createPixPayment({
+        amount,
+        description,
+        userId
+      });
+      toast({
+        title: 'Payment created',
+        description: 'Your PIX payment has been created successfully'
+      });
+      return result;
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create PIX payment',
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const createQRPayment = async (
-        amount: number,
-        currency: string,
-        provider: 'MERCADOPAGO' | 'MODO'
-    ) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await PaymentService.createQRPayment(
-                'USER_ID', // Replace with actual user ID
-                amount,
-                currency,
-                provider
-            );
-            addToast('QR Code Generated. Scan the QR code to complete payment');
-            return result;
-        } catch (err: any) {
-            setError(err.message);
-            addToast(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const createQRPayment = async (amount: number, description: string, userId: string) => {
+    setLoading(true);
+    try {
+      const result = await PaymentService.createQRPayment({
+        amount,
+        description,
+        userId
+      });
+      toast({
+        title: 'Payment created',
+        description: 'Your QR payment has been created successfully'
+      });
+      return result;
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create QR payment',
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const createCardPayment = async (
-        amount: number,
-        currency: string,
-        cardDetails: {
-            number: string;
-            exp_month: number;
-            exp_year: number;
-            cvc: string;
-        }
-    ) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await PaymentService.createCardPayment(
-                'USER_ID', // Replace with actual user ID
-                amount,
-                currency,
-                cardDetails
-            );
-            addToast('Card Payment Processed. Your payment is being processed');
-            return result;
-        } catch (err: any) {
-            setError(err.message);
-            addToast(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const createCardPayment = async (
+    amount: number,
+    description: string,
+    userId: string,
+    cardDetails: {
+      number: string;
+      expiry: string;
+      cvc: string;
+    }
+  ) => {
+    setLoading(true);
+    try {
+      const result = await PaymentService.createCardPayment({
+        amount,
+        description,
+        userId,
+        cardDetails
+      });
+      toast({
+        title: 'Payment created',
+        description: 'Your card payment has been created successfully'
+      });
+      return result;
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create card payment',
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const createDispute = async (
-        transactionId: string,
-        reason: string,
-        details: string
-    ) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const result = await PaymentService.createDispute(
-                transactionId,
-                reason,
-                details
-            );
-            addToast('Dispute Created. We will review your case shortly');
-            return result;
-        } catch (err: any) {
-            setError(err.message);
-            addToast(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const createDispute = async (paymentId: string, reason: string, userId: string) => {
+    setLoading(true);
+    try {
+      const result = await PaymentService.createDispute({
+        paymentId,
+        reason,
+        userId
+      });
+      toast({
+        title: 'Dispute created',
+        description: 'Your dispute has been created successfully'
+      });
+      return result;
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to create dispute',
+        variant: 'destructive'
+      });
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return {
-        loading,
-        error,
-        createPixPayment,
-        createQRPayment,
-        createCardPayment,
-        createDispute
-    };
-};
+  return {
+    loading,
+    createPixPayment,
+    createQRPayment,
+    createCardPayment,
+    createDispute
+  };
+}

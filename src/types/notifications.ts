@@ -1,16 +1,16 @@
 export type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'exchange';
 
-export interface Notification {
+export interface BaseNotification {
   id: string;
   type: NotificationType;
   title: string;
   message: string;
   timestamp: Date;
   read: boolean;
-  data?: any;
+  data?: unknown;
 }
 
-export interface ExchangeNotification extends Notification {
+export interface ExchangeNotification extends BaseNotification {
   type: 'exchange';
   data: {
     fromAmount: number;
@@ -21,3 +21,9 @@ export interface ExchangeNotification extends Notification {
     transactionId: string;
   };
 }
+
+export interface SystemNotification extends BaseNotification {
+  type: 'success' | 'error' | 'warning' | 'info';
+}
+
+export type Notification = SystemNotification | ExchangeNotification;

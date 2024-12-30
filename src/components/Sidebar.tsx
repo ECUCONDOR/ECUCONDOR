@@ -9,7 +9,8 @@ import {
   User, 
   Settings,
   CreditCard,
-  History
+  History,
+  LucideIcon
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -19,7 +20,11 @@ interface SidebarProps {
 export default function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
 
-  const links = [
+  const links: Array<{
+    href: string;
+    label: string;
+    icon: LucideIcon;
+  }> = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     { href: '/exchange', label: 'Cambio', icon: DollarSign },
     { href: '/documents', label: 'Documentos', icon: FileText },

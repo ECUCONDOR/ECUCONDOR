@@ -1,9 +1,17 @@
-import { supabase } from '@/lib/supabase'
-import type { Database } from '@/types/database.types'
+import { Database } from '@/types/supabase'
+import { supabase } from '@/lib/supabase/client'
 
-type Payment = Database['public']['Tables']['payments']['Row']
-type PaymentInsert = Database['public']['Tables']['payments']['Insert']
-type PaymentUpdate = Database['public']['Tables']['payments']['Update']
+export interface Payment {
+  id: string
+  amount: number
+  currency: string
+  status: 'pending' | 'completed' | 'failed'
+  created_at: string
+  updated_at: string
+}
+
+export interface PaymentInsert extends Omit<Payment, 'id' | 'created_at' | 'updated_at'> {}
+export interface PaymentUpdate extends Partial<PaymentInsert> {}
 
 export class PaymentService {
   async getPaymentHistory(userId: string): Promise<Payment[]> {
@@ -70,6 +78,7 @@ export class PaymentService {
       throw error
     }
 
+    const paymentsData = data.transactions;
     return data
   }
 }

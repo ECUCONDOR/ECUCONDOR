@@ -221,3 +221,8 @@ export class PaymentService {
         // Implement MercadoPago specific webhook processing
     }
 }
+
+interface PaymentMethodConfig {
+  id: string;
+  type: PaymentMethod;
+}

@@ -6,21 +6,25 @@ export default function RocketExplosion() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    // Verificaciones iniciales
     if (typeof window === 'undefined' || !canvasRef.current) return
 
     const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const context = canvas.getContext('2d')
+    
+    // Si no hay contexto, salimos temprano
+    if (!context) return
 
-    // Set canvas size
+    // Función para ajustar el tamaño del canvas
     const setCanvasSize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
     }
+    
     setCanvasSize()
     window.addEventListener('resize', setCanvasSize)
 
-    // Particle class
+    // Clase Particle para manejar cada partícula individual
     class Particle {
       x: number
       y: number
@@ -43,7 +47,7 @@ export default function RocketExplosion() {
       update() {
         this.x += this.vx
         this.y += this.vy
-        this.vy += 0.02 // gravity
+        this.vy += 0.02
         this.alpha *= 0.99
       }
 
@@ -58,41 +62,45 @@ export default function RocketExplosion() {
       }
     }
 
-    // Particle system
+    // Sistema de partículas y animación
     const particles: Particle[] = []
     const maxParticles = 300
 
-    // Animation loop
-    function animate() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // La función createAnimationLoop asegura que context está disponible
+    const createAnimationLoop = (ctx: CanvasRenderingContext2D) => {
+      return function animate() {
+        // Aplicamos el efecto de desvanecimiento
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      // Add new particles
-      if (particles.length < maxParticles) {
-        for (let i = 0; i < 5; i++) {
-          particles.push(new Particle())
+        // Generamos nuevas partículas
+        if (particles.length < maxParticles) {
+          for (let i = 0; i < 5; i++) {
+            particles.push(new Particle())
+          }
         }
-      }
 
-      // Update and draw particles
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const particle = particles[i]
-        particle.update()
-        particle.draw(ctx)
+        // Actualizamos y dibujamos las partículas
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const particle = particles[i]
+          particle.update()
+          particle.draw(ctx)
 
-        // Remove faded particles
-        if (particle.alpha < 0.01) {
-          particles.splice(i, 1)
+          // Eliminamos partículas desvanecidas
+          if (particle.alpha < 0.01) {
+            particles.splice(i, 1)
+          }
         }
-      }
 
-      requestAnimationFrame(animate)
+        requestAnimationFrame(animate)
+      }
     }
 
-    // Start animation
-    animate()
+    // Iniciamos la animación con el contexto verificado
+    const animationLoop = createAnimationLoop(context)
+    animationLoop()
 
-    // Cleanup
+    // Limpieza al desmontar el componente
     return () => {
       window.removeEventListener('resize', setCanvasSize)
     }

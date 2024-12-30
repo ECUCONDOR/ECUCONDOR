@@ -1,149 +1,130 @@
-'use client';
+import { useEffect, useRef, useState } from 'react';
 
-import { useState, useEffect, useRef } from 'react';
-
-interface BinanceTickerData {
-  s: string;  // Symbol
-  c: string;  // Current price
-  P: string;  // Price change percent
-}
-
-interface PriceData {
-  symbol: string;
-  price: number;
-  change24h: number;
-  lastUpdate: Date;
+interface WebSocketState {
+  connected: boolean;
+  reconnecting: boolean;
 }
 
 interface WebSocketError {
   type: string;
   message: string;
-  error?: Error;
+  error: Error;
 }
 
-const BINANCE_WS_URL = 'wss://stream.binance.com:9443/ws';
-const UPDATE_INTERVAL = 20000; // 20 segundos
-const RECONNECT_DELAY = 5000; // 5 segundos
-const MAX_RETRIES = 3;
+interface BinanceWebSocketData {
+  e: string; // Event type
+  E: number; // Event time
+  s: string; // Symbol
+  p: string; // Price change
+  P: string; // Price change percent
+  w: string; // Weighted average price
+  c: string; // Last price
+  Q: string; // Last quantity
+  o: string; // Open price
+  h: string; // High price
+  l: string; // Low price
+  v: string; // Total traded base asset volume
+  q: string; // Total traded quote asset volume
+  O: number; // Statistics open time
+  C: number; // Statistics close time
+  F: number; // First trade ID
+  L: number; // Last trade Id
+  n: number; // Total number of trades
+}
 
-export const useBinanceWebSocket = (symbols: string[]) => {
-  const [prices, setPrices] = useState<PriceData[]>([]);
+interface BinancePrice {
+  symbol: string;
+  price: string;
+}
+
+export function useBinanceWebSocket(symbols: string | string[]) {
+  const [state, setState] = useState<WebSocketState>({
+    connected: false,
+    reconnecting: false,
+  });
+  const [prices, setPrices] = useState<BinancePrice[]>([]);
+  const [data, setData] = useState<BinanceWebSocketData | null>(null);
   const [error, setError] = useState<WebSocketError | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
-  const retryCountRef = useRef(0);
+  const ws = useRef<WebSocket | null>(null);
+  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const handleError = (type: string, message: string, error?: Error) => {
-    const wsError: WebSocketError = {
-      type,
-      message: message || 'Error de conexión con Binance',
-      error
-    };
-    console.error('WebSocket Error:', wsError);
-    setError(wsError);
+  const handleError = (type: string, message: string, error: Error) => {
+    setError({ type, message, error });
+    setState(prev => ({ ...prev, connected: false }));
   };
 
   const connect = () => {
     try {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        return;
-      }
+      if (ws.current?.readyState === WebSocket.OPEN) return;
 
-      wsRef.current = new WebSocket(BINANCE_WS_URL);
+      const symbolString = Array.isArray(symbols) ? symbols.join(',') : symbols;
+      ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbolString.toLowerCase()}@ticker`);
 
-      wsRef.current.onopen = () => {
-        console.log('WebSocket Connected');
-        retryCountRef.current = 0;
+      ws.current.onopen = () => {
+        setState({ connected: true, reconnecting: false });
         setError(null);
-
-        const streams = symbols.map(symbol => `${symbol.toLowerCase()}@ticker`);
-        const subscribeMsg = {
-          method: 'SUBSCRIBE',
-          params: streams,
-          id: 1
-        };
-
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          wsRef.current.send(JSON.stringify(subscribeMsg));
-        }
       };
 
-      wsRef.current.onmessage = (event) => {
+      ws.current.onmessage = (event) => {
         try {
-          const data: BinanceTickerData = JSON.parse(event.data);
-          if (data.s && data.c && data.P) {
-            const priceData: PriceData = {
-              symbol: data.s,
-              price: parseFloat(data.c),
-              change24h: parseFloat(data.P),
-              lastUpdate: new Date()
-            };
-
-            setPrices(prev => {
-              const index = prev.findIndex(p => p.symbol === priceData.symbol);
-              if (index === -1) {
-                return [...prev, priceData];
-              }
-              const newPrices = [...prev];
-              newPrices[index] = priceData;
-              return newPrices;
-            });
-          }
-        } catch (err) {
-          console.warn('Error parsing WebSocket message:', err);
-        }
-      };
-
-      wsRef.current.onclose = (event) => {
-        if (!event.wasClean) {
-          handleError('CLOSE', 'Conexión cerrada inesperadamente');
-          if (retryCountRef.current < MAX_RETRIES) {
-            reconnectTimeoutRef.current = setTimeout(() => {
-              retryCountRef.current += 1;
-              connect();
-            }, RECONNECT_DELAY);
+          const data = JSON.parse(event.data);
+          setData(data);
+          const price = { symbol: data.s, price: data.c };
+          setPrices(prev => [...prev.filter(p => p.symbol !== price.symbol), price]);
+        } catch (error) {
+          if (error instanceof Error) {
+            handleError('PARSE', 'Error parsing WebSocket data', error);
           }
         }
       };
 
-      wsRef.current.onerror = (event) => {
-        handleError('ERROR', 'Error en la conexión WebSocket', event.error);
+      ws.current.onclose = () => {
+        setState(prev => ({ ...prev, connected: false }));
+        handleError('CLOSE', 'Connection closed unexpectedly', new Error('WebSocket connection closed'));
+        // Attempt to reconnect
+        if (!state.reconnecting) {
+          setState(prev => ({ ...prev, reconnecting: true }));
+          reconnectTimeout.current = setTimeout(connect, 5000);
+        }
       };
 
-    } catch (err) {
-      handleError('CONNECT', 'Error al establecer la conexión WebSocket', err instanceof Error ? err : new Error(String(err)));
+      ws.current.onerror = (event) => {
+        if (event instanceof ErrorEvent) {
+          handleError('ERROR', 'WebSocket connection error', event.error);
+        } else {
+          handleError('ERROR', 'Unknown WebSocket error', new Error('Unknown WebSocket error'));
+        }
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        handleError('CONNECT', 'Error connecting to WebSocket', error);
+      }
     }
+  };
+
+  const disconnect = () => {
+    if (reconnectTimeout.current) {
+      clearTimeout(reconnectTimeout.current);
+    }
+    if (ws.current) {
+      ws.current.close();
+      ws.current = null;
+    }
+    setState({ connected: false, reconnecting: false });
   };
 
   useEffect(() => {
     connect();
-
-    const intervalId = setInterval(() => {
-      if (wsRef.current?.readyState !== WebSocket.OPEN) {
-        connect();
-      }
-    }, UPDATE_INTERVAL);
-
-    return () => {
-      clearInterval(intervalId);
-      if (wsRef.current) {
-        const streams = symbols.map(symbol => `${symbol.toLowerCase()}@ticker`);
-        const unsubscribeMsg = {
-          method: 'UNSUBSCRIBE',
-          params: streams,
-          id: 1
-        };
-
-        if (wsRef.current.readyState === WebSocket.OPEN) {
-          wsRef.current.send(JSON.stringify(unsubscribeMsg));
-          wsRef.current.close();
-        }
-      }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-    };
+    return () => disconnect();
   }, [symbols]);
 
-  return { prices, error };
-};
+  return {
+    connected: state.connected,
+    reconnecting: state.reconnecting,
+    prices,
+    data,
+    error,
+    connect,
+    disconnect
+  };
+}

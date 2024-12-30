@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import { PublicNavbar } from '@/components/public-navbar';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { showNotification } from '@/components/Notification';
+import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,53 +31,64 @@ export default function VerifyPage() {
     try {
       const { error } = await supabase.auth.verifyOtp({
         token_hash: token,
-        type: 'signup'
+        type: 'email',
       });
 
-      if (error) throw error;
-      router.push('/dashboard');
+      if (error) {
+        showNotification(
+          'error',
+          'Error de verificación',
+          'El enlace de verificación no es válido o ha expirado.'
+        );
+      } else {
+        showNotification(
+          'success',
+          'Verificación exitosa',
+          'Tu correo electrónico ha sido verificado correctamente.'
+        );
+        router.push('/auth/login');
+      }
     } catch (error) {
-      console.error('Error verifying email:', error);
+      showNotification(
+        'error',
+        'Error',
+        'Ha ocurrido un error al verificar tu correo electrónico.'
+      );
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#000B1F]">
-      <PublicNavbar />
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-md mx-auto mt-16 bg-black/30 p-8 rounded-lg backdrop-blur-lg border border-white/10 text-center">
-          <Image
-            src="/images/image.svg"
-            alt="ECUCONDOR Logo"
-            width={100}
-            height={100}
-            className="mx-auto mb-6"
-          />
-          <h1 className="text-2xl font-bold mb-4">Verifica tu correo electrónico</h1>
-          <p className="text-gray-400 mb-6">
-            Te hemos enviado un correo electrónico con un enlace de verificación.
-            Por favor, revisa tu bandeja de entrada y sigue las instrucciones.
-          </p>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-400">
-              ¿No recibiste el correo? Revisa tu carpeta de spam o solicita un nuevo enlace.
-            </p>
-            <Button
-              onClick={() => {
-                showNotification(
-                  'info',
-                  'Correo reenviado',
-                  'Hemos enviado un nuevo correo de verificación a tu dirección de email'
-                );
-              }}
-              variant="outline"
-              className="mt-4"
-            >
-              Reenviar correo de verificación
-            </Button>
+    <ToastProvider>
+      <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-black">
+        <PublicNavbar />
+        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4">
+          <div className="w-full max-w-md p-8 space-y-6 bg-white/10 backdrop-blur-md rounded-xl shadow-xl">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative w-20 h-20">
+                <Image
+                  src="/images/image.svg"
+                  alt="ECUCONDOR Logo"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+              <h1 className="text-2xl font-bold text-white text-center">
+                Verificación de Correo Electrónico
+              </h1>
+              <p className="text-gray-300 text-center">
+                Por favor, espera mientras verificamos tu correo electrónico...
+              </p>
+              <Link href="/auth/login" className="w-full">
+                <Button className="w-full">
+                  Volver al inicio de sesión
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
+        <ToastViewport />
       </div>
-    </div>
+    </ToastProvider>
   );
 }

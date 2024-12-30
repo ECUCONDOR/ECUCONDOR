@@ -91,9 +91,11 @@ export default function PrivacySettings() {
               <Label htmlFor="profileVisibility">¿Quién puede ver tu perfil?</Label>
               <Select
                 value={settings.profileVisibility}
-                onValueChange={(value: 'public' | 'private' | 'contacts') => 
-                  handleChange('profileVisibility', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === 'public' || value === 'private' || value === 'contacts') {
+                    handleChange('profileVisibility', value);
+                  }
+                }}
               >
                 <SelectTrigger id="profileVisibility">
                   <SelectValue placeholder="Selecciona la visibilidad" />
@@ -110,9 +112,11 @@ export default function PrivacySettings() {
               <Label htmlFor="activityVisibility">¿Quién puede ver tu actividad?</Label>
               <Select
                 value={settings.activityVisibility}
-                onValueChange={(value: 'public' | 'private' | 'contacts') => 
-                  handleChange('activityVisibility', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === 'public' || value === 'private' || value === 'contacts') {
+                    handleChange('activityVisibility', value);
+                  }
+                }}
               >
                 <SelectTrigger id="activityVisibility">
                   <SelectValue placeholder="Selecciona la visibilidad" />
@@ -191,9 +195,11 @@ export default function PrivacySettings() {
               <Label htmlFor="sessionTimeout">Tiempo de Inactividad</Label>
               <Select
                 value={settings.sessionTimeout}
-                onValueChange={(value: '15' | '30' | '60' | 'never') => 
-                  handleChange('sessionTimeout', value)
-                }
+                onValueChange={(value: string) => {
+                  if (value === '15' || value === '30' || value === '60' || value === 'never') {
+                    handleChange('sessionTimeout', value);
+                  }
+                }}
               >
                 <SelectTrigger id="sessionTimeout">
                   <SelectValue placeholder="Selecciona el tiempo" />

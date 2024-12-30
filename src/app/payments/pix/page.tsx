@@ -1,6 +1,6 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient, Session } from '@supabase/auth-helpers-nextjs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QrCode } from 'lucide-react';
@@ -12,7 +12,7 @@ import { PaymentService, PaymentMethod } from '@/services/payment.service';
 export default function PixPaymentPage() {
   const supabase = createClientComponentClient();
   const router = useRouter();
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pixMethod, setPixMethod] = useState<PaymentMethod | null>(null);

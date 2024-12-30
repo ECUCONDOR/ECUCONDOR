@@ -104,7 +104,7 @@ export default function RegisterPage() {
       addNotification(
         'error',
         'Error de registro',
-        error.message
+        'No se pudo crear la cuenta. Por favor, verifica los datos e intenta nuevamente.'
       );
     } finally {
       setIsLoading(false);

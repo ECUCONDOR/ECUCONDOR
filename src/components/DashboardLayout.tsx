@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/auth-context';
 import { useToast } from '@/components/ui/use-toast';
+import type { Route } from 'next';
 import {
   Home,
   User,
@@ -22,7 +23,7 @@ import {
 import { NotificationCenter } from './NotificationCenter';
 
 interface NavItem {
-  href: string;
+  href: Route;
   icon: React.ReactNode;
   label: string;
   group?: string;
@@ -41,18 +42,18 @@ export default function DashboardLayout({
 
   const navItems: NavItem[] = [
     // Grupo Principal
-    { href: '/dashboard', icon: <Home size={20} />, label: 'Panel Principal', group: 'main' },
-    { href: '/profile', icon: <User size={20} />, label: 'Mi Cuenta', group: 'main' },
+    { href: '/dashboard' as Route, icon: <Home size={20} />, label: 'Panel Principal', group: 'main' },
+    { href: '/profile' as Route, icon: <User size={20} />, label: 'Mi Cuenta', group: 'main' },
     
     // Grupo Financiero
-    { href: '/payments', icon: <Wallet size={20} />, label: 'Billetera Digital', group: 'financial' },
-    { href: '/transactions', icon: <FileText size={20} />, label: 'Mis Movimientos', group: 'financial' },
-    { href: '/exchange', icon: <Repeat2 size={20} />, label: 'Cripto Exchange', group: 'financial' },
-    { href: '/p2p', icon: <Users size={20} />, label: 'Cambio de Divisas', group: 'financial' },
-    { href: '/operations', icon: <BarChart2 size={20} />, label: 'Estado de Cuenta', group: 'financial' },
+    { href: '/payments' as Route, icon: <Wallet size={20} />, label: 'Billetera Digital', group: 'financial' },
+    { href: '/transactions' as Route, icon: <FileText size={20} />, label: 'Mis Movimientos', group: 'financial' },
+    { href: '/exchange' as Route, icon: <Repeat2 size={20} />, label: 'Cripto Exchange', group: 'financial' },
+    { href: '/p2p' as Route, icon: <Users size={20} />, label: 'Cambio de Divisas', group: 'financial' },
+    { href: '/operations' as Route, icon: <BarChart2 size={20} />, label: 'Estado de Cuenta', group: 'financial' },
     
     // Grupo Configuración
-    { href: '/settings', icon: <Settings size={20} />, label: 'Configuración', group: 'settings' },
+    { href: '/settings' as Route, icon: <Settings size={20} />, label: 'Configuración', group: 'settings' },
   ];
 
   const handleLogout = async () => {
@@ -94,7 +95,7 @@ export default function DashboardLayout({
         <div className="h-full px-3 py-4 overflow-y-auto">
           <div className="flex justify-between items-center mb-5">
             <Link
-              href="/dashboard"
+              href={'/dashboard' as Route}
               className={cn(
                 'flex items-center',
                 !isSidebarOpen && 'justify-center'

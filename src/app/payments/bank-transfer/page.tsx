@@ -7,11 +7,12 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Building2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Session } from '@supabase/supabase-js';
 
 export default function BankTransferPage() {
   const supabase = createClientComponentClient();
   const router = useRouter();
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -30,7 +31,7 @@ export default function BankTransferPage() {
       <div className="p-6">
         <Alert>
           <AlertDescription>
-            Por favor inicia sesión para acceder a las transferencias bancarias.
+            Checking authentication status...
           </AlertDescription>
         </Alert>
       </div>
@@ -38,14 +39,14 @@ export default function BankTransferPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto p-6">
       <PageHeader
-        title="Transferencia Bancaria"
-        description="Registre su cuenta bancaria para recibir pagos"
+        title="Bank Transfer"
+        description="Transfer funds using bank transfer"
         icon={<Building2 className="w-6 h-6" />}
       />
-      <div className="mt-8 max-w-2xl mx-auto">
-        <BankTransferForm />
+      <div className="mt-8">
+        <BankTransferForm session={session} />
       </div>
     </div>
   );

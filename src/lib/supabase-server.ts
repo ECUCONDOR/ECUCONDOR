@@ -5,30 +5,26 @@ import { cookies } from 'next/headers';
 import { type NextRequest } from 'next/server';
 import { Database } from '@/types/database.types';
 
-export function createServerSupabaseClient(request: NextRequest) {
-  const cookieStore = cookies();
-
+export async function createServerSupabaseClient(request: NextRequest) {
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        async get(name: string) {
+          const cookieStore = cookies();
+          const cookie = await cookieStore;
+          return cookie.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options });
-          } catch (error) {
-            // Handle error
-          }
+        async set(name: string, value: string, options: CookieOptions) {
+          const cookieStore = cookies();
+          const cookie = await cookieStore;
+          cookie.set(name, value, options);
         },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.delete({ name, ...options });
-          } catch (error) {
-            // Handle error
-          }
+        async remove(name: string, options: CookieOptions) {
+          const cookieStore = cookies();
+          const cookie = await cookieStore;
+          cookie.delete(name);
         },
       },
     }

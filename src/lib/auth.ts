@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { NextAuthOptions } from 'next-auth';
+import { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -81,69 +81,52 @@ export const auth = {
 
 export const authOptions: NextAuthOptions = {
   pages: {
-    signIn: '/auth/login',
-    signOut: '/auth/login',
-    error: '/auth/login',
+    signIn: '/login',
+  },
+  session: {
+    strategy: 'jwt',
   },
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
-        try {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error('Por favor ingrese email y contraseña');
-          }
-
-          const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-            email: credentials.email,
-            password: credentials.password,
-          });
-
-          if (signInError) {
-            console.error('Login error:', signInError);
-            throw new Error('Credenciales inválidas');
-          }
-
-          if (!user) {
-            throw new Error('Usuario no encontrado');
-          }
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.email,
-          };
-        } catch (error: any) {
-          console.error('Auth error:', error);
-          throw error;
+      async authorize(credentials, req) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
+
+        const { data: { user }, error } = await supabase.auth.signInWithPassword({
+          email: credentials.email,
+          password: credentials.password,
+        });
+
+        if (error || !user) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email || '',
+          name: user.user_metadata?.name
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
+        token.id = user.id
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.id;
-        session.user.email = token.email;
+      if (token && session.user) {
+        session.user.id = token.id as string
       }
-      return session;
+      return session
     },
   },
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  debug: process.env.NODE_ENV === 'development',
-  secret: process.env.NEXTAUTH_SECRET,
-};
+}

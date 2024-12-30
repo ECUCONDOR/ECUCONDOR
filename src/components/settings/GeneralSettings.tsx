@@ -10,15 +10,37 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Save } from 'lucide-react';
+import { Currency, CurrencyCode } from '@/types/p2p';
+
+interface Settings {
+  language: string;
+  timezone: string;
+  currency: Currency;
+  dateFormat: string;
+  enableDarkMode: boolean;
+}
+
+const CURRENCY_SYMBOLS: Record<CurrencyCode, string> = {
+  [CurrencyCode.USD]: '$',
+  [CurrencyCode.ARS]: '$',
+  [CurrencyCode.BRL]: 'R$',
+  [CurrencyCode.WLD]: 'W'
+};
+
+const createCurrency = (code: CurrencyCode): Currency => ({
+  code,
+  name: CurrencyCode[code],
+  symbol: CURRENCY_SYMBOLS[code]
+});
 
 export default function GeneralSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<Settings>({
     language: 'es',
     timezone: 'America/Guayaquil',
-    currency: 'USD',
+    currency: createCurrency(CurrencyCode.USD),
     dateFormat: 'DD/MM/YYYY',
     enableDarkMode: true,
   });
@@ -29,10 +51,17 @@ export default function GeneralSettings() {
   );
 
   const handleChange = (name: string, value: string | boolean) => {
-    setSettings(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'currency') {
+      setSettings(prev => ({
+        ...prev,
+        [name]: createCurrency(value as CurrencyCode)
+      }));
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,16 +135,17 @@ export default function GeneralSettings() {
         <div className="space-y-2">
           <Label htmlFor="currency">Moneda Principal</Label>
           <Select
-            value={settings.currency}
+            value={settings.currency.code}
             onValueChange={(value) => handleChange('currency', value)}
           >
             <SelectTrigger id="currency">
               <SelectValue placeholder="Selecciona una moneda" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
-              <SelectItem value="ARS">ARS - Peso Argentino</SelectItem>
-              <SelectItem value="BRL">BRL - Real Brasileño</SelectItem>
+              <SelectItem value={CurrencyCode.USD}>USD - Dólar Estadounidense</SelectItem>
+              <SelectItem value={CurrencyCode.ARS}>ARS - Peso Argentino</SelectItem>
+              <SelectItem value={CurrencyCode.BRL}>BRL - Real Brasileño</SelectItem>
+              <SelectItem value={CurrencyCode.WLD}>WLD - Moneda Local</SelectItem>
             </SelectContent>
           </Select>
         </div>
