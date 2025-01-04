@@ -2,13 +2,16 @@
 
 import { useAuth } from '@/contexts/auth-context';
 import { redirect } from 'next/navigation';
+import { GuideNotification } from '@/components/notifications/GuideNotification';
+import { StatusNotification } from '@/components/notifications/StatusNotification';
 
 interface PaymentsLayoutProps {
   children: React.ReactNode;
 }
 
 export default function PaymentsLayout({ children }: PaymentsLayoutProps) {
-  const { user, isLoading } = useAuth();
+  const auth = useAuth();
+  const { user, isLoading } = auth || { user: null, isLoading: true };
 
   if (isLoading) {
     return (
@@ -25,7 +28,11 @@ export default function PaymentsLayout({ children }: PaymentsLayoutProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        {children}
+        <>
+          {children}
+          <GuideNotification />
+          <StatusNotification />
+        </>
       </div>
     </div>
   );

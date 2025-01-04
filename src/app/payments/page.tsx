@@ -3,126 +3,70 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PaymentForm } from '@/components/payments/PaymentForm';
+import { ExchangeForm } from '@/components/payments/ExchangeForm';
+import { ARSExchangeForm } from '@/components/payments/ARSExchangeForm';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { handleExchangeAction } from '../actions/exchange';
+import { RecentActivity } from '@/components/payments/RecentActivity';
 
 export default function PaymentsPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [balance, setBalance] = useState(1000); // Ejemplo de balance
-  const [activeTab, setActiveTab] = useState('send');
-
-  const handlePayment = async (amount: number, recipient: string) => {
-    // Aquí iría la lógica de pago real
-    console.log(`Sending ${amount} to ${recipient}`);
-    setBalance(prev => prev - amount);
-  };
+  const [activeTab, setActiveTab] = useState('usd-to-ars');
 
   return (
     <div className="container mx-auto p-6">
       <div className="grid gap-6">
-        {/* Balance Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Mi Billetera Digital</CardTitle>
+            <CardTitle>Transacciones Internacionales con Ecucondor</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${balance.toFixed(2)} USD</div>
-            <p className="text-sm text-gray-500">Balance Disponible</p>
+            <p className="text-lg font-medium">Realice transacciones entre Argentina y Ecuador con Ecucondor SAS BIC</p>
+            <p className="text-sm text-gray-500 mt-2">Su socio confiable para transferencias internacionales</p>
           </CardContent>
         </Card>
 
-        {/* Transactions Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Transacciones</CardTitle>
+            <CardTitle>Cambio de Divisas</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="send" className="w-full">
+            <Tabs value={activeTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger 
-                  value="send"
-                  onClick={() => setActiveTab('send')}
+                  value="usd-to-ars"
+                  onClick={() => setActiveTab('usd-to-ars')}
                 >
-                  Enviar
+                  USD → ARS
                 </TabsTrigger>
                 <TabsTrigger 
-                  value="receive"
-                  onClick={() => setActiveTab('receive')}
+                  value="ars-to-usd"
+                  onClick={() => setActiveTab('ars-to-usd')}
                 >
-                  Recibir
+                  ARS → USD
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="send">
+              <TabsContent value="usd-to-ars">
                 <div className="space-y-4 pt-4">
-                  <div className="space-y-2">
-                    <Label>Destinatario</Label>
-                    <Input type="text" placeholder="Email o ID del destinatario" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Monto</Label>
-                    <Input type="number" placeholder="0.00" min="0" step="0.01" />
-                  </div>
-                  <Button className="w-full">Enviar Pago</Button>
+                  <ExchangeForm action={handleExchangeAction} />
                 </div>
               </TabsContent>
 
-              <TabsContent value="receive">
+              <TabsContent value="ars-to-usd">
                 <div className="space-y-4 pt-4">
-                  <Alert>
-                    <AlertDescription>
-                      Tu ID de billetera: {user?.id}
-                    </AlertDescription>
-                  </Alert>
-                  <p className="text-sm text-gray-500">
-                    Comparte este ID con otros usuarios para recibir pagos.
-                  </p>
-                  <Button 
-                    className="w-full"
-                    onClick={() => navigator.clipboard.writeText(user?.id || '')}
-                  >
-                    Copiar ID
-                  </Button>
+                  <ARSExchangeForm action={handleExchangeAction} />
                 </div>
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Actividad Reciente</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium">Pago Enviado</p>
-                  <p className="text-sm text-gray-500">A: usuario123</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium text-red-500">-$50.00</p>
-                  <p className="text-sm text-gray-500">Hace 2 horas</p>
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-medium">Pago Recibido</p>
-                  <p className="text-sm text-gray-500">De: usuario456</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium text-green-500">+$75.00</p>
-                  <p className="text-sm text-gray-500">Hace 1 día</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <RecentActivity />
       </div>
     </div>
   );
