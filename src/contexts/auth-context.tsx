@@ -11,11 +11,10 @@ interface AuthContextType {
   setShowTermsModal: (show: boolean) => void;
   acceptTerms: () => void;
   signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -26,7 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const acceptTerms = () => {
     setShowTermsModal(false);
-    localStorage.setItem('ecucondor_terms_accepted', 'true');
   };
 
   useEffect(() => {
@@ -65,22 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   };
 
-  const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  };
-
   const signOut = async () => {
     await supabase.auth.signOut();
     router.push('/auth/login');
@@ -94,7 +76,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setShowTermsModal,
       acceptTerms,
       signIn,
-      signUp,
       signOut
     }}>
       {children}
