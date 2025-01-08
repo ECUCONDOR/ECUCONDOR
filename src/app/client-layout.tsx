@@ -19,10 +19,10 @@ export default function ClientLayout({
   const router = useRouter();
 
   const handleLogout = async () => {
-    const { error } = await signOut();
-    if (!error) {
+    try {
+      await signOut();
       router.push("/login");
-    } else {
+    } catch (error) {
       console.error("Error al cerrar sesión:", error);
     }
   };
@@ -68,7 +68,7 @@ export default function ClientLayout({
       </header>
       <main className="container mx-auto p-4">{children}</main>
       <footer className="bg-gray-900 text-white p-4 text-center">
-        <p>© 2024 ECUCONDOR S.A.S. Todos los derechos reservados.</p>
+        <p> 2024 ECUCONDOR S.A.S. Todos los derechos reservados.</p>
       </footer>
     </div>
   );

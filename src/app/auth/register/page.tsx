@@ -46,21 +46,21 @@ export default function RegisterPage() {
 
     if (!acceptedTerms) {
       setError('Debes aceptar los términos de servicio');
-      addNotification(
-        'warning',
-        'Términos de servicio',
-        'Debes aceptar los términos de servicio para continuar'
-      );
+      addNotification({
+        type: 'warning',
+        title: 'Términos de servicio',
+        message: 'Debes aceptar los términos de servicio para continuar'
+      });
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Las contraseñas no coinciden');
-      addNotification(
-        'error',
-        'Error de validación',
-        'Las contraseñas ingresadas no coinciden'
-      );
+      addNotification({
+        type: 'error',
+        title: 'Error de validación',
+        message: 'Las contraseñas ingresadas no coinciden'
+      });
       return;
     }
 
@@ -87,11 +87,11 @@ export default function RegisterPage() {
           description: 'Tu cuenta ha sido creada correctamente. Por favor, verifica tu correo electrónico.',
           variant: 'default',
         });
-        addNotification(
-          'success',
-          'Registro exitoso',
-          'Tu cuenta ha sido creada correctamente. Por favor, verifica tu correo electrónico.'
-        );
+        addNotification({
+          type: 'success',
+          title: 'Registro exitoso',
+          message: 'Tu cuenta ha sido creada correctamente. Por favor, verifica tu correo electrónico.'
+        });
         router.push('/auth/login');
       }
     } catch (error: any) {
@@ -101,11 +101,11 @@ export default function RegisterPage() {
         description: error.message,
         variant: 'destructive',
       });
-      addNotification(
-        'error',
-        'Error de registro',
-        'No se pudo crear la cuenta. Por favor, verifica los datos e intenta nuevamente.'
-      );
+      addNotification({
+        type: 'error',
+        title: 'Error de registro',
+        message: 'No se pudo crear la cuenta. Por favor, verifica los datos e intenta nuevamente.'
+      });
     } finally {
       setIsLoading(false);
     }

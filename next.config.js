@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true,
-  },
+  transpilePackages: ['zustand'],
+  experimental: {},
   images: {
     remotePatterns: [
       {

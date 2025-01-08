@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const error = searchParams?.get('error')
 
   useEffect(() => {
     if (error) {
@@ -18,7 +18,7 @@ export default function AuthErrorPage() {
     }
   }, [error])
 
-  const getErrorMessage = (errorCode: string | null): string => {
+  const getErrorMessage = (errorCode: string | null | undefined): string => {
     switch (errorCode?.toLowerCase()) {
       case 'configuration':
         return 'Error de configuración del sistema. Por favor, contacte al administrador.'

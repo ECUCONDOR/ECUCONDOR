@@ -99,20 +99,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/auth/login');
   };
 
-  const value = {
-    user,
-    loading,
-    signIn,
-    signUp,
-    signOut,
-    hasAcceptedTerms,
-    showTermsModal,
-    setShowTermsModal,
-    acceptTerms,
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      signIn,
+      signUp,
+      signOut,
+      hasAcceptedTerms,
+      showTermsModal,
+      setShowTermsModal,
+      acceptTerms
+    }}>
       {children}
     </AuthContext.Provider>
   );

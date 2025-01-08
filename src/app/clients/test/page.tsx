@@ -5,10 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClientService } from '@/services/clients';
 import { Client } from '@/types/database';
+import { ClientResponse } from '@/types/onboarding';
 
 const testClient = {
   first_name: "Eduardo",
   last_name: "Marques",
+  name: "Eduardo Marques",
+  type: "personal" as const,
   identification: "95466020",
   email: "ecucondor@example.com",
   phone: "1124099147",
@@ -18,8 +21,12 @@ const testClient = {
 const minimalClient = {
   first_name: "Ana",
   last_name: "López",
+  name: "Ana López",
+  type: "personal" as const,
   identification: "0987654321",
-  email: "ana@example.com"
+  email: "ana@example.com",
+  phone: "1234567890",
+  address: ""
 };
 
 export default function TestPage() {
@@ -28,7 +35,7 @@ export default function TestPage() {
     message: string;
     data?: any;
   }[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClientResponse[]>([]);
 
   const addResult = (success: boolean, message: string, data?: any) => {
     setResults(prev => [...prev, { success, message, data }]);
@@ -97,7 +104,7 @@ export default function TestPage() {
             <Card key={client.id}>
               <CardContent className="p-4">
                 <h3 className="font-bold">
-                  {client.first_name} {client.last_name}
+                  {client.name}
                 </h3>
                 <p className="text-sm text-gray-500">{client.identification}</p>
                 <p className="text-sm">{client.email}</p>
