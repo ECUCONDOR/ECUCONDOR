@@ -8,13 +8,9 @@ DROP POLICY IF EXISTS "Users can insert their own clients" ON public.clients;
 DROP POLICY IF EXISTS "Users can update clients they own" ON public.clients;
 DROP POLICY IF EXISTS "Users can view their own relations" ON public.user_client_relation;
 DROP POLICY IF EXISTS "Users can create relations for their clients" ON public.user_client_relation;
-DROP POLICY IF EXISTS "Users can view their own verification status" ON public.verification_status;
-DROP POLICY IF EXISTS "Users can create their own verification status" ON public.verification_status;
-DROP POLICY IF EXISTS "Users can update their own verification status" ON public.verification_status;
 
 -- Drop existing tables
 DROP TABLE IF EXISTS public.user_client_relations;
-DROP TABLE IF EXISTS public.verification_status;
 
 -- Create clients table
 CREATE TABLE IF NOT EXISTS public.clients (
