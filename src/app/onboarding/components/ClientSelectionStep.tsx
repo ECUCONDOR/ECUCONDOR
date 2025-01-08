@@ -12,7 +12,7 @@ import { ClientFormData } from '@/types/onboarding'
 import { Loader2 } from 'lucide-react'
 
 interface ClientSelectionStepProps {
-  onNextAction: (clientId: string) => void;
+  onNextAction: (clientId: number) => void;
 }
 
 export default function ClientSelectionStep({ onNextAction }: ClientSelectionStepProps) {

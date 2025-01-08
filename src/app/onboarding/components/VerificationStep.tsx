@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation'
 
 interface VerificationStepProps {
   onVerifiedAction: () => Promise<void>
-  clientId: string
+  clientId: number
 }
 
 interface VerificationItem {
@@ -200,7 +200,7 @@ export function VerificationStep({ onVerifiedAction, clientId }: VerificationSte
             </p>
           </div>
           <Button 
-            onClick={goToDashboard}
+            onClick={goToDashboard} 
             className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
           >
             Ir al Panel de Control

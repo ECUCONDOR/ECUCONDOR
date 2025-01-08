@@ -49,12 +49,14 @@ export default function Home() {
     () => initialExchangeOptions[currentSymbolIndex],
     [currentSymbolIndex]
   );
-  const { prices, error } = useBinanceWebSocket(currentSymbol.symbol);
-  const [exchangeOptions, setExchangeOptions] = useState<ExtendedExchangeOption[]>(initialExchangeOptions.map(opt => ({
-    ...opt,
-    price: undefined,
-    lastUpdate: undefined
-  })));
+  const { prices, error } = useBinanceWebSocket([currentSymbol.symbol]);
+  const [exchangeOptions, setExchangeOptions] = useState<ExtendedExchangeOption[]>(
+    initialExchangeOptions.map(opt => ({
+      ...opt,
+      price: undefined,
+      lastUpdate: undefined
+    }))
+  );
   const [selectedExchange, setSelectedExchange] = useState<ExtendedExchangeOption>(exchangeOptions[0]);
   const [amount, setAmount] = useState('');
   const [convertedAmount, setConvertedAmount] = useState('');

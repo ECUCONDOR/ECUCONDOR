@@ -2,13 +2,7 @@ import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/database.types';
 
-interface UserClientRelation {
-  id: string;
-  user_id: string;
-  client_id: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  created_at: string;
-}
+type UserClientRelation = Database['public']['Tables']['user_client_relation']['Row'];
 
 interface UserClientRelationState {
   hasRelation: boolean;
@@ -50,41 +44,28 @@ export function useUserClientRelation() {
 
         const { data, error } = await supabase
           .from('user_client_relation')
-          .select('status')
+          .select('*')
           .eq('user_id', session.user.id)
           .single();
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            if (isMounted) {
-              setState(prev => ({
-                ...prev,
-                loading: false,
-                hasRelation: false,
-                status: null
-              }));
-            }
-            return;
-          }
-          throw error;
-        }
+        if (error) throw error;
 
         if (isMounted) {
           setState(prev => ({
             ...prev,
             loading: false,
-            hasRelation: true,
-            status: data.status,
+            hasRelation: !!data,
+            status: data?.status ?? null,
             error: null
           }));
         }
       } catch (error) {
-        console.error('Error checking client relation:', error);
+        console.error('Error checking relation:', error);
         if (isMounted) {
           setState(prev => ({
             ...prev,
             loading: false,
-            error: error instanceof Error ? error : new Error('Error desconocido')
+            error: error instanceof Error ? error : new Error('Unknown error')
           }));
         }
       }
@@ -104,7 +85,7 @@ export function useUserClientRelation() {
       if (!session) return null;
 
       const { data, error } = await supabase
-        .from('user_client_relations')
+        .from('user_client_relation')
         .select('*')
         .eq('user_id', session.user.id)
         .eq('client_id', clientId)
@@ -125,7 +106,7 @@ export function useUserClientRelation() {
       if (!session) return null;
 
       const { data, error } = await supabase
-        .from('user_client_relations')
+        .from('user_client_relation')
         .upsert({
           user_id: session.user.id,
           client_id: clientId,

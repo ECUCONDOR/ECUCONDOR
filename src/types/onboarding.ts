@@ -1,60 +1,42 @@
+import type { Database } from './database.types';
+
 export enum Steps {
   Welcome = 'welcome',
   ClientSelection = 'client-selection',
   Complete = 'complete'
 }
 
-export interface ClientFormData {
-  first_name: string;
-  last_name: string;
-  name: string;
-  type: 'personal' | 'business';
-  address: string;
-  identification: string;
-  email: string;
-  phone: string;
-}
+export type ClientFormData = Omit<Database['public']['Tables']['clients']['Insert'], 'id' | 'created_at' | 'updated_at'>;
 
-export interface ClientResponse {
-  id: string
-  name: string
-  identification: string
-  email: string
-  phone: string
-  type: 'personal' | 'business'
-  address?: string
-  created_by: string
-  created_at: string
-  updated_at: string
-}
+export type ClientResponse = Database['public']['Tables']['clients']['Row'];
 
 export interface OnboardingStep {
-  id: string
-  title: string
-  description: string
-  isComplete: boolean
+  id: string;
+  title: string;
+  description: string;
+  isComplete: boolean;
 }
 
 export interface OnboardingProgress {
-  currentStep: number
-  steps: OnboardingStep[]
-  selectedClient: ClientResponse | null
+  currentStep: number;
+  steps: OnboardingStep[];
+  selectedClient: ClientResponse | null;
 }
 
 export interface VerificationDocument {
-  id: string
-  type: 'id' | 'address' | 'business' | 'other'
-  path: string
-  status: 'pending' | 'verified' | 'rejected'
-  comments?: string
+  id: string;
+  type: 'id' | 'address' | 'business' | 'other';
+  path: string;
+  status: 'pending' | 'verified' | 'rejected';
+  comments?: string;
 }
 
 export interface VerificationStatus {
-  id: string
-  user_id: string
-  client_id: string
-  documents: VerificationDocument[]
-  status: 'pending' | 'verified' | 'rejected'
-  created_at: string
-  updated_at: string
+  id: string;
+  user_id: string;
+  client_id: string;
+  documents: VerificationDocument[];
+  status: 'pending' | 'verified' | 'rejected';
+  created_at: string;
+  updated_at: string;
 }
