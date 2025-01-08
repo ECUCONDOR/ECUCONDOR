@@ -1,0 +1,2764 @@
+
+--- START SCRIPT RUN ---
+Script directory: D:\ECUCONDOR\ECUCONDOR
+
+--- START OF FILE .env.example ---
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL=https://your-project.functions.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+DATABASE_URL=your-database-url
+DIRECT_URL=your-direct-url
+
+# Authentication
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+APPLE_ID=your-apple-id
+APPLE_SECRET=your-apple-secret
+
+# Security
+ENCRYPTION_KEY=your-encryption-key
+COOKIE_SECRET=your-cookie-secret
+
+# Development
+NEXT_TELEMETRY_DISABLED=1
+SUPABASE_LOCAL_API_URL=http://127.0.0.1:54323
+SUPABASE_LOCAL_STUDIO_URL=http://127.0.0.1:54321
+
+--- START OF FILE .env.local ---
+NEXT_PUBLIC_SUPABASE_URL=https://adhivizuhfdxthpgqlxw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkaGl2aXp1aGZkeHRocGdxbHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3MzQ0NjIsImV4cCI6MjA0NjMxMDQ2Mn0.kUsTt-JMqWsLiLzzx1ET-Js_r_x5qLnppSeSiKP9Q7E
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+DATABASE_URL=postgres://postgres.adhivizuhfdxthpgqlxw:ecucondor2024@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+DIRECT_URL=postgres://postgres.adhivizuhfdxthpgqlxw:ecucondor2024@aws-0-us-east-1.pooler.supabase.com:5432/postgres
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=c8130754f89e2a8d9f9e9d2c0e8f7b6a4d3c2b1a0
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+APPLE_ID=your-apple-id
+APPLE_SECRET=your-apple-secret
+ENCRYPTION_KEY=your-encryption-key
+COOKIE_SECRET=your-cookie-secret
+NEXT_TELEMETRY_DISABLED=1
+
+# API variables for local supabase development
+SUPABASE_LOCAL_API_URL=http://127.0.0.1:54323
+SUPABASE_LOCAL_STUDIO_URL=http://127.0.0.1:54321
+
+
+# Otros puertos de servicios
+SUPABASE_DB_PORT=54322
+SUPABASE_STUDIO_PORT=54321
+SUPABASE_API_PORT=54323
+
+--- START OF FILE .env.production ---
+NEXT_PUBLIC_SUPABASE_URL=https://adhivizuhfdxthpgqlxw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkaGl2aXp1aGZkeHRocGdxbHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3MzQ0NjIsImV4cCI6MjA0NjMxMDQ2Mn0.kUsTt-JMqWsLiLzzx1ET-Js_r_x5qLnppSeSiKP9Q7E
+NEXT_PUBLIC_SITE_URL=https://ecucondor.com
+DATABASE_URL="postgres://postgres.adhivizuhfdxthpgqlxw:ecucondor2024@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgres://postgres.adhivizuhfdxthpgqlxw:ecucondor2024@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+NEXTAUTH_URL=https://ecucondor.com
+NEXTAUTH_SECRET=caseros896
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+APPLE_ID=your-apple-id
+APPLE_SECRET=your-apple-secret
+ENCRYPTION_KEY=caseros896
+COOKIE_SECRET=caseros896
+NEXT_TELEMETRY_DISABLED=1
+
+# API variables for Supabase
+SUPABASE_LOCAL_API_URL=http://127.0.0.1:54323
+SUPABASE_LOCAL_STUDIO_URL=http://127.0.0.1:54321
+
+# SMTP Configuration
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=ecucondor@gmail.com
+SMTP_PASSWORD=caseros896
+SMTP_FROM=no-reply@ecucondor.com
+
+# Other configurations
+# Add any other production-specific configurations here
+--- START OF FILE .gitignore ---
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+
+.vercel
+
+--- START OF FILE .npmrc ---
+legacy-peer-deps=true
+
+--- START OF FILE .nvmrc ---
+echo "20" > .nvmrc
+--- START OF FILE .vercelignore ---
+node_modules/
+.git/
+.git_backup/
+backup_20241229/
+*.log
+.DS_Store
+.env
+.env.local
+.env.*
+dist/
+atest
+*.sh
+.vercel/
+.next/
+pnpm-lock.yaml
+package-lock.json
+README.md
+.gitignore
+.npmrc
+
+--- START OF FILE jsconfig.json ---
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+
+--- START OF FILE next.config.js ---
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+  },
+  typescript: {
+    // Enable type checking during build
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    // Enable ESLint checking during build
+    ignoreDuringBuilds: false,
+  },
+}
+
+module.exports = nextConfig
+
+--- START OF FILE package.json ---
+{
+  "name": "ecucondor",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "supabase:init": "supabase init",
+    "supabase:start": "supabase start",
+    "supabase:deploy": "supabase db push",
+    "supabase:functions:deploy": "supabase functions deploy update-stats",
+    "clean": "rm -rf .next && rm -rf node_modules && pnpm install"
+  },
+  "dependencies": {
+    "@radix-ui/react-alert-dialog": "1.0.5",
+    "@radix-ui/react-avatar": "1.0.4",
+    "@radix-ui/react-checkbox": "1.1.3",
+    "@radix-ui/react-dialog": "1.0.5",
+    "@radix-ui/react-dropdown-menu": "2.0.6",
+    "@radix-ui/react-label": "2.0.2",
+    "@radix-ui/react-select": "2.0.0",
+    "@radix-ui/react-separator": "1.0.3",
+    "@radix-ui/react-slot": "1.0.2",
+    "@radix-ui/react-switch": "^1.1.2",
+    "@radix-ui/react-toast": "1.1.5",
+    "@supabase/auth-helpers-nextjs": "0.10.0",
+    "@supabase/ssr": "0.5.2",
+    "@supabase/supabase-js": "2.47.10",
+    "bufferutil": "4.0.9",
+    "class-variance-authority": "0.7.0",
+    "clsx": "2.0.0",
+    "date-fns": "4.1.0",
+    "date-fns-tz": "3.2.0",
+    "dotenv": "16.4.7",
+    "framer-motion": "^11.16.0",
+    "graceful-fs": "4.2.11",
+    "lucide-react": "0.469.0",
+    "next": "14.0.4",
+    "next-themes": "0.4.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-qr-code": "^2.0.15",
+    "recharts": "2.15.0",
+    "sonner": "1.7.1",
+    "tailwind-merge": "2.1.0",
+    "tailwindcss-animate": "1.0.7",
+    "utf-8-validate": "6.0.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.19.70",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "autoprefixer": "10.4.16",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.0.4",
+    "postcss": "8.4.32",
+    "supabase": "^2.2.1",
+    "tailwindcss": "3.4.0",
+    "typescript": "5.3.3"
+  },
+  "packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321"
+}
+
+--- START OF FILE postcss.config.js ---
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+--- START OF FILE tailwind.config.js ---
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  darkMode: ["class"],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+
+--- START OF FILE tailwind.config.ts ---
+import type { Config } from "tailwindcss"
+
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx}',
+  ],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        gradient: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+        twinkle: {
+          "0%": { transform: "scale(0.5)", opacity: "0.3" },
+          "50%": { transform: "scale(1.2)", opacity: "0.7" },
+          "100%": { transform: "scale(0.5)", opacity: "0.3" },
+        },
+        rise: {
+          "0%": { 
+            bottom: "-100px",
+            transform: "translateX(0)",
+            opacity: "0"
+          },
+          "50%": {
+            transform: "translate(100px, -500px)",
+            opacity: "0.8"
+          },
+          "100%": {
+            bottom: "1080px",
+            transform: "translateX(-200px)",
+            opacity: "0"
+          }
+        },
+        "slide-in": {
+          "0%": { transform: "translateY(100%)" },
+          "100%": { transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "gradient": "gradient 3s linear infinite",
+        "twinkle": "twinkle 4s ease-in-out infinite",
+        "rise": "rise 10s infinite ease-in",
+        "slide-in": "slide-in 0.3s ease-out",
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'stars': 'radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0))',
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+
+export default config
+
+--- START OF FILE tsconfig.json ---
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noEmit": true,
+    "incremental": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+
+--- START OF FILE tsnode.config.json ---
+{
+  "compilerOptions": {
+    "module": "commonjs"
+  }
+}
+
+--- START OF FILE vercel.json ---
+{
+  "version": 2
+}
+--- START OF FILE middleware.ts ---
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { componentLoggers } from './src/lib/logger';
+import { randomUUID } from 'crypto';
+
+const { api: logger } = componentLoggers;
+
+export async function middleware(request: NextRequest) {
+  const requestStart = Date.now();
+  const requestId = randomUUID();
+
+  try {
+    logger.info('Incoming request', {
+      method: request.method,
+      url: request.url,
+      requestId,
+      userAgent: request.headers.get('user-agent'),
+    });
+
+    const response = NextResponse.next();
+    const supabase = createMiddlewareClient({ req: request, res: response });
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      logger.warn('Failed to retrieve session', { error: sessionError, requestId });
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    const session = sessionData?.session;
+
+    const protectedRoutes = ['/dashboard', '/profile'];
+    const isProtectedRoute = protectedRoutes.some(route =>
+      request.nextUrl.pathname.startsWith(route),
+    );
+
+    if (isProtectedRoute && !session) {
+      logger.warn('Unauthorized access attempt', {
+        path: request.nextUrl.pathname,
+        requestId,
+      });
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    if (session && request.nextUrl.pathname.startsWith('/auth')) {
+      logger.info('Redirecting authenticated user', {
+        path: request.nextUrl.pathname,
+        userId: session.user.id,
+        requestId,
+      });
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    const duration = Date.now() - requestStart;
+    logger.info('Request completed', {
+      method: request.method,
+      url: request.url,
+      status: response.status,
+      duration,
+      requestId,
+      userId: session?.user?.id,
+    });
+
+    response.headers.set('X-Request-ID', requestId);
+    response.headers.set('X-Response-Time', `${duration}ms`);
+
+    return response;
+  } catch (error) {
+    const duration = Date.now() - requestStart;
+    logger.error('Request failed', {
+      method: request.method,
+      url: request.url,
+      duration,
+      requestId,
+    }, error as Error);
+
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 },
+    );
+  }
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|public|api).*)',
+  ],
+};
+
+--- START OF FILE next-env.d.ts ---
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+/// <reference types="next/navigation-types/compat/navigation" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
+--- START OF FILE src/App.js ---
+import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './components/layout/MainLayout';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import { authService } from './api/auth';
+// Componente de ruta protegida
+const PrivateRoute = ({ children }) => {
+    const isAuthenticated = authService.isAuthenticated();
+    return isAuthenticated ? _jsx(_Fragment, { children: children }) : _jsx(Navigate, { to: "/login" });
+};
+const App = () => {
+    return (_jsx(Router, { children: _jsx(MainLayout, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/", element: _jsx(Home, {}) }), _jsx(Route, { path: "/login", element: _jsx(Login, {}) }), _jsx(Route, { path: "/register", element: _jsx(Register, {}) }), _jsx(Route, { path: "/forgot-password", element: _jsx(ForgotPassword, {}) }), _jsx(Route, { path: "/reset-password", element: _jsx(ResetPassword, {}) }), _jsx(Route, { path: "/profile", element: _jsx(PrivateRoute, { children: _jsx(Profile, {}) }) }), _jsx(Route, { path: "*", element: _jsx(Navigate, { to: "/" }) })] }) }) }));
+};
+export default App;
+
+--- START OF FILE src/main.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import AppRoutes from './routes/AppRoutes';
+import { AuthProvider } from './context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './styles/animations.css';
+import './styles/theme.css';
+import './index.css';
+ReactDOM.createRoot(document.getElementById('root')).render(_jsx(React.StrictMode, { children: _jsxs(AuthProvider, { children: [_jsx(AppRoutes, {}), _jsx(ToastContainer, { position: "top-right", autoClose: 3000 })] }) }));
+
+--- START OF FILE src/main.jsx ---
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+--- START OF FILE src/main.tsx ---
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import App from './App'
+import './index.css'
+import { Providers } from './components/providers'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Providers>
+        <App />
+      </Providers>
+    </BrowserRouter>
+  </React.StrictMode>
+)
+
+--- START OF FILE src/layout.tsx ---
+'use client';
+
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { AuthProvider } from "@/contexts/AuthContext";
+
+// Configuración de la fuente Inter
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+// Componente interno que maneja la lógica de autenticación
+function LayoutContent({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
+  };
+
+  return (
+    <html lang="en">
+      <body className={`${inter.variable} antialiased`}>
+        <header className="bg-gray-800 text-white p-4">
+          <nav className="container mx-auto flex justify-between items-center">
+            <div>
+              <a href="/" className="text-xl font-bold">ECUCONDOR S.A.S</a>
+            </div>
+            <ul className="flex space-x-4">
+              {user ? (
+                <>
+                  <li>
+                    <a href="/dashboard" className="hover:underline">Dashboard</a>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <a href="/login" className="hover:underline">Iniciar sesión</a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </header>
+        <main className="container mx-auto p-4">{children}</main>
+        <footer className="bg-gray-900 text-white p-4 text-center">
+          <p>© 2024 ECUCONDOR S.A.S. Todos los derechos reservados.</p>
+        </footer>
+      </body>
+    </html>
+  );
+}
+
+// Componente principal que provee el contexto de autenticación
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <AuthProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </AuthProvider>
+  );
+}
+--- START OF FILE src/middleware.ts ---
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import type { Database } from '@/types/database.types'
+
+export async function middleware(request: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient<Database>({ req: request, res })
+
+  try {
+    // Verificar autenticación
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    // Si no hay sesión y no es una ruta pública, redirigir a login
+    if (!session && !isPublicRoute(request.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+
+    // Si hay sesión pero está en una ruta de auth, redirigir al dashboard
+    if (session && isAuthRoute(request.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+
+    // Si requiere cliente y no hay relación, redirigir a onboarding
+    if (requiresClient(request.nextUrl.pathname) && session) {
+      const { data: relationData, error: relationError } = await supabase
+        .rpc('get_current_user_client_id')
+
+      if (relationError || !relationData?.client_id || relationData.status !== 'ACTIVE') {
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      }
+    }
+
+    return res
+  } catch (error) {
+    console.error('Error en middleware:', error)
+    // En caso de error, redirigir a una página de error
+    return NextResponse.redirect(new URL('/error', request.url))
+  }
+}
+
+// Rutas que requieren verificación de cliente
+function requiresClient(pathname: string): boolean {
+  const protectedPaths = [
+    '/dashboard',
+    '/profile',
+    '/settings',
+    '/operations',
+    '/payments'
+  ]
+  return protectedPaths.some(path => pathname.startsWith(path))
+}
+
+// Rutas públicas que no requieren autenticación
+function isPublicRoute(pathname: string): boolean {
+  const publicPaths = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/',
+    '/about',
+    '/contact'
+  ]
+  return publicPaths.includes(pathname)
+}
+
+// Rutas de autenticación
+function isAuthRoute(pathname: string): boolean {
+  return pathname.startsWith('/auth/')
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
+  ],
+}
+
+--- START OF FILE src/index.css ---
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Animaciones personalizadas */
+@keyframes fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+  position: absolute;
+  z-index: 0;
+}
+
+--- START OF FILE src/components/layout/Navbar.tsx ---
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { authService } from '../../api/auth';
+
+const Navbar = () => {
+  const isAuthenticated = authService.isAuthenticated();
+
+  return (
+    <nav className="bg-white shadow-lg">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <Link to="/" className="flex items-center">
+              <span className="text-xl font-bold">Mi App</span>
+            </Link>
+          </div>
+          <div className="flex items-center">
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900">
+                  Perfil
+                </Link>
+                <button
+                  onClick={() => authService.signOut()}
+                  className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="ml-4 px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+--- START OF FILE src/components/layout/Footer.tsx ---
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Image from 'next/image';
+
+const Footer = () => {
+  return (
+    <footer className="bg-white shadow-inner mt-auto">
+      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Columna 1: Información de la empresa */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <Image
+                src="/images/image.svg"
+                alt="ECUCONDOR Logo"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
+              <h3 className="text-lg font-semibold text-gray-900">ECUCONDOR</h3>
+            </div>
+            <p className="text-gray-600 text-sm">
+              Una plataforma moderna y segura para gestionar tus necesidades.
+            </p>
+          </div>
+
+          {/* Columna 2: Enlaces rápidos */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Enlaces Rápidos</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Inicio
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Mi Perfil
+                </Link>
+              </li>
+              <li>
+                <Link to="/faq" className="text-gray-600 hover:text-gray-900 text-sm">
+                  FAQ
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Columna 3: Legal */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/privacy" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Política de Privacidad
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Términos y Condiciones
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-gray-600 hover:text-gray-900 text-sm">
+                  Política de Cookies
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Columna 4: Contacto */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Contacto</h3>
+            <ul className="space-y-2">
+              <li className="text-gray-600 text-sm">
+                Email: soporte@miapp.com
+              </li>
+              <li className="text-gray-600 text-sm">
+                Tel: +1234567890
+              </li>
+              <li className="flex space-x-4 mt-4">
+                {/* Redes sociales */}
+                <a href="#" className="text-gray-400 hover:text-gray-900">
+                  <span className="sr-only">Facebook</span>
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-gray-900">
+                  <span className="sr-only">Twitter</span>
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-gray-900">
+                  <span className="sr-only">GitHub</span>
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-8 border-t border-gray-200 pt-8">
+          <p className="text-center text-gray-400 text-sm">
+            {new Date().getFullYear()} Mi App. Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
+
+--- START OF FILE src/components/layout/MainLayout.tsx ---
+'use client';
+
+import React from 'react';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import { LoadingProvider } from '@/contexts/LoadingContext';
+
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  return (
+    <ThemeProvider>
+      <NotificationProvider>
+        <LoadingProvider>
+          <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+            <Navbar />
+            <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {children}
+            </main>
+            <Footer />
+            <NotificationCenter />
+          </div>
+        </LoadingProvider>
+      </NotificationProvider>
+    </ThemeProvider>
+  );
+};
+
+export default MainLayout;
+
+--- START OF FILE src/components/registration/RegistrationFlow.tsx ---
+
+--- START OF FILE src/components/LoadingSpinner.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+const LoadingSpinner = ({ size = 'medium', color = 'blue', fullScreen = false, }) => {
+    const sizeClasses = {
+        small: 'h-4 w-4',
+        medium: 'h-8 w-8',
+        large: 'h-12 w-12',
+    };
+    const colorClasses = {
+        blue: 'text-blue-600',
+        white: 'text-white',
+        gray: 'text-gray-600',
+    };
+    const spinner = (_jsx("div", { className: "inline-flex items-center justify-center", children: _jsxs("svg", { className: `animate-spin ${sizeClasses[size]} ${colorClasses[color]}`, xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", children: [_jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }), _jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })] }) }));
+    if (fullScreen) {
+        return (_jsx("div", { className: "fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50", children: spinner }));
+    }
+    return spinner;
+};
+export default LoadingSpinner;
+
+--- START OF FILE src/components/NotificationBell.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import api from '../api/axios';
+import { useNotification } from '../contexts/NotificationContext';
+const NotificationBell = () => {
+    const [notifications, setNotifications] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const { addNotification } = useNotification();
+    useEffect(() => {
+        fetchNotifications();
+        // Polling cada 30 segundos
+        const interval = setInterval(fetchNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
+    const fetchNotifications = async () => {
+        try {
+            const response = await api.get('/notifications');
+            setNotifications(response.data);
+            setUnreadCount(response.data.filter((n) => !n.read).length);
+        }
+        catch (error) {
+            console.error('Error al obtener notificaciones:', error);
+        }
+    };
+    const markAsRead = async (id) => {
+        try {
+            await api.put(`/notifications/${id}/read`);
+            setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+            setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+        catch (error) {
+            addNotification('error', 'Error al marcar la notificación como leída');
+        }
+    };
+    const markAllAsRead = async () => {
+        try {
+            await api.put('/notifications/mark-all-read');
+            setNotifications(notifications.map(n => ({ ...n, read: true })));
+            setUnreadCount(0);
+        }
+        catch (error) {
+            addNotification('error', 'Error al marcar las notificaciones como leídas');
+        }
+    };
+    const deleteNotification = async (id) => {
+        try {
+            await api.delete(`/notifications/${id}`);
+            setNotifications(notifications.filter(n => n.id !== id));
+            if (!notifications.find(n => n.id === id)?.read) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+        }
+        catch (error) {
+            addNotification('error', 'Error al eliminar la notificación');
+        }
+    };
+    return (_jsxs("div", { className: "relative", children: [_jsxs("button", { onClick: () => setShowDropdown(!showDropdown), className: "relative p-2 text-gray-600 hover:text-gray-900", children: [_jsx("svg", { className: "h-6 w-6", fill: "none", strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: "2", viewBox: "0 0 24 24", stroke: "currentColor", children: _jsx("path", { d: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" }) }), unreadCount > 0 && (_jsx("span", { className: "absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full", children: unreadCount }))] }), showDropdown && (_jsxs("div", { className: "absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 z-50", children: [_jsxs("div", { className: "px-4 py-2 border-b flex justify-between items-center", children: [_jsx("h3", { className: "text-lg font-semibold", children: "Notificaciones" }), unreadCount > 0 && (_jsx("button", { onClick: markAllAsRead, className: "text-sm text-blue-600 hover:text-blue-800", children: "Marcar todas como le\u00EDdas" }))] }), _jsx("div", { className: "max-h-96 overflow-y-auto", children: notifications.length === 0 ? (_jsx("p", { className: "px-4 py-2 text-gray-500", children: "No hay notificaciones" })) : (notifications.map(notification => (_jsx("div", { className: `px-4 py-3 hover:bg-gray-50 ${!notification.read ? 'bg-blue-50' : ''}`, children: _jsxs("div", { className: "flex justify-between items-start", children: [_jsxs("div", { className: "flex-1", children: [_jsx("p", { className: "text-sm text-gray-900", children: notification.message }), _jsx("p", { className: "text-xs text-gray-500 mt-1", children: new Date(notification.createdAt).toLocaleString() })] }), _jsxs("div", { className: "ml-4 flex-shrink-0 flex", children: [!notification.read && (_jsx("button", { onClick: () => markAsRead(notification.id), className: "text-blue-600 hover:text-blue-800 text-sm", children: "Marcar como le\u00EDda" })), _jsx("button", { onClick: () => deleteNotification(notification.id), className: "ml-2 text-red-600 hover:text-red-800 text-sm", children: "Eliminar" })] })] }) }, notification.id)))) })] }))] }));
+};
+export default NotificationBell;
+
+--- START OF FILE src/components/CurrencyConverter.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import { binanceService } from '../services/binanceService';
+const CurrencyConverter = () => {
+    const [amount, setAmount] = useState(0);
+    const [fromCurrency, setFromCurrency] = useState('USDT');
+    const [toCurrency, setToCurrency] = useState('ARS');
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
+    const [rates, setRates] = useState({});
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        fetchRates();
+        const interval = setInterval(fetchRates, 30000); // Actualizar cada 30 segundos
+        return () => clearInterval(interval);
+    }, []);
+    const fetchRates = async () => {
+        try {
+            const newRates = await binanceService.getMultipleRates();
+            setRates(newRates);
+        }
+        catch (err) {
+            setError('Error al obtener las tasas de cambio');
+        }
+    };
+    const handleConvert = async () => {
+        setError(null);
+        setLoading(true);
+        try {
+            let convertedAmount;
+            const pair = `${fromCurrency}${toCurrency}`;
+            if (rates[pair]) {
+                convertedAmount = amount * rates[pair];
+            }
+            else {
+                // Si no existe la conversión directa, usar USDT como intermediario
+                const fromRate = rates[`${fromCurrency}USDT`] || 1 / rates[`USDT${fromCurrency}`];
+                const toRate = rates[`USDT${toCurrency}`];
+                convertedAmount = amount * fromRate * toRate;
+            }
+            setResult(convertedAmount);
+        }
+        catch (err) {
+            setError('Error en la conversión');
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    return (_jsxs("div", { className: "p-6 border border-gold rounded-lg bg-black bg-opacity-30", children: [_jsx("h2", { className: "text-3xl font-bold mb-6 text-gold", children: "Convertir Divisas" }), _jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium mb-2", children: "Cantidad" }), _jsx("input", { type: "number", value: amount, onChange: (e) => setAmount(Number(e.target.value)), className: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold", placeholder: "Ingrese el monto" })] }), _jsxs("div", { className: "grid grid-cols-2 gap-4", children: [_jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium mb-2", children: "De" }), _jsxs("select", { value: fromCurrency, onChange: (e) => setFromCurrency(e.target.value), className: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold", children: [_jsx("option", { value: "USDT", children: "USDT" }), _jsx("option", { value: "ARS", children: "ARS" }), _jsx("option", { value: "BRL", children: "BRL" })] })] }), _jsxs("div", { children: [_jsx("label", { className: "block text-sm font-medium mb-2", children: "A" }), _jsxs("select", { value: toCurrency, onChange: (e) => setToCurrency(e.target.value), className: "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold", children: [_jsx("option", { value: "ARS", children: "ARS" }), _jsx("option", { value: "BRL", children: "BRL" }), _jsx("option", { value: "USDT", children: "USDT" })] })] })] }), _jsx("button", { onClick: handleConvert, disabled: loading, className: "w-full bg-gold hover:bg-gold-dark text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out", children: loading ? 'Convirtiendo...' : 'Convertir' }), result !== null && (_jsxs("div", { className: "mt-4 p-4 bg-white bg-opacity-10 rounded-lg", children: [_jsx("h3", { className: "text-xl font-semibold", children: "Resultado:" }), _jsxs("p", { className: "text-2xl text-gold", children: [result.toFixed(2), " ", toCurrency] }), _jsxs("p", { className: "text-sm text-gray-400", children: ["Tasa: 1 ", fromCurrency, " = ", (result / amount).toFixed(4), " ", toCurrency] })] })), error && (_jsx("div", { className: "mt-4 p-4 bg-red-500 bg-opacity-10 text-red-500 rounded-lg", children: error }))] })] }));
+};
+export default CurrencyConverter;
+
+--- START OF FILE src/components/NegociacionForm.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from 'react';
+import { useNegociacion } from '@/hooks/useNegociacion';
+const NegociacionForm = () => {
+    const { crearNegociacion, loading } = useNegociacion();
+    const [formData, setFormData] = useState({
+        montoOrigen: 0,
+        monedaOrigen: 'USD',
+        monedaDestino: 'ARS',
+    });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await crearNegociacion(formData);
+        }
+        catch (error) {
+            console.error('Error al crear negociación:', error);
+        }
+    };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: name === 'montoOrigen' ? parseFloat(value) : value
+        }));
+    };
+    return (_jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "montoOrigen", className: "block text-sm font-medium text-gray-700", children: "Monto" }), _jsx("input", { type: "number", name: "montoOrigen", id: "montoOrigen", value: formData.montoOrigen, onChange: handleChange, className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", required: true, min: "0", step: "0.01" })] }), _jsxs("div", { className: "grid grid-cols-2 gap-4", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "monedaOrigen", className: "block text-sm font-medium text-gray-700", children: "Moneda Origen" }), _jsxs("select", { name: "monedaOrigen", id: "monedaOrigen", value: formData.monedaOrigen, onChange: handleChange, className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", children: [_jsx("option", { value: "USD", children: "USD" }), _jsx("option", { value: "ARS", children: "ARS" })] })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "monedaDestino", className: "block text-sm font-medium text-gray-700", children: "Moneda Destino" }), _jsxs("select", { name: "monedaDestino", id: "monedaDestino", value: formData.monedaDestino, onChange: handleChange, className: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", children: [_jsx("option", { value: "ARS", children: "ARS" }), _jsx("option", { value: "USD", children: "USD" })] })] })] }), _jsx("button", { type: "submit", disabled: loading, className: "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500", children: loading ? 'Procesando...' : 'Crear Negociación' })] }));
+};
+export default NegociacionForm;
+
+--- START OF FILE src/components/NegociacionStatus.js ---
+import { jsx as _jsx } from "react/jsx-runtime";
+import { EstadosNegociacion } from '@/types/negociacion';
+const getStatusColor = (estado) => {
+    switch (estado) {
+        case EstadosNegociacion.PENDIENTE:
+            return 'bg-yellow-100 text-yellow-800';
+        case EstadosNegociacion.EN_PROCESO:
+            return 'bg-blue-100 text-blue-800';
+        case EstadosNegociacion.VERIFICADO:
+            return 'bg-green-100 text-green-800';
+        case EstadosNegociacion.COMPLETADO:
+            return 'bg-green-100 text-green-800';
+        case EstadosNegociacion.FALLIDO:
+            return 'bg-red-100 text-red-800';
+        case EstadosNegociacion.EXPIRADO:
+            return 'bg-gray-100 text-gray-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+};
+const getStatusText = (estado) => {
+    switch (estado) {
+        case EstadosNegociacion.PENDIENTE:
+            return 'Pendiente';
+        case EstadosNegociacion.EN_PROCESO:
+            return 'En Proceso';
+        case EstadosNegociacion.VERIFICADO:
+            return 'Verificado';
+        case EstadosNegociacion.COMPLETADO:
+            return 'Completado';
+        case EstadosNegociacion.FALLIDO:
+            return 'Fallido';
+        case EstadosNegociacion.EXPIRADO:
+            return 'Expirado';
+        default:
+            return estado;
+    }
+};
+const NegociacionStatus = ({ estado }) => {
+    const colorClass = getStatusColor(estado);
+    const statusText = getStatusText(estado);
+    return (_jsx("span", { className: `px-3 py-1 rounded-full text-sm font-medium ${colorClass}`, children: statusText }));
+};
+export default NegociacionStatus;
+
+--- START OF FILE src/components/UserList.js ---
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from 'react';
+import { userService } from '../services/userService';
+export const UserList = () => {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        loadUsers();
+    }, []);
+    const loadUsers = async () => {
+        try {
+            setLoading(true);
+            const data = await userService.getUsers();
+            setUsers(data);
+        }
+        catch (err) {
+            setError(err instanceof Error ? err.message : 'An error occurred');
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    if (loading)
+        return _jsx("div", { children: "Loading users..." });
+    if (error)
+        return _jsxs("div", { children: ["Error: ", error] });
+    return (_jsxs("div", { className: "p-4", children: [_jsx("h2", { className: "text-2xl font-bold mb-4", children: "Users" }), _jsx("div", { className: "grid gap-4", children: users.map((user) => (_jsxs("div", { className: "p-4 border border-gold rounded-lg", children: [_jsx("h3", { className: "font-bold", children: user.name }), _jsx("p", { children: user.email }), _jsxs("p", { className: "text-sm text-gray-500", children: ["Joined: ", new Date(user.created_at).toLocaleDateString()] })] }, user.id))) })] }));
+};
+
+--- START OF FILE src/app/dashboard/page.tsx ---
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { 
+  AreaChart, Area, CartesianGrid, XAxis, YAxis, 
+  Tooltip, ResponsiveContainer 
+} from 'recharts';
+import { 
+  Wallet, RefreshCcw, Users, Clock, Menu, Bell, Search, 
+  Settings, ArrowUpRight, ArrowDownRight, DollarSign, Filter 
+} from 'lucide-react';
+import { useClientData, formatCurrency, calculateChange } from '@/hooks/useClientData';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
+import { useDashboardContext } from '@/contexts/dashboard-context';
+
+// Interfaces
+interface BalanceData {
+  month: string;
+  balance: number;
+}
+
+interface StatCardProps {
+  title: string;
+  value: string;
+  change: string;
+  icon: React.ReactNode;
+  trend: 'up' | 'down';
+}
+
+interface QuickActionCardProps {
+  title: string;
+  description: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
+function StatCard({ title, value, change, icon, trend }: StatCardProps) {
+  return (
+    <Card className="bg-white/5 border-white/10 backdrop-blur-lg p-6 hover:bg-white/10 transition-all duration-300">
+      <div className="flex items-center justify-between">
+        <div className="p-2 bg-white/5 rounded-lg">
+          {icon}
+        </div>
+        {trend === 'up' ? (
+          <ArrowUpRight className="h-4 w-4 text-green-400" />
+        ) : (
+          <ArrowDownRight className="h-4 w-4 text-red-400" />
+        )}
+      </div>
+      <div className="mt-4">
+        <h3 className="text-sm font-medium text-gray-400">{title}</h3>
+        <div className="mt-2 flex items-baseline">
+          <p className="text-2xl font-semibold">{value}</p>
+          <p className={`ml-2 text-sm ${trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
+            {change}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function QuickActionCard({ title, description, href, icon }: QuickActionCardProps) {
+  return (
+    <Card className="bg-white/5 border-white/10 backdrop-blur-lg hover:bg-white/10 transition-all duration-300 group">
+      <a href={href} className="block p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="p-2 bg-white/5 rounded-lg group-hover:bg-white/10">
+            {icon}
+          </div>
+          <ArrowUpRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+        <h3 className="font-medium text-gray-200 group-hover:text-white">
+          {title}
+        </h3>
+        <p className="mt-1 text-sm text-gray-400">
+          {description}
+        </p>
+      </a>
+    </Card>
+  );
+}
+
+export default function Dashboard() {
+  const { clientId } = useDashboardContext();
+  const { clientData, loading: dataLoading, error: dataError } = useClientData(clientId!);
+
+  if (dataLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-black">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+      </div>
+    );
+  }
+
+  if (dataError || !clientData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-black">
+        <div className="text-white">Error loading dashboard data. Please try again later.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-950 via-blue-900 to-black">
+      {/* Navegación Superior */}
+      <nav className="bg-white/5 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+              <h1 className="ml-4 text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 text-transparent bg-clip-text">
+                Panel de Control
+              </h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Buscar..."
+                  className="pl-10 bg-white/5 border-white/10 w-64"
+                />
+              </div>
+              <Button variant="ghost" size="icon">
+                <Bell className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Settings className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Resumen de Estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Tu Balance"
+            value={formatCurrency(clientData?.balance || 0)}
+            change={calculateChange(clientData?.previous_balance, clientData?.balance)}
+            icon={<Wallet className="h-5 w-5 text-blue-400" />}
+            trend={clientData?.balance > (clientData?.previous_balance || 0) ? "up" : "down"}
+          />
+          <StatCard
+            title="Transacciones"
+            value={clientData?.transaction_count?.toString() || "0"}
+            change="+5%"
+            icon={<RefreshCcw className="h-5 w-5 text-cyan-400" />}
+            trend="up"
+          />
+          <StatCard
+            title="Usuarios Activos"
+            value={clientData?.active_users?.toString() || "0"}
+            change="+12%"
+            icon={<Users className="h-5 w-5 text-purple-400" />}
+            trend="up"
+          />
+          <StatCard
+            title="Tiempo Promedio"
+            value={clientData?.average_time || "0:00"}
+            change="-8%"
+            icon={<Clock className="h-5 w-5 text-orange-400" />}
+            trend="down"
+          />
+        </div>
+
+        {/* Acciones Rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <QuickActionCard
+            title="Nueva Transacción"
+            description="Crear una nueva transacción o transferencia"
+            href="/transactions/new"
+            icon={<DollarSign className="h-5 w-5 text-emerald-400" />}
+          />
+          <QuickActionCard
+            title="Filtrar Operaciones"
+            description="Buscar y filtrar operaciones por fecha o tipo"
+            href="/transactions/filter"
+            icon={<Filter className="h-5 w-5 text-yellow-400" />}
+          />
+          <QuickActionCard
+            title="Configuración"
+            description="Administrar preferencias y configuraciones"
+            href="/settings"
+            icon={<Settings className="h-5 w-5 text-purple-400" />}
+          />
+        </div>
+
+        {/* Gráfico de Balance */}
+        <Card className="bg-white/5 border-white/10 backdrop-blur-lg p-6">
+          <h2 className="text-lg font-semibold mb-4">Balance Histórico</h2>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={[
+                  { month: 'Ene', balance: 30000 },
+                  { month: 'Feb', balance: 35000 },
+                  { month: 'Mar', balance: 32000 },
+                  { month: 'Abr', balance: 40000 },
+                  { month: 'May', balance: 38000 },
+                  { month: 'Jun', balance: 45000 }
+                ]}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#9CA3AF"
+                  tick={{ fill: '#9CA3AF' }}
+                />
+                <YAxis 
+                  stroke="#9CA3AF"
+                  tick={{ fill: '#9CA3AF' }}
+                  tickFormatter={(value) => `$${value}`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(17, 24, 39, 0.8)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '0.5rem'
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="balance"
+                  stroke="#3B82F6"
+                  fillOpacity={1}
+                  fill="url(#balanceGradient)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </main>
+    </div>
+  );
+}
+--- START OF FILE src/registro-bancario/page.tsx ---
+import FormularioRegistroBancario from '@/components/FormularioRegistroBancario';
+
+export default function RegistroBancarioPage() {
+  return (
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8 pt-8">
+          <h1 className="text-3xl font-bold text-[#8B4513]">Registro Bancario</h1>
+          <p className="mt-2 text-gray-600">Complete el formulario con sus datos bancarios</p>
+        </div>
+        <FormularioRegistroBancario />
+      </div>
+    </div>
+  );
+}
+
+--- START OF FILE src/app/layout.tsx ---
+'use client';
+
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Providers } from '@/components/providers';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
+import TermsAndConditions from '@/components/TermsAndConditions';
+
+const inter = Inter({ subsets: ['latin'] });
+
+function TermsWrapper({ children }: { children: React.ReactNode }) {
+  const { showTermsModal, setShowTermsModal, acceptTerms } = useAuth();
+
+  return (
+    <>
+      {children}
+      <TermsAndConditions
+        open={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        onAccept={acceptTerms}
+      />
+    </>
+  );
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/images/image.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/images/image.svg" />
+      </head>
+      <body className={inter.className}>
+        <AuthProvider>
+          <Providers>
+            <div className="min-h-screen relative overflow-hidden bg-[#000B1F]">
+              <div className="relative z-10">
+                <TermsWrapper>
+                  {children}
+                </TermsWrapper>
+              </div>
+            </div>
+            <Toaster />
+          </Providers>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
+--- START OF FILE src/services/binanceService.ts ---
+import axios from 'axios';
+
+interface BinancePrice {
+  symbol: string;
+  price: string;
+}
+
+export const binanceService = {
+  async getExchangeRate(symbol: string): Promise<number> {
+    try {
+      const response = await axios.get<BinancePrice>(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+      return parseFloat(response.data.price);
+    } catch (error) {
+      console.error('Error fetching from Binance:', error);
+      throw new Error('Error al obtener la tasa de cambio de Binance');
+    }
+  },
+
+  async getMultipleRates(): Promise<{ [key: string]: number }> {
+    try {
+      const [usdtArs, usdtBrl] = await Promise.all([
+        this.getExchangeRate('USDTARS'),
+        this.getExchangeRate('USDTBRL')
+      ]);
+
+      return {
+        USDTARS: usdtArs,
+        USDTBRL: usdtBrl,
+        ARSBRL: usdtBrl / usdtArs,
+        BRLARS: usdtArs / usdtBrl
+      };
+    } catch (error) {
+      console.error('Error fetching multiple rates:', error);
+      throw new Error('Error al obtener las tasas de cambio');
+    }
+  }
+};
+
+--- START OF FILE src/services/userService.ts ---
+import { supabase } from '../lib/supabaseClient';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  created_at: string;
+}
+
+export const userService = {
+  async getUsers() {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*');
+
+    if (error) throw error;
+    return data as User[];
+  },
+
+  async createUser(user: Omit<User, 'id' | 'created_at'>) {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([user])
+      .select();
+
+    if (error) throw error;
+    return data[0] as User;
+  },
+
+  async updateUser(id: string, updates: Partial<User>) {
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', id)
+      .select();
+
+    if (error) throw error;
+    return data[0] as User;
+  },
+
+  async deleteUser(id: string) {
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  }
+};
+
+--- START OF FILE src/api/axios.js ---
+Error reading file: src/api/axios.js Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\api\axios.js'
+
+--- START OF FILE src/providers/AuthProvider.tsx ---
+'use client'
+
+import { createContext, useContext, useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/config'
+import { User, Session } from '@supabase/supabase-js'
+
+type AuthContextType = {
+  user: User | null
+  session: Session | null
+  supabase: ReturnType<typeof createClient>
+  isLoading: boolean
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setIsLoading(false)
+    })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setIsLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  return (
+    <AuthContext.Provider value={{ user, session, supabase, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+
+--- START OF FILE src/contexts/AuthContext.tsx ---
+'use client';
+
+import { createContext, useContext, useEffect, useState } from 'react'
+import { createClientComponentClient, User } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation'
+
+type AuthContextType = {
+  user: User | null
+  loading: boolean
+  signOut: () => Promise<void>
+  signInWithEmail: (email: string, password: string) => Promise<{
+    error: any
+    data: any
+  }>
+  signUp: (email: string, password: string) => Promise<{
+    error: any
+    data: any
+  }>
+}
+
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  signOut: async () => {},
+  signInWithEmail: async () => ({ error: null, data: null }),
+  signUp: async () => ({ error: null, data: null })
+})
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const supabase = createClientComponentClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) {
+        console.error('Error getting session:', error)
+        setLoading(false)
+        return
+      }
+      setUser(session?.user ?? null)
+      setLoading(false)
+    }
+
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [supabase.auth])
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
+
+  const signInWithEmail = async (email: string, password: string) => {
+    const response = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+    return response
+  }
+
+  const signUp = async (email: string, password: string) => {
+    const response = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    })
+    return response
+  }
+
+  const value = {
+    user,
+    loading,
+    signOut,
+    signInWithEmail,
+    signUp
+  }
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+--- START OF FILE src/contexts/NotificationContext.tsx ---
+'use client';
+
+import { createContext, useContext, useState } from 'react';
+
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: Date;
+  read: boolean;
+  type: 'info' | 'success' | 'warning' | 'error';
+};
+
+type NotificationContextType = {
+  notifications: Notification[];
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  removeNotification: (id: string) => void;
+  clearAll: () => void;
+};
+
+export const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+
+export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    const newNotification = {
+      ...notification,
+      id: crypto.randomUUID(),
+      timestamp: new Date(),
+      read: false,
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(prev =>
+      prev.map(notification =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev =>
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+  };
+
+  const removeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(notification => notification.id !== id));
+  };
+
+  const clearAll = () => {
+    setNotifications([]);
+  };
+
+  return (
+    <NotificationContext.Provider
+      value={{
+        notifications,
+        addNotification,
+        markAsRead,
+        markAllAsRead,
+        removeNotification,
+        clearAll,
+      }}
+    >
+      {children}
+    </NotificationContext.Provider>
+  );
+}
+
+export function useNotifications() {
+  const context = useContext(NotificationContext);
+  if (context === undefined) {
+    throw new Error('useNotifications must be used within a NotificationProvider');
+  }
+  return context;
+}
+
+--- START OF FILE src/hooks/useNegociacion.ts ---
+import { useState, useCallback } from 'react';
+import { EstadosNegociacion, EstadoNegociacion, Negociacion, CrearNegociacionDTO } from '@/types/negociacion';
+import api from '@/config/api';
+import { toast } from 'react-toastify';
+
+export const useNegociacion = () => {
+  const [estado, setEstado] = useState<EstadoNegociacion>(EstadosNegociacion.PENDIENTE);
+  const [negociacionActual, setNegociacionActual] = useState<Negociacion | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const crearNegociacion = useCallback(async (datos: CrearNegociacionDTO) => {
+    setLoading(true);
+    try {
+      const response = await api.post<Negociacion>('/negociaciones', datos);
+      setNegociacionActual(response.data);
+      setEstado(response.data.estado);
+      toast.success('Negociación creada exitosamente');
+      return response.data;
+    } catch (error) {
+      toast.error('Error al crear la negociación');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const actualizarEstado = useCallback(async (negociacionId: string, nuevoEstado: EstadoNegociacion) => {
+    setLoading(true);
+    try {
+      const response = await api.patch<Negociacion>(`/negociaciones/${negociacionId}/estado`, {
+        estado: nuevoEstado
+      });
+      setNegociacionActual(response.data);
+      setEstado(response.data.estado);
+      toast.success('Estado actualizado exitosamente');
+      return response.data;
+    } catch (error) {
+      toast.error('Error al actualizar el estado');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const obtenerNegociacion = useCallback(async (negociacionId: string) => {
+    setLoading(true);
+    try {
+      const response = await api.get<Negociacion>(`/negociaciones/${negociacionId}`);
+      setNegociacionActual(response.data);
+      setEstado(response.data.estado);
+      return response.data;
+    } catch (error) {
+      toast.error('Error al obtener la negociación');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const listarNegociaciones = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await api.get<Negociacion[]>('/negociaciones');
+      return response.data;
+    } catch (error) {
+      toast.error('Error al obtener las negociaciones');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    estado,
+    negociacionActual,
+    loading,
+    crearNegociacion,
+    actualizarEstado,
+    obtenerNegociacion,
+    listarNegociaciones,
+    EstadosNegociacion
+  };
+};
+
+--- START OF FILE src/types/negociacion.ts ---
+export enum EstadosNegociacion {
+  PENDIENTE = 'PENDIENTE',
+  EN_PROCESO = 'EN_PROCESO',
+  VERIFICADO = 'VERIFICADO',
+  EXPIRADO = 'EXPIRADO',
+  COMPLETADO = 'COMPLETADO',
+  FALLIDO = 'FALLIDO'
+}
+
+export type EstadoNegociacion = keyof typeof EstadosNegociacion;
+
+export interface Negociacion {
+  id: string;
+  estado: EstadoNegociacion;
+  montoOrigen: number;
+  montoDestino: number;
+  monedaOrigen: string;
+  monedaDestino: string;
+  tasaCambio: number;
+  fechaCreacion: string;
+  fechaActualizacion: string;
+  usuarioId: string;
+}
+
+export interface CrearNegociacionDTO {
+  montoOrigen: number;
+  monedaOrigen: string;
+  monedaDestino: string;
+}
+
+--- START OF FILE supabase/config.toml ---
+# For detailed configuration reference documentation, visit:
+# https://supabase.com/docs/guides/local-development/cli/config
+# A string used to distinguish different Supabase projects on the same host. Defaults to the
+# working directory name when running `supabase init`.
+project_id = "ECUCONDOR"
+
+[api]
+enabled = true
+# Port to use for the API URL.
+port = 54321
+# Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
+# endpoints. `public` and `graphql_public` schemas are included by default.
+schemas = ["public", "graphql_public"]
+# Extra schemas to add to the search_path of every request.
+extra_search_path = ["public", "extensions"]
+# The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
+# for accidental or malicious requests.
+max_rows = 1000
+
+[api.tls]
+# Enable HTTPS endpoints locally using a self-signed certificate.
+enabled = false
+
+[db]
+# Port to use for the local database URL.
+port = 54322
+# Port used by db diff command to initialize the shadow database.
+shadow_port = 54320
+# The database major version to use. This has to be the same as your remote database's. Run `SHOW
+# server_version;` on the remote database to check.
+major_version = 15
+
+[db.pooler]
+enabled = false
+# Port to use for the local connection pooler.
+port = 54329
+# Specifies when a server connection can be reused by other clients.
+# Configure one of the supported pooler modes: `transaction`, `session`.
+pool_mode = "transaction"
+# How many server connections to allow per user/database pair.
+default_pool_size = 20
+# Maximum number of client connections allowed.
+max_client_conn = 100
+
+[db.seed]
+# If enabled, seeds the database after migrations during a db reset.
+enabled = true
+# Specifies an ordered list of seed files to load during db reset.
+# Supports glob patterns relative to supabase directory: './seeds/*.sql'
+sql_paths = ['./seed.sql']
+
+[realtime]
+enabled = true
+# Bind realtime via either IPv4 or IPv6. (default: IPv4)
+# ip_version = "IPv6"
+# The maximum length in bytes of HTTP request headers. (default: 4096)
+# max_header_length = 4096
+
+[studio]
+enabled = true
+# Port to use for Supabase Studio.
+port = 54323
+# External URL of the API server that frontend connects to.
+api_url = "http://127.0.0.1"
+# OpenAI API Key to use for Supabase AI in the Supabase Studio.
+openai_api_key = "env(OPENAI_API_KEY)"
+
+# Email testing server. Emails sent with the local dev setup are not actually sent - rather, they
+# are monitored, and you can view the emails that would have been sent from the web interface.
+[inbucket]
+enabled = true
+# Port to use for the email testing server web interface.
+port = 54324
+# Uncomment to expose additional ports for testing user applications that send emails.
+# smtp_port = 54325
+# pop3_port = 54326
+# admin_email = "admin@email.com"
+# sender_name = "Admin"
+
+[storage]
+enabled = true
+# The maximum file size allowed (e.g. "5MB", "500KB").
+file_size_limit = "50MiB"
+
+# Image transformation API is available to Supabase Pro plan.
+# [storage.image_transformation]
+# enabled = true
+
+# Uncomment to configure local storage buckets
+# [storage.buckets.images]
+# public = false
+# file_size_limit = "50MiB"
+# allowed_mime_types = ["image/png", "image/jpeg"]
+# objects_path = "./images"
+
+[auth]
+enabled = true
+# The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
+# in emails.
+site_url = "http://127.0.0.1:3000"
+# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+# How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
+jwt_expiry = 3600
+# If disabled, the refresh token will never expire.
+enable_refresh_token_rotation = true
+# Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
+# Requires enable_refresh_token_rotation = true.
+refresh_token_reuse_interval = 10
+# Allow/disallow new user signups to your project.
+enable_signup = true
+# Allow/disallow anonymous sign-ins to your project.
+enable_anonymous_sign_ins = false
+# Allow/disallow testing manual linking of accounts
+enable_manual_linking = false
+# Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
+minimum_password_length = 6
+# Passwords that do not meet the following requirements will be rejected as weak. Supported values
+# are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
+password_requirements = ""
+
+[auth.email]
+# Allow/disallow new user signups via email to your project.
+enable_signup = true
+# If enabled, a user will be required to confirm any email change on both the old, and new email
+# addresses. If disabled, only the new email is required to confirm.
+double_confirm_changes = true
+# If enabled, users need to confirm their email address before signing in.
+enable_confirmations = false
+# If enabled, users will need to reauthenticate or have logged in recently to change their password.
+secure_password_change = false
+# Controls the minimum amount of time that must pass before sending another signup confirmation or password reset email.
+max_frequency = "1s"
+# Number of characters used in the email OTP.
+otp_length = 6
+# Number of seconds before the email OTP expires (defaults to 1 hour).
+otp_expiry = 3600
+
+# Use a production-ready SMTP server
+# [auth.email.smtp]
+# enabled = true
+# host = "smtp.sendgrid.net"
+# port = 587
+# user = "apikey"
+# pass = "env(SENDGRID_API_KEY)"
+# admin_email = "admin@email.com"
+# sender_name = "Admin"
+
+# Uncomment to customize email template
+# [auth.email.template.invite]
+# subject = "You have been invited"
+# content_path = "./supabase/templates/invite.html"
+
+[auth.sms]
+# Allow/disallow new user signups via SMS to your project.
+enable_signup = false
+# If enabled, users need to confirm their phone number before signing in.
+enable_confirmations = false
+# Template for sending OTP to users
+template = "Your code is {{ .Code }}"
+# Controls the minimum amount of time that must pass before sending another sms otp.
+max_frequency = "5s"
+
+# Use pre-defined map of phone number to OTP for testing.
+# [auth.sms.test_otp]
+# 4152127777 = "123456"
+
+# Configure logged in session timeouts.
+# [auth.sessions]
+# Force log out after the specified duration.
+# timebox = "24h"
+# Force log out if the user has been inactive longer than the specified duration.
+# inactivity_timeout = "8h"
+
+# This hook runs before a token is issued and allows you to add additional claims based on the authentication method used.
+# [auth.hook.custom_access_token]
+# enabled = true
+# uri = "pg-functions://<database>/<schema>/<hook_name>"
+
+# Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
+[auth.sms.twilio]
+enabled = false
+account_sid = ""
+message_service_sid = ""
+# DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
+auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
+
+# Multi-factor-authentication is available to Supabase Pro plan.
+[auth.mfa]
+# Control how many MFA factors can be enrolled at once per user.
+max_enrolled_factors = 10
+
+# Control MFA via App Authenticator (TOTP)
+[auth.mfa.totp]
+enroll_enabled = false
+verify_enabled = false
+
+# Configure MFA via Phone Messaging
+[auth.mfa.phone]
+enroll_enabled = false
+verify_enabled = false
+otp_length = 6
+template = "Your code is {{ .Code }}"
+max_frequency = "5s"
+
+# Configure MFA via WebAuthn
+# [auth.mfa.web_authn]
+# enroll_enabled = true
+# verify_enabled = true
+
+# Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
+# `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
+# `twitter`, `slack`, `spotify`, `workos`, `zoom`.
+[auth.external.apple]
+enabled = false
+client_id = ""
+# DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
+secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
+# Overrides the default auth redirectUrl.
+redirect_uri = ""
+# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
+# or any other third-party OIDC providers.
+url = ""
+# If enabled, the nonce check will be skipped. Required for local sign in with Google auth.
+skip_nonce_check = false
+
+# Use Firebase Auth as a third-party provider alongside Supabase Auth.
+[auth.third_party.firebase]
+enabled = false
+# project_id = "my-firebase-project"
+
+# Use Auth0 as a third-party provider alongside Supabase Auth.
+[auth.third_party.auth0]
+enabled = false
+# tenant = "my-auth0-tenant"
+# tenant_region = "us"
+
+# Use AWS Cognito (Amplify) as a third-party provider alongside Supabase Auth.
+[auth.third_party.aws_cognito]
+enabled = false
+# user_pool_id = "my-user-pool-id"
+# user_pool_region = "us-east-1"
+
+[edge_runtime]
+enabled = true
+# Configure one of the supported request policies: `oneshot`, `per_worker`.
+# Use `oneshot` for hot reload, or `per_worker` for load testing.
+policy = "oneshot"
+# Port to attach the Chrome inspector for debugging edge functions.
+inspector_port = 8083
+
+# Use these configurations to customize your Edge Function.
+# [functions.MY_FUNCTION_NAME]
+# enabled = true
+# verify_jwt = true
+# import_map = "./functions/MY_FUNCTION_NAME/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+# entrypoint = "./functions/MY_FUNCTION_NAME/index.ts"
+
+[analytics]
+enabled = true
+port = 54327
+# Configure one of the supported backends: `postgres`, `bigquery`.
+backend = "postgres"
+
+# Experimental features may be deprecated any time
+[experimental]
+# Configures Postgres storage engine to use OrioleDB (S3)
+orioledb_version = ""
+# Configures S3 bucket URL, eg. <bucket_name>.s3-<region>.amazonaws.com
+s3_host = "env(S3_HOST)"
+# Configures S3 bucket region, eg. us-east-1
+s3_region = "env(S3_REGION)"
+# Configures AWS_ACCESS_KEY_ID for S3 bucket
+s3_access_key = "env(S3_ACCESS_KEY)"
+# Configures AWS_SECRET_ACCESS_KEY for S3 bucket
+s3_secret_key = "env(S3_SECRET_KEY)"
+
+--- START OF FILE supabase/seed.sql ---
+-- Insertar roles básicos
+INSERT INTO roles (nombre) VALUES
+    ('administrador'),
+    ('usuario'),
+    ('operador')
+ON CONFLICT (nombre) DO NOTHING;
+
+-- Insertar tipos de cambio iniciales
+INSERT INTO tipos_cambio (par_monedas, valor, activo) VALUES
+    ('USD/ARS', 1000.50, true),
+    ('BRL/ARS', 175.25, true),
+    ('BRL/USD', 0.21, true),
+    ('BTC/USD', 94537.41, true),
+    ('WLD/USD', 1.82, true)
+ON CONFLICT (par_monedas) DO UPDATE 
+SET valor = EXCLUDED.valor,
+    fecha_actualizacion = TIMEZONE('UTC'::TEXT, NOW());
+
+-- Insertar configuraciones globales del sistema
+INSERT INTO configuracion_usuario (user_id, clave, valor)
+SELECT 
+    auth.uid(),
+    'idioma_preferido',
+    'es'
+FROM auth.users
+WHERE auth.users.id = auth.uid()
+ON CONFLICT (user_id, clave) DO NOTHING;
+
+-- Insertar configuración de notificaciones por defecto
+INSERT INTO configuracion_usuario (user_id, clave, valor)
+SELECT 
+    auth.uid(),
+    'notificaciones_email',
+    'true'
+FROM auth.users
+WHERE auth.users.id = auth.uid()
+ON CONFLICT (user_id, clave) DO NOTHING;
+
+--- START OF FILE supabase/storage.sql ---
+-- Crear el bucket si no existe
+insert into storage.buckets (id, name)
+values ('uploads', 'uploads')
+on conflict (id) do nothing;
+
+-- Política para subir archivos (solo usuarios autenticados)
+create policy "Usuarios autenticados pueden subir archivos"
+on storage.objects for insert
+to authenticated
+with check (
+  bucket_id = 'uploads'
+  and (storage.foldername(name))[1] = 'comprobantes'
+  and auth.uid() = owner
+);
+
+-- Política para ver archivos (solo el propietario)
+create policy "Usuarios pueden ver sus propios archivos"
+on storage.objects for select
+to authenticated
+using (
+  bucket_id = 'uploads'
+  and owner = auth.uid()
+);
+
+-- Política para eliminar archivos (solo el propietario)
+create policy "Usuarios pueden eliminar sus propios archivos"
+on storage.objects for delete
+to authenticated
+using (
+  bucket_id = 'uploads'
+  and owner = auth.uid()
+);
+
+-- Función para limpiar archivos antiguos (más de 30 días)
+create or replace function storage.cleanup_old_files()
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  delete from storage.objects
+  where
+    bucket_id = 'uploads'
+    and created_at < now() - interval '30 days';
+end;
+$$;
+
+--- START OF FILE supabase/functions.sql ---
+-- Crear un job para limpiar archivos antiguos cada día
+select
+  cron.schedule(
+    'cleanup-old-files', -- nombre del job
+    '0 0 * * *',        -- ejecutar a las 00:00 todos los días
+    $$
+    select storage.cleanup_old_files();
+    $$
+  );
+
+--- START OF FILE supabase/migrations/20250107_verification_tables.sql ---
+-- Verificar el tipo de dato actual de client_id
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name IN ('verification_status', 'user_permissions')
+  AND column_name = 'client_id';
+
+-- Agregar columnas temporales para almacenar los valores convertidos
+ALTER TABLE verification_status ADD COLUMN client_id_temp BIGINT;
+ALTER TABLE user_permissions ADD COLUMN client_id_temp BIGINT;
+
+-- Convertir y copiar los valores de client_id a las columnas temporales
+UPDATE verification_status
+SET client_id_temp = ('x' || substr(md5(client_id::text), 1, 16))::bit(64)::bigint;
+
+UPDATE user_permissions
+SET client_id_temp = ('x' || substr(md5(client_id::text), 1, 16))::bit(64)::bigint;
+
+-- Eliminar restricciones y referencias existentes en client_id
+ALTER TABLE verification_status DROP CONSTRAINT IF EXISTS verification_status_client_id_fkey;
+ALTER TABLE user_permissions DROP CONSTRAINT IF EXISTS user_permissions_client_id_fkey;
+
+-- Eliminar la columna original client_id
+ALTER TABLE verification_status DROP COLUMN client_id;
+ALTER TABLE user_permissions DROP COLUMN client_id;
+
+-- Renombrar las columnas temporales a client_id
+ALTER TABLE verification_status RENAME COLUMN client_id_temp TO client_id;
+ALTER TABLE user_permissions RENAME COLUMN client_id_temp TO client_id;
+
+-- Agregar restricciones y referencias con el nuevo tipo de dato
+ALTER TABLE verification_status
+ADD CONSTRAINT verification_status_client_id_fkey
+FOREIGN KEY (client_id) REFERENCES clients(id);
+
+ALTER TABLE user_permissions
+ADD CONSTRAINT user_permissions_client_id_fkey
+FOREIGN KEY (client_id) REFERENCES clients(id);
+
+-- Verificar el resultado final
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name IN ('verification_status', 'user_permissions')
+  AND column_name = 'client_id';
+
+--- START OF FILE prisma/schema.prisma ---
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderType {
+  buy
+  sell
+}
+
+enum OrderStatus {
+  open
+  in_progress
+  completed
+  cancelled
+}
+
+enum Currency {
+  USD
+  ARS
+  BRL
+  WLD
+}
+
+model P2POrder {
+  id            String      @id @default(cuid())
+  type          OrderType
+  currency      Currency
+  amount        Decimal      @db.Decimal(10,2)
+  price         Decimal      @db.Decimal(10,2)
+  status        OrderStatus
+  userId        String
+  user          User        @relation("UserOrders", fields: [userId], references: [id])
+  paymentMethod String?
+  bankInfo      String?
+  country       String?
+  minAmount     Decimal?     @db.Decimal(10,2)
+  maxAmount     Decimal?     @db.Decimal(10,2)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([currency, type, status])
+  @@index([status])
+  @@index([createdAt])
+  @@map("p2p_orders")
+}
+
+model User {
+  id              String      @id @default(cuid())
+  name            String?
+  email           String?     @unique
+  completedTrades Int         @default(0)
+  successRate     Decimal     @default(100) @db.Decimal(5,2)
+  orders          P2POrder[]  @relation("UserOrders")
+  country         String?
+  bankAccounts    String[]
+  paymentMethods  String[]
+  kycVerified     Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+--- START OF FILE src/config/constants.ts ---
+Error reading file: src/config/constants.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\config\constants.ts'
+
+--- START OF FILE src/config/api.ts ---
+import axios from 'axios';
+
+declare global {
+  interface ImportMetaEnv {
+    NEXT_PUBLIC_API_URL: string
+  }
+}
+
+export const API_CONFIG = {
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+};
+
+export const getAuthHeader = () => {
+  const token = localStorage.getItem('token')
+  return token ? { Authorization: `Bearer ${token}` } : {}
+};
+
+const api = axios.create(API_CONFIG);
+
+// Interceptor para agregar el token a las peticiones
+api.interceptors.request.use(
+  (config) => {
+    const headers = getAuthHeader();
+    if (headers.Authorization) {
+      config.headers.Authorization = headers.Authorization;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor para manejar errores de autenticación
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
+
+--- START OF FILE src/utils/auth.ts ---
+Error reading file: src/utils/auth.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\utils\auth.ts'
+
+--- START OF FILE src/utils/format.ts ---
+Error reading file: src/utils/format.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\utils\format.ts'
+
+--- START OF FILE src/utils/validation.ts ---
+import { z } from 'zod';
+import { CurrencyCode, OrderTypeEnum, PaymentMethodType } from '@/types/p2p';
+import { P2PServiceError } from './errors';
+
+enum P2PErrorCodes {
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  INVALID_AMOUNT = 'INVALID_AMOUNT',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+}
+
+export const orderSchema = z.object({
+  currency: z.nativeEnum(CurrencyCode, {
+    required_error: 'La moneda es requerida',
+    invalid_type_error: 'Moneda inválida'
+  }),
+  type: z.nativeEnum(OrderTypeEnum, {
+    required_error: 'El tipo de orden es requerido',
+    invalid_type_error: 'Tipo de orden inválido'
+  }),
+  amount: z.number({
+    required_error: 'El monto es requerido',
+    invalid_type_error: 'El monto debe ser un número'
+  }).positive('El monto debe ser mayor a 0'),
+  price: z.number({
+    required_error: 'El precio es requerido',
+    invalid_type_error: 'El precio debe ser un número'
+  }).positive('El precio debe ser mayor a 0'),
+  payment_method: z.nativeEnum(PaymentMethodType, {
+    required_error: 'El método de pago es requerido',
+    invalid_type_error: 'Método de pago inválido'
+  }),
+  bank_info: z.string().optional(),
+  country: z.string().optional(),
+  min_amount: z.number().optional(),
+  max_amount: z.number().optional()
+});
+
+export function validateOrder(data: unknown) {
+  try {
+    return orderSchema.parse(data);
+  } catch (error) {
+    throw new P2PServiceError(
+      P2PErrorCodes.INTERNAL_ERROR,
+      'Datos de orden inválidos'
+    );
+  }
+}
+
+export function validateAmount(amount: number, min: number, max: number): boolean {
+  try {
+    if (amount < min || amount > max) {
+      throw new Error(`El monto debe estar entre ${min} y ${max}`);
+    }
+    return true;
+  } catch (error) {
+    throw new P2PServiceError(P2PErrorCodes.INVALID_AMOUNT, error instanceof Error ? error.message : 'Invalid amount');
+  }
+}
+
+export function handleValidationError(error: unknown, message?: string): never {
+  if (error instanceof Error) {
+    throw new P2PServiceError(P2PErrorCodes.INVALID_AMOUNT, message || error.message);
+  }
+  throw error;
+}
+
+--- START OF FILE src/types/user.ts ---
+Error reading file: src/types/user.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\types\user.ts'
+
+--- START OF FILE src/types/auth.ts ---
+Error reading file: src/types/auth.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\types\auth.ts'
+
+--- START OF FILE src/types/api.ts ---
+Error reading file: src/types/api.ts Error: ENOENT: no such file or directory, access 'D:\ECUCONDOR\ECUCONDOR\src\types\api.ts'
+
+--- END OF FILES ---

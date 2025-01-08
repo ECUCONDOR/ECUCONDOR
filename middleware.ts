@@ -21,13 +21,17 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     const supabase = createMiddlewareClient({ req: request, res: response });
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      logger.warn('Failed to retrieve session', { error: sessionError, requestId });
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+    }
+
+    const session = sessionData?.session;
 
     const protectedRoutes = ['/dashboard', '/profile'];
-    const isProtectedRoute = protectedRoutes.some(route => 
-      request.nextUrl.pathname.startsWith(route)
+    const isProtectedRoute = protectedRoutes.some(route =>
+      request.nextUrl.pathname.startsWith(route),
     );
 
     if (isProtectedRoute && !session) {
@@ -38,7 +42,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
-    if (session && (request.nextUrl.pathname.startsWith('/auth'))) {
+    if (session && request.nextUrl.pathname.startsWith('/auth')) {
       logger.info('Redirecting authenticated user', {
         path: request.nextUrl.pathname,
         userId: session.user.id,
@@ -72,20 +76,13 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.json(
       { error: 'Internal Server Error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|api).*)',
   ],
 };

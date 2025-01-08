@@ -1,24 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/database.types';
+import { Database } from '@/types/supabase';
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
-}
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  db: {
+    schema: 'public',
+  },
+});
 
+// Manejador de errores de Supabase
 export function handleSupabaseError(error: unknown): string {
   if (typeof error === 'object' && error !== null && 'message' in error) {
     const message = String(error.message);
@@ -39,9 +31,18 @@ export function handleSupabaseError(error: unknown): string {
     if (message.includes('Email already taken')) {
       return 'El correo electrónico ya está registrado';
     }
+    if (message.includes('PGRST116')) {
+      return 'No se encontró el recurso solicitado';
+    }
     
     return message;
   }
   
   return 'Ha ocurrido un error inesperado';
+}
+
+// Tipos de respuesta comunes
+export interface SupabaseResponse<T> {
+  data: T | null;
+  error: Error | null;
 }

@@ -14,11 +14,10 @@ const AnimatedBackground = () => {
           {[...Array(10)].map((_, i) => (
             <div
               key={i}
-              className="bubble"
+              className={`bubble bubble-${i}`}
               style={{
                 left: `${10 + (i * 10)}%`,
-                animationDelay: `${i * 0.5}s`,
-                animationDuration: `${8 + Math.random() * 4}s`
+                animationDelay: `${i * 0.5}s`
               }}
             />
           ))}

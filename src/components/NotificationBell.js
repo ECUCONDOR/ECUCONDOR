@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../contexts/NotificationContext';
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);

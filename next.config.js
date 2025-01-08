@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    appDir: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -8,12 +11,28 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // Enable type checking during build
+    ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    // Enable ESLint checking during build
+    ignoreDuringBuilds: false,
+  },
+  webpack: (config, { isServer }) => {
+    // Optimizaciones para el cliente
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+
+    return config;
   },
 }
 

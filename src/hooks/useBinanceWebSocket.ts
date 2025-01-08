@@ -1,130 +1,138 @@
-import { useEffect, useRef, useState } from 'react';
+'use client';
 
-interface WebSocketState {
+import { useEffect, useRef, useState, useCallback } from 'react';
+
+type WebSocketState = {
   connected: boolean;
-  reconnecting: boolean;
-}
+  lastMessage: any;
+  reconnectAttempt: number;
+};
 
-interface WebSocketError {
+type WebSocketError = {
   type: string;
   message: string;
   error: Error;
-}
+} | null;
 
-interface BinanceWebSocketData {
-  e: string; // Event type
-  E: number; // Event time
-  s: string; // Symbol
-  p: string; // Price change
-  P: string; // Price change percent
-  w: string; // Weighted average price
-  c: string; // Last price
-  Q: string; // Last quantity
-  o: string; // Open price
-  h: string; // High price
-  l: string; // Low price
-  v: string; // Total traded base asset volume
-  q: string; // Total traded quote asset volume
-  O: number; // Statistics open time
-  C: number; // Statistics close time
-  F: number; // First trade ID
-  L: number; // Last trade Id
-  n: number; // Total number of trades
-}
+const initialState: WebSocketState = {
+  connected: false,
+  lastMessage: null,
+  reconnectAttempt: 0,
+};
 
-interface BinancePrice {
-  symbol: string;
-  price: string;
-}
-
-export function useBinanceWebSocket(symbols: string | string[]) {
-  const [state, setState] = useState<WebSocketState>({
-    connected: false,
-    reconnecting: false,
-  });
-  const [prices, setPrices] = useState<BinancePrice[]>([]);
-  const [data, setData] = useState<BinanceWebSocketData | null>(null);
-  const [error, setError] = useState<WebSocketError | null>(null);
+export const useBinanceWebSocket = (symbols: string[]) => {
   const ws = useRef<WebSocket | null>(null);
-  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const [state, setState] = useState<WebSocketState>(initialState);
+  const [error, setError] = useState<WebSocketError>(null as WebSocketError);
+  const [prices, setPrices] = useState<Array<{ symbol: string; price: string }>>([]);
 
-  const handleError = (type: string, message: string, error: Error) => {
-    setError({ type, message, error });
-    setState(prev => ({ ...prev, connected: false }));
-  };
+  const connect = useCallback(() => {
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      return; // Already connected
+    }
 
-  const connect = () => {
     try {
-      if (ws.current?.readyState === WebSocket.OPEN) return;
-
-      const symbolString = Array.isArray(symbols) ? symbols.join(',') : symbols;
-      ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbolString.toLowerCase()}@ticker`);
-
+      ws.current = new WebSocket(`wss://stream.binance.com:9443/ws/${symbols.map(symbol => symbol.toLowerCase()).join('@trade/')}@trade`);
+      
       ws.current.onopen = () => {
-        setState({ connected: true, reconnecting: false });
+        setState(prev => ({
+          ...prev,
+          connected: true,
+          reconnectAttempt: 0
+        }));
         setError(null);
       };
 
       ws.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          setData(data);
-          const price = { symbol: data.s, price: data.c };
-          setPrices(prev => [...prev.filter(p => p.symbol !== price.symbol), price]);
-        } catch (error) {
-          if (error instanceof Error) {
-            handleError('PARSE', 'Error parsing WebSocket data', error);
-          }
-        }
-      };
-
-      ws.current.onclose = () => {
-        setState(prev => ({ ...prev, connected: false }));
-        handleError('CLOSE', 'Connection closed unexpectedly', new Error('WebSocket connection closed'));
-        // Attempt to reconnect
-        if (!state.reconnecting) {
-          setState(prev => ({ ...prev, reconnecting: true }));
-          reconnectTimeout.current = setTimeout(connect, 5000);
+          setState(prev => ({
+            ...prev,
+            lastMessage: data
+          }));
+          setPrices(prev => {
+            const index = prev.findIndex(p => p.symbol === data.s);
+            if (index >= 0) {
+              const newPrices = [...prev];
+              newPrices[index] = { symbol: data.s, price: data.p };
+              return newPrices;
+            }
+            return [...prev, { symbol: data.s, price: data.p }];
+          });
+        } catch (err) {
+          console.error('Error parsing message:', err);
         }
       };
 
       ws.current.onerror = (event) => {
-        if (event instanceof ErrorEvent) {
-          handleError('ERROR', 'WebSocket connection error', event.error);
-        } else {
-          handleError('ERROR', 'Unknown WebSocket error', new Error('Unknown WebSocket error'));
+        console.error('WebSocket error:', event);
+        setState(prev => ({ 
+          ...prev, 
+          connected: false
+        }));
+      };
+
+      ws.current.onclose = () => {
+        setState(prev => ({ 
+          ...prev, 
+          connected: false,
+          reconnectAttempt: prev.reconnectAttempt + 1
+        }));
+        
+        // Clear any existing reconnection timeout
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        // Attempt reconnection after a delay
+        if (state.reconnectAttempt < 5) {
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connect();
+          }, Math.min(1000 * Math.pow(2, state.reconnectAttempt), 30000)); // Exponential backoff with max 30s
         }
       };
     } catch (error) {
       if (error instanceof Error) {
-        handleError('CONNECT', 'Error connecting to WebSocket', error);
+        setError({
+          type: 'CONNECTION_ERROR',
+          message: 'Failed to establish WebSocket connection',
+          error
+        });
       }
     }
-  };
+  }, [symbols]); // Only depend on symbols
 
-  const disconnect = () => {
-    if (reconnectTimeout.current) {
-      clearTimeout(reconnectTimeout.current);
+  useEffect(() => {
+    connect();
+    
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (ws.current) {
+        ws.current.close();
+        ws.current = null;
+      }
+    };
+  }, [connect]); // connect is stable now due to limited dependencies
+
+  const disconnect = useCallback(() => {
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
     }
     if (ws.current) {
       ws.current.close();
       ws.current = null;
+      setState(prev => ({ ...prev, connected: false }));
     }
-    setState({ connected: false, reconnecting: false });
-  };
-
-  useEffect(() => {
-    connect();
-    return () => disconnect();
-  }, [symbols]);
+  }, []);
 
   return {
     connected: state.connected,
-    reconnecting: state.reconnecting,
-    prices,
-    data,
+    lastMessage: state.lastMessage,
     error,
-    connect,
+    prices,
     disconnect
   };
-}
+};

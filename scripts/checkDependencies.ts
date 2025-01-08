@@ -1,12 +1,21 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 
-function checkDependencies() {
-  const packageJson = JSON.parse(
+interface PackageJson {
+  dependencies: {
+    [key: string]: string;
+  };
+  engines?: {
+    node?: string;
+  };
+}
+
+function checkDependencies(): void {
+  const packageJson: PackageJson = JSON.parse(
     fs.readFileSync('./package.json', 'utf8')
   );
 
-  const requiredDeps = [
+  const requiredDeps: string[] = [
     '@supabase/auth-helpers-react',
     'next',
     'react',
@@ -14,7 +23,7 @@ function checkDependencies() {
   ];
 
   const missing = requiredDeps.filter(
-    dep => !packageJson.dependencies[dep]
+    (dep: string) => !packageJson.dependencies[dep]
   );
 
   if (missing.length > 0) {
@@ -23,8 +32,9 @@ function checkDependencies() {
   }
 
   // Verificar versiones de Node y pnpm
-  const nodeVersion = process.version;
-  const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
+  const nodeVersion: string = process.version;
+  const majorVersion: number = parseInt(nodeVersion.slice(1).split('.')[0], 10);
+  
   if (majorVersion < 20) {
     console.error('Se requiere Node.js versión 20+');
     process.exit(1);

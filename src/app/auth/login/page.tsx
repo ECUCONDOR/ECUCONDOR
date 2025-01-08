@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import Link from 'next/link';
-import { createBrowserClient } from '@supabase/ssr';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { PublicNavbar } from '@/components/public-navbar';
 import { useNotifications } from '@/contexts/NotificationContext';
 import NewYearFireworks from '@/components/NewYearFireworks';
@@ -25,10 +25,7 @@ function LoginFormContent() {
   const { toast } = useToast();
   const { addNotification } = useNotifications();
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createClientComponentClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +42,11 @@ function LoginFormContent() {
           description: error.message,
           variant: 'destructive',
         });
-        addNotification('error', 'Error de acceso', 'No se pudo iniciar sesión. Verifica tus credenciales.');
+        addNotification({
+          type: 'error',
+          title: 'Error de acceso',
+          message: 'No se pudo iniciar sesión. Verifica tus credenciales.'
+        });
         return;
       }
 
@@ -55,7 +56,11 @@ function LoginFormContent() {
           description: 'Has iniciado sesión correctamente',
           variant: 'default',
         });
-        addNotification('success', 'Bienvenido', 'Has iniciado sesión correctamente');
+        addNotification({
+          type: 'success',
+          title: 'Bienvenido',
+          message: 'Has iniciado sesión correctamente'
+        });
         router.refresh();
         await new Promise(resolve => setTimeout(resolve, 100));
         router.push('/dashboard');
@@ -66,7 +71,11 @@ function LoginFormContent() {
         description: 'Ocurrió un error al iniciar sesión. Por favor, intenta nuevamente.',
         variant: 'destructive',
       });
-      addNotification('error', 'Error de acceso', 'No se pudo iniciar sesión. Verifica tus credenciales.');
+      addNotification({
+        type: 'error',
+        title: 'Error de acceso',
+        message: 'No se pudo iniciar sesión. Verifica tus credenciales.'
+      });
     } finally {
       setIsLoading(false);
     }

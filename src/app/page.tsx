@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
@@ -44,7 +44,12 @@ export default function Home() {
   const { toast } = useToast();
   const [rates, setRates] = useState<Record<ExchangePair, ExchangeRate>>(initialRates);
   const binancePairs = ['btcusdt', 'wldusdt', 'usdtbrl', 'usdtars'];
-  const { prices, error } = useBinanceWebSocket(initialExchangeOptions.map(opt => opt.symbol));
+  const [currentSymbolIndex, setCurrentSymbolIndex] = useState(0);
+  const currentSymbol = useMemo(
+    () => initialExchangeOptions[currentSymbolIndex],
+    [currentSymbolIndex]
+  );
+  const { prices, error } = useBinanceWebSocket(currentSymbol.symbol);
   const [exchangeOptions, setExchangeOptions] = useState<ExtendedExchangeOption[]>(initialExchangeOptions.map(opt => ({
     ...opt,
     price: undefined,
@@ -54,7 +59,6 @@ export default function Home() {
   const [amount, setAmount] = useState('');
   const [convertedAmount, setConvertedAmount] = useState('');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
-  const [currentSymbolIndex, setCurrentSymbolIndex] = useState(0);
 
   useEffect(() => {
     if (error) {
@@ -78,13 +82,14 @@ export default function Home() {
     }
   }, [prices, exchangeOptions]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSymbolIndex((prevIndex) => (prevIndex + 1) % exchangeOptions.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
+  const rotateSymbol = useCallback(() => {
+    setCurrentSymbolIndex(prevIndex => (prevIndex + 1) % initialExchangeOptions.length);
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(rotateSymbol, 5000);
+    return () => clearInterval(interval);
+  }, [rotateSymbol]);
 
   const handleExchangeSelect = (exchange: ExtendedExchangeOption) => {
     setSelectedExchange(exchange);
@@ -130,6 +135,14 @@ export default function Home() {
       setLastUpdate(new Date());
     }
   }, [prices]);
+
+  const formattedPrice = useMemo(() => {
+    if (!prices?.find(p => p.symbol === currentSymbol.symbol)?.p) return 'Loading...';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(parseFloat(prices.find(p => p.symbol === currentSymbol.symbol)?.p));
+  }, [prices, currentSymbol]);
 
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-blue-950 via-blue-900 to-black text-white relative overflow-hidden">
@@ -234,6 +247,16 @@ export default function Home() {
             </div>
           ))}
         </div>
+      </div>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/5 backdrop-blur-sm border-t border-white/10">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">{currentSymbol.name}</h2>
+          <div className={`h-2 w-2 rounded-full ${prices ? 'bg-green-500' : 'bg-red-500'}`} />
+        </div>
+        <p className="text-3xl font-mono text-center">{formattedPrice}</p>
+        <p className="text-sm text-gray-400 text-center">
+          Auto-rotating every 5 seconds
+        </p>
       </div>
     </main>
   );

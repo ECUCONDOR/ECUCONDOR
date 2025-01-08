@@ -2,13 +2,10 @@
 
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
 
 function LoadingSpinner() {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-    </div>
-  );
+  return <Spinner size="lg" className="m-4" />;
 }
 
 export default function PaymentsLayoutClient({ children }: { children: React.ReactNode }) {

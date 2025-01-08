@@ -1,93 +1,126 @@
+'use client';
+
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { Session, User, AuthError, AuthChangeEvent } from '@supabase/supabase-js';
-import { useToast } from '@/hooks/use-toast';
+import { createClientComponentClient, User } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
-  session: Session | null;
   user: User | null;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
   loading: boolean;
-  isLoading: boolean;
+  signIn: (email: string, password: string) => Promise<any>;
+  signUp: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<void>;
+  hasAcceptedTerms: boolean;
+  showTermsModal: boolean;
+  setShowTermsModal: (show: boolean) => void;
+  acceptTerms: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('ecucondor_terms_accepted') === 'true';
+    }
+    return false;
+  });
+  const [showTermsModal, setShowTermsModal] = useState(!hasAcceptedTerms);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  const acceptTerms = () => {
+    localStorage.setItem('ecucondor_terms_accepted', 'true');
+    setHasAcceptedTerms(true);
+    setShowTermsModal(false);
+  };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    if (!hasAcceptedTerms) {
+      setShowTermsModal(true);
+    }
+  }, [hasAcceptedTerms]);
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error getting session:', error.message);
+        setLoading(false);
+        return;
+      }
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
+
+    getSession();
+
+    const { data: { subscription }} = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        router.push('/auth/login');
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router, supabase]);
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        toast({
-          title: 'Error al iniciar sesión',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
-      throw error;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (data.session) {
+      router.push('/dashboard');
     }
+
+    return { data, error };
+  };
+
+  const signUp = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    return { data, error };
   };
 
   const signOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-    } catch (error) {
-      if (error instanceof AuthError) {
-        toast({
-          title: 'Error al cerrar sesión',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
-      throw error;
-    }
+    await supabase.auth.signOut();
+    router.push('/auth/login');
   };
 
   const value = {
-    session,
     user,
-    signIn,
-    signOut,
     loading,
-    isLoading: loading,
+    signIn,
+    signUp,
+    signOut,
+    hasAcceptedTerms,
+    showTermsModal,
+    setShowTermsModal,
+    acceptTerms,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

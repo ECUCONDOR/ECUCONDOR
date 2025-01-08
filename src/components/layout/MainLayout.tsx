@@ -1,10 +1,12 @@
+'use client';
+
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import NotificationBell from '../NotificationBell';
-import { ThemeProvider } from '../../context/ThemeContext';
-import { NotificationProvider } from '../../context/NotificationContext';
-import { LoadingProvider } from '../../context/LoadingContext';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import { LoadingProvider } from '@/contexts/LoadingContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -21,6 +23,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               {children}
             </main>
             <Footer />
+            <NotificationCenter />
           </div>
         </LoadingProvider>
       </NotificationProvider>

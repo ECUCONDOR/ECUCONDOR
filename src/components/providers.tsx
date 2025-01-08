@@ -1,38 +1,22 @@
 'use client';
 
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { AuthProvider } from '@/contexts/auth-context';
-import { ThemeProvider as NextThemeProvider } from 'next-themes';
-import { Toaster } from '@/components/ui/toaster';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { SessionContextProvider } from '@supabase/auth-helpers-react';
-import { useState } from 'react';
-import { Database } from '@/types/supabase';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 
-interface ProvidersProps {
-  children: React.ReactNode
-}
-
-export function Providers({ children }: ProvidersProps) {
-  const [supabaseClient] = useState(() => createClientComponentClient<Database>());
-
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <NextThemeProvider
+    <NextThemesProvider 
+      attribute="class"
       defaultTheme="system"
-      storageKey="theme-preference"
       enableSystem
       disableTransitionOnChange
     >
-      <SessionContextProvider supabaseClient={supabaseClient}>
-        <AuthProvider>
-          <main className="min-h-screen bg-background font-sans antialiased">
-            <TooltipProvider>
-              {children}
-              <Toaster />
-            </TooltipProvider>
-          </main>
-        </AuthProvider>
-      </SessionContextProvider>
-    </NextThemeProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          {children}
+        </NotificationProvider>
+      </AuthProvider>
+    </NextThemesProvider>
   );
 }

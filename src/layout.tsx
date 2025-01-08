@@ -2,9 +2,9 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 // Configuración de la fuente Inter
 const inter = Inter({

@@ -4,133 +4,79 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export interface Database {
   public: {
     Tables: {
-      payments: {
+      clients: {
         Row: {
-          id: string;
-          type: 'PIX' | 'QR' | 'CARD';
-          amount: number;
-          description: string;
-          userId: string;
-          status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'DISPUTED';
-          cardDetails?: {
-            number: string;
-            expiry: string;
-            cvc: string;
-          };
-          createdAt: string;
-          updatedAt: string;
-        };
+          id: number
+          first_name: string
+          last_name: string
+          identification: string
+          email: string
+          phone: string | null
+          address: string | null
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
         Insert: {
-          id?: string;
-          type: 'PIX' | 'QR' | 'CARD';
-          amount: number;
-          description: string;
-          userId: string;
-          status?: 'PENDING' | 'COMPLETED' | 'FAILED' | 'DISPUTED';
-          cardDetails?: {
-            number: string;
-            expiry: string;
-            cvc: string;
-          };
-          createdAt?: string;
-          updatedAt?: string;
-        };
+          id?: number
+          first_name: string
+          last_name: string
+          identification: string
+          email: string
+          phone?: string | null
+          address?: string | null
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
         Update: {
-          type?: 'PIX' | 'QR' | 'CARD';
-          amount?: number;
-          description?: string;
-          userId?: string;
-          status?: 'PENDING' | 'COMPLETED' | 'FAILED' | 'DISPUTED';
-          cardDetails?: {
-            number: string;
-            expiry: string;
-            cvc: string;
-          };
-          updatedAt?: string;
-        };
-      };
-      disputes: {
+          first_name?: string
+          last_name?: string
+          identification?: string
+          email?: string
+          phone?: string | null
+          address?: string | null
+          updated_at?: string
+        }
+      }
+      user_client_relation: {
         Row: {
-          id: string;
-          paymentId: string;
-          reason: string;
-          userId: string;
-          status: 'OPEN' | 'RESOLVED' | 'REJECTED';
-          createdAt: string;
-          updatedAt: string;
-        };
+          id: string
+          user_id: string
+          client_id: number
+          status: 'ACTIVE' | 'INACTIVE'
+          created_at: string
+          updated_at: string
+        }
         Insert: {
-          id?: string;
-          paymentId: string;
-          reason: string;
-          userId: string;
-          status?: 'OPEN' | 'RESOLVED' | 'REJECTED';
-          createdAt?: string;
-          updatedAt?: string;
-        };
+          id?: string
+          user_id: string
+          client_id: number
+          status?: 'ACTIVE' | 'INACTIVE'
+          created_at?: string
+          updated_at?: string
+        }
         Update: {
-          paymentId?: string;
-          reason?: string;
-          userId?: string;
-          status?: 'OPEN' | 'RESOLVED' | 'REJECTED';
-          updatedAt?: string;
-        };
-      };
-      custody_accounts: {
-        Row: {
-          id: string;
-          userId: string;
-          type: string;
-          balance: number;
-          currency: string;
-          status: string;
-          dailyLimit: number;
-          monthlyLimit: number;
-          recentOperations: Json[];
-          createdAt: string;
-          updatedAt: string;
-        };
-        Insert: {
-          id?: string;
-          userId: string;
-          type: string;
-          balance?: number;
-          currency: string;
-          status?: string;
-          dailyLimit?: number;
-          monthlyLimit?: number;
-          recentOperations?: Json[];
-          createdAt?: string;
-          updatedAt?: string;
-        };
-        Update: {
-          userId?: string;
-          type?: string;
-          balance?: number;
-          currency?: string;
-          status?: string;
-          dailyLimit?: number;
-          monthlyLimit?: number;
-          recentOperations?: Json[];
-          updatedAt?: string;
-        };
-      };
-    };
+          user_id?: string
+          client_id?: number
+          status?: 'ACTIVE' | 'INACTIVE'
+          updated_at?: string
+        }
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Enums: {
-      payment_type: 'PIX' | 'QR' | 'CARD';
-      payment_status: 'PENDING' | 'COMPLETED' | 'FAILED' | 'DISPUTED';
-      dispute_status: 'OPEN' | 'RESOLVED' | 'REJECTED';
-    };
-  };
+      [_ in never]: never
+    }
+  }
 }
