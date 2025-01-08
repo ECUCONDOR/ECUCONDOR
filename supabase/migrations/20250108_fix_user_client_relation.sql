@@ -65,3 +65,32 @@ WHERE NOT EXISTS (
     AND status = 'ACTIVE'
 )
 LIMIT 1;
+
+-- Drop existing policies
+DROP POLICY IF EXISTS "Users can view their own relations" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can create relations for their clients" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can update their own relations" ON public.user_client_relation;
+
+-- Create policies
+CREATE POLICY "Users can view their own relations"
+ON public.user_client_relation FOR SELECT
+TO authenticated
+USING (
+    user_id = auth.uid()
+);
+
+CREATE POLICY "Users can create relations for their clients"
+ON public.user_client_relation FOR INSERT
+TO authenticated
+WITH CHECK (
+    user_id = auth.uid()
+);
+
+CREATE POLICY "Users can update their own relations"
+ON public.user_client_relation FOR UPDATE
+TO authenticated
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+
+-- Grant permissions
+GRANT ALL ON public.user_client_relation TO authenticated;

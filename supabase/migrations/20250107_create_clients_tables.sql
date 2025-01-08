@@ -1,114 +1,108 @@
+-- Drop existing functions
+DROP FUNCTION IF EXISTS public.get_client_by_identification(TEXT);
+DROP FUNCTION IF EXISTS public.get_client_details_by_identification(TEXT);
+
+-- Drop existing policies
+DROP POLICY IF EXISTS "Users can view clients they are related to" ON public.clients;
+DROP POLICY IF EXISTS "Users can insert their own clients" ON public.clients;
+DROP POLICY IF EXISTS "Users can update clients they own" ON public.clients;
+DROP POLICY IF EXISTS "Users can view their own relations" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can create relations for their clients" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can view their own verification status" ON public.verification_status;
+DROP POLICY IF EXISTS "Users can create their own verification status" ON public.verification_status;
+DROP POLICY IF EXISTS "Users can update their own verification status" ON public.verification_status;
+
+-- Drop existing tables
+DROP TABLE IF EXISTS public.user_client_relations;
+DROP TABLE IF EXISTS public.verification_status;
+
 -- Create clients table
 CREATE TABLE IF NOT EXISTS public.clients (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL,
-    identification TEXT NOT NULL UNIQUE,
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    identification TEXT UNIQUE NOT NULL,
     email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    type TEXT NOT NULL CHECK (type IN ('personal', 'business')),
-    address TEXT,
-    created_by UUID NOT NULL REFERENCES auth.users(id),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    phone TEXT,
+    type TEXT CHECK (type IN ('personal', 'business')) DEFAULT 'personal',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    created_by uuid REFERENCES auth.users(id),
+    updated_by uuid REFERENCES auth.users(id)
 );
 
--- Create user_client_relations table
-CREATE TABLE IF NOT EXISTS public.user_client_relations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES auth.users(id),
-    client_id UUID NOT NULL REFERENCES public.clients(id),
-    role TEXT NOT NULL CHECK (role IN ('owner', 'admin', 'user')),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, client_id)
-);
-
--- Create verification_status table
-CREATE TABLE IF NOT EXISTS public.verification_status (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES auth.users(id),
-    client_id UUID NOT NULL REFERENCES public.clients(id),
-    status TEXT NOT NULL CHECK (status IN ('pending', 'verified', 'rejected')),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, client_id)
-);
-
--- Create RLS policies for clients table
+-- Enable RLS
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view clients they are related to"
-ON public.clients FOR SELECT
-TO authenticated
-USING (
-    EXISTS (
-        SELECT 1 FROM public.user_client_relations
-        WHERE user_client_relations.client_id = clients.id
-        AND user_client_relations.user_id = auth.uid()
-    )
+-- Create user-client relation table
+CREATE TABLE IF NOT EXISTS public.user_client_relation (
+    user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+    client_id uuid REFERENCES public.clients(id) ON DELETE CASCADE,
+    status TEXT CHECK (status IN ('ACTIVE', 'INACTIVE')) DEFAULT 'ACTIVE',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (user_id, client_id)
 );
 
-CREATE POLICY "Users can insert their own clients"
-ON public.clients FOR INSERT
-TO authenticated
-WITH CHECK (
-    created_by = auth.uid()
-);
+-- Enable RLS
+ALTER TABLE public.user_client_relation ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can update clients they own"
-ON public.clients FOR UPDATE
-TO authenticated
-USING (
-    EXISTS (
-        SELECT 1 FROM public.user_client_relations
-        WHERE user_client_relations.client_id = clients.id
-        AND user_client_relations.user_id = auth.uid()
-        AND user_client_relations.role = 'owner'
-    )
-);
+-- Create RLS policies
+CREATE POLICY "Users can view their own client relations" ON public.user_client_relation
+    FOR SELECT TO authenticated
+    USING (auth.uid() = user_id);
 
--- Create RLS policies for user_client_relations table
-ALTER TABLE public.user_client_relations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view their linked clients" ON public.clients
+    FOR SELECT TO authenticated
+    USING (
+        id IN (
+            SELECT client_id 
+            FROM public.user_client_relation 
+            WHERE user_id = auth.uid()
+            AND status = 'ACTIVE'
+        )
+    );
 
-CREATE POLICY "Users can view their own relations"
-ON public.user_client_relations FOR SELECT
-TO authenticated
-USING (
-    user_id = auth.uid()
-);
+-- Create helper functions
+CREATE OR REPLACE FUNCTION public.get_client_by_identification(p_identification TEXT)
+RETURNS TABLE (
+    found boolean,
+    client_id uuid
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        TRUE as found,
+        id as client_id
+    FROM public.clients
+    WHERE identification = p_identification
+    LIMIT 1;
 
-CREATE POLICY "Users can create relations for their clients"
-ON public.user_client_relations FOR INSERT
-TO authenticated
-WITH CHECK (
-    user_id = auth.uid() OR
-    EXISTS (
-        SELECT 1 FROM public.user_client_relations
-        WHERE user_client_relations.client_id = NEW.client_id
-        AND user_client_relations.user_id = auth.uid()
-        AND user_client_relations.role = 'owner'
-    )
-);
+    -- If no rows were returned, return a single row with found = false and null client_id
+    IF NOT FOUND THEN
+        RETURN QUERY SELECT false::boolean as found, NULL::uuid as client_id;
+    END IF;
+END;
+$$;
 
--- Create RLS policies for verification_status table
-ALTER TABLE public.verification_status ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view their own verification status"
-ON public.verification_status FOR SELECT
-TO authenticated
-USING (
-    user_id = auth.uid()
-);
-
-CREATE POLICY "Users can create their own verification status"
-ON public.verification_status FOR INSERT
-TO authenticated
-WITH CHECK (
-    user_id = auth.uid()
-);
-
-CREATE POLICY "Users can update their own verification status"
-ON public.verification_status FOR UPDATE
-TO authenticated
-USING (
-    user_id = auth.uid()
-);
+CREATE OR REPLACE FUNCTION public.get_client_details_by_identification(p_identification TEXT)
+RETURNS SETOF public.clients
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT c.*
+    FROM public.clients c
+    WHERE c.identification = p_identification
+    AND EXISTS (
+        SELECT 1 
+        FROM public.user_client_relation ucr 
+        WHERE ucr.client_id = c.id 
+        AND ucr.user_id = auth.uid()
+        AND ucr.status = 'ACTIVE'
+    );
+END;
+$$;

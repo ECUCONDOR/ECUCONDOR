@@ -1,7 +1,7 @@
 -- Create client_stats table
 CREATE TABLE IF NOT EXISTS public.client_stats (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  client_id BIGINT REFERENCES public.clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
   balance DECIMAL(10,2) NOT NULL DEFAULT 0,
   previous_balance DECIMAL(10,2) NOT NULL DEFAULT 0,
   transaction_count INTEGER NOT NULL DEFAULT 0,

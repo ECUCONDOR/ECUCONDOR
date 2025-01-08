@@ -135,7 +135,7 @@ CREATE TRIGGER handle_user_client_relation_updated_at
 -- Create helper functions
 CREATE OR REPLACE FUNCTION public.get_client_by_identification(p_identification TEXT)
 RETURNS TABLE (
-    exists boolean,
+    found boolean,
     client_id uuid,
     error_message text
 ) 
@@ -145,7 +145,7 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT 
-        TRUE as exists,
+        TRUE as found,
         c.id as client_id,
         NULL as error_message
     FROM public.clients c

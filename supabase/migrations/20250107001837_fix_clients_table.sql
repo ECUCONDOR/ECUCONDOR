@@ -3,6 +3,9 @@ DROP TRIGGER IF EXISTS set_updated_at ON public.clients;
 DROP POLICY IF EXISTS "Users can view their own clients" ON public.clients;
 DROP POLICY IF EXISTS "Users can insert their own clients" ON public.clients;
 DROP POLICY IF EXISTS "Users can update their own clients" ON public.clients;
+DROP POLICY IF EXISTS "Users can view their own relations" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can insert their own relations" ON public.user_client_relation;
+DROP POLICY IF EXISTS "Users can update their own relations" ON public.user_client_relation;
 
 -- Modify clients table
 ALTER TABLE public.clients
@@ -64,8 +67,7 @@ CREATE POLICY "Users can insert their own relations"
 
 CREATE POLICY "Users can update their own relations"
     ON public.user_client_relation FOR UPDATE
-    USING (user_id = auth.uid())
-    WITH CHECK (user_id = auth.uid());
+    USING (user_id = auth.uid());
 
 -- Create function to automatically create user_client_relation
 CREATE OR REPLACE FUNCTION public.handle_client_creation()

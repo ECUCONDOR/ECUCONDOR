@@ -1,76 +1,128 @@
 import { createClient } from '@/lib/supabase/config';
+import type { Database } from '@/types/supabase';
 
 interface ClientData {
-  id?: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   identification: string;
   email: string;
-  phone: string;
-  type: 'personal' | 'business';
-  address?: string;
+  phone?: string;
+  type?: 'personal' | 'business';
 }
 
-export const clientService = {
-  async createClient(clientData: ClientData) {
+interface Client extends ClientData {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
+}
+
+class ClientService {
+  private readonly baseUrl: string;
+
+  constructor() {
+    this.baseUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/clients`;
+  }
+
+  private async getAuthToken(): Promise<string> {
+    const { createClient } = await import('@/lib/supabase/config');
     const supabase = createClient();
+    const { data: { session }, error } = await supabase.auth.getSession();
     
+    if (error || !session) {
+      throw new Error('No hay una sesión activa');
+    }
+    
+    return session.access_token;
+  }
+
+  async createClient(data: ClientData): Promise<Client> {
     try {
-      // Call the Edge Function
-      const response = await fetch(
-        process.env.NEXT_PUBLIC_SUPABASE_EDGE_FUNCTION_URL!, 
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-          },
-          body: JSON.stringify(clientData)
-        }
-      );
+      const token = await this.getAuthToken();
+      
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...data,
+          type: data.type || 'personal'
+        })
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create client');
+        if (response.status === 409) {
+          throw new Error('Ya existe un cliente con esta identificación');
+        }
+        throw new Error(errorData.error || 'Error al crear el cliente');
       }
 
-      const result = await response.json();
-      return result;
+      const { client } = await response.json();
+      return client;
     } catch (error) {
       console.error('Error creating client:', error);
       throw error;
     }
-  },
+  }
 
-  async getClientByUserId() {
-    const supabase = createClient();
-    
+  async getClientByIdentification(identification: string): Promise<Client | null> {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const token = await this.getAuthToken();
       
-      if (!session) {
-        throw new Error('No active session');
-      }
-
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_FUNCTION_URL}/user`, 
+        `${this.baseUrl}?identification=${encodeURIComponent(identification)}`,
         {
-          method: 'GET',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`
+            'Authorization': `Bearer ${token}`
           }
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch client');
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(errorData.error || 'Error al obtener el cliente');
       }
 
-      const result = await response.json();
-      return result;
+      const { client } = await response.json();
+      return client;
     } catch (error) {
-      console.error('Error fetching client:', error);
+      console.error('Error getting client:', error);
       throw error;
     }
   }
-};
+
+  async getClientByUserId(): Promise<Client | null> {
+    try {
+      const token = await this.getAuthToken();
+      
+      const response = await fetch(this.baseUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(errorData.error || 'Error al obtener el cliente');
+      }
+
+      const { clients } = await response.json();
+      return clients?.[0] || null;
+    } catch (error) {
+      console.error('Error getting user client:', error);
+      throw error;
+    }
+  }
+}
+
+export const clientService = new ClientService();
