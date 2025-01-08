@@ -40,7 +40,7 @@ const TimeDisplay = dynamic(() => Promise.resolve(({ date }: { date: Date }) => 
 export default function Home() {
   const [email, setEmail] = useState('');
   const router = useRouter();
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
   const [rates, setRates] = useState<Record<ExchangePair, ExchangeRate>>(initialRates);
   const binancePairs = ['btcusdt', 'wldusdt', 'usdtbrl', 'usdtars'];

@@ -97,52 +97,57 @@ export function useUserClientRelation() {
     };
   }, [supabase]);
 
-  const updateClientRelation = async (clientId: string): Promise<UserClientRelation | null> => {
-    setState(prev => ({ ...prev, loading: true }));
-    
+  const checkClientRelation = async (clientId: string): Promise<UserClientRelation | null> => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No hay sesión activa');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) return null;
 
-      // Insertar la relación usuario-cliente
       const { data, error } = await supabase
-        .from('user_client_relation')
-        .insert([
-          {
-            user_id: session.user.id,
-            client_id: clientId,
-            status: 'ACTIVE'
-          }
-        ])
+        .from('user_client_relations')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('client_id', clientId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error checking client relation:', error);
+      return null;
+    }
+  };
+
+  const updateClientRelation = async (clientId: string): Promise<UserClientRelation | null> => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) return null;
+
+      const { data, error } = await supabase
+        .from('user_client_relations')
+        .upsert({
+          user_id: session.user.id,
+          client_id: clientId,
+          status: 'ACTIVE'
+        })
         .select()
         .single();
 
       if (error) throw error;
-
-      if (data) {
-        setState(prev => ({
-          ...prev,
-          hasRelation: true,
-          status: 'ACTIVE',
-          error: null
-        }));
-      }
-
       return data;
     } catch (error) {
       console.error('Error updating client relation:', error);
-      setState(prev => ({
-        ...prev,
-        error: error instanceof Error ? error : new Error('Error desconocido')
-      }));
-      throw error;
-    } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      return null;
     }
   };
 
   return {
-    ...state,
-    updateClientRelation
+    updateClientRelation,
+    checkClientRelation,
+    hasRelation: state.hasRelation,
+    status: state.status,
+    loading: state.loading,
+    error: state.error
   };
 }

@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation'
 
 interface VerificationStepProps {
   onVerifiedAction: () => Promise<void>
+  clientId: string
 }
 
 interface VerificationItem {
@@ -22,7 +23,7 @@ interface VerificationItem {
   message?: string
 }
 
-export function VerificationStep({ onVerifiedAction }: VerificationStepProps) {
+export function VerificationStep({ onVerifiedAction, clientId }: VerificationStepProps) {
   const { user } = useSupabaseAuth()
   const { checkClientRelation } = useUserClientRelation()
   const supabase = createClientComponentClient()
@@ -97,7 +98,7 @@ export function VerificationStep({ onVerifiedAction }: VerificationStepProps) {
   const verifyClientRelation = async () => {
     updateItemStatus('relation', 'verifying')
     try {
-      const hasRelation = await checkClientRelation()
+      const hasRelation = await checkClientRelation(clientId)
       if (!hasRelation) {
         updateItemStatus('relation', 'error', 'No se encontró la relación con el cliente. Esto puede ser normal si acabas de registrarte.')
         return false

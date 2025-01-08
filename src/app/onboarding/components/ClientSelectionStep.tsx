@@ -17,6 +17,8 @@ interface ClientSelectionStepProps {
 
 export default function ClientSelectionStep({ onNextAction }: ClientSelectionStepProps) {
   const [formData, setFormData] = useState<ClientFormData>({
+    first_name: '',
+    last_name: '',
     name: '',
     identification: '',
     email: '',

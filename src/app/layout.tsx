@@ -4,8 +4,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/contexts/auth-context';
-import { useAuth } from '@/hooks/useAuth';
+import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import { DashboardProvider } from '@/contexts/dashboard-context';
 import TermsAndConditions from '@/components/TermsAndConditions';
 

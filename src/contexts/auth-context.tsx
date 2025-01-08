@@ -7,13 +7,12 @@ import { useRouter } from 'next/navigation';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string) => Promise<any>;
-  signOut: () => Promise<void>;
-  hasAcceptedTerms: boolean;
   showTermsModal: boolean;
   setShowTermsModal: (show: boolean) => void;
   acceptTerms: () => void;
+  signIn: (email: string, password: string) => Promise<any>;
+  signUp: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -21,27 +20,14 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hasAcceptedTerms, setHasAcceptedTerms] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('ecucondor_terms_accepted') === 'true';
-    }
-    return false;
-  });
-  const [showTermsModal, setShowTermsModal] = useState(!hasAcceptedTerms);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
   const acceptTerms = () => {
-    localStorage.setItem('ecucondor_terms_accepted', 'true');
-    setHasAcceptedTerms(true);
     setShowTermsModal(false);
+    localStorage.setItem('ecucondor_terms_accepted', 'true');
   };
-
-  useEffect(() => {
-    if (!hasAcceptedTerms) {
-      setShowTermsModal(true);
-    }
-  }, [hasAcceptedTerms]);
 
   useEffect(() => {
     const getSession = async () => {
@@ -57,18 +43,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     getSession();
 
-    const { data: { subscription }} = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
-        router.push('/auth/login');
-      }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      setLoading(false);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [router, supabase]);
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -76,11 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
     });
 
-    if (data.session) {
-      router.push('/dashboard');
+    if (error) {
+      throw error;
     }
 
-    return { data, error };
+    return data;
   };
 
   const signUp = async (email: string, password: string) => {
@@ -91,7 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
-    return { data, error };
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   };
 
   const signOut = async () => {
@@ -103,13 +90,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{
       user,
       loading,
-      signIn,
-      signUp,
-      signOut,
-      hasAcceptedTerms,
       showTermsModal,
       setShowTermsModal,
-      acceptTerms
+      acceptTerms,
+      signIn,
+      signUp,
+      signOut
     }}>
       {children}
     </AuthContext.Provider>
