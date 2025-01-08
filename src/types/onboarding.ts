@@ -6,7 +6,9 @@ export enum Steps {
   Complete = 'complete'
 }
 
-export type ClientFormData = Omit<Database['public']['Tables']['clients']['Insert'], 'id' | 'created_at' | 'updated_at'>;
+export type ClientFormData = Omit<Database['public']['Tables']['clients']['Insert'], 'id' | 'created_at' | 'updated_at'> & { 
+  created_by?: string 
+};
 
 export type ClientResponse = Database['public']['Tables']['clients']['Row'];
 

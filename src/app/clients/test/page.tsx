@@ -15,7 +15,8 @@ const testClient = {
   identification: "95466020",
   email: "ecucondor@example.com",
   phone: "1124099147",
-  address: "Sarandi328"
+  address: "Sarandi328",
+  created_by: 'user-id-here' // Replace with actual user ID
 };
 
 const minimalClient = {
