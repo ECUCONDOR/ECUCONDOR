@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { Database } from '@/types/supabase';
+import { NextResponse } from 'next/server';
+import type { Database } from '@/types/supabase';
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
@@ -38,19 +38,20 @@ export async function GET(request: Request) {
     if (type) query = query.eq('tipo', type);
     if (status) query = query.eq('estado', status);
 
-    const { data, error } = await query
+    const { data: orders, error: queryError } = await query
       .order('created_at', { ascending: false });
 
-    if (error) {
+    if (queryError) {
+      console.error('Error al obtener órdenes:', queryError);
       return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
+        { error: 'Error al obtener órdenes' },
+        { status: 500 }
       );
     }
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error al obtener órdenes:', error);
+    return NextResponse.json(orders);
+  } catch (error: unknown) {
+    console.error('Error inesperado:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
     const cookieStore = cookies();
     const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
@@ -119,29 +120,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Crear la orden
-    const { data, error } = await supabase
+    const { data: order, error: insertError } = await supabase
       .from('ordenes_p2p')
-      .insert([
-        {
-          ...body,
-          user_id: session.user.id,
-          estado: 'abierta',
-        }
-      ])
+      .insert([{ ...body, user_id: session.user.id, estado: 'abierta' }])
       .select()
       .single();
 
-    if (error) {
+    if (insertError) {
+      console.error('Error al crear orden:', insertError);
       return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
+        { error: 'Error al crear la orden' },
+        { status: 500 }
       );
     }
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error al crear orden:', error);
+    return NextResponse.json(order);
+  } catch (error: unknown) {
+    console.error('Error inesperado:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
