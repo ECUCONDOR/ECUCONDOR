@@ -6,7 +6,10 @@ import { Database } from '@/types/supabase';
 import { ExchangeFormData, Currency } from '@/lib/exchange';
 
 export async function handleExchangeAction(data: ExchangeFormData) {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const supabase = createServerComponentClient<Database>({ 
+    cookies,
+    options: { db: { schema: 'public' } }
+  });
   
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();

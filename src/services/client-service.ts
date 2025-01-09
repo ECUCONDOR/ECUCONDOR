@@ -1,36 +1,10 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
-interface ClientData {
-  first_name: string;
-  last_name: string;
-  identification: string;
-  email: string;
-  phone?: string;
-  type?: 'personal' | 'business';
-}
-
-interface Client extends ClientData {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
-  updated_by: string;
-}
-
-interface ValidationError {
-  field: string;
-  message: string;
-}
-
-interface ApiResponse {
-  message?: string;
-  code?: string;
-  error?: string;
-  client?: Client;
-  clients?: Client[];
-  clientId?: string;
-  validationErrors?: ValidationError[];
-}
+import { 
+  ClientData, 
+  Client, 
+  ValidationError, 
+  ApiResponse 
+} from '../types';
 
 export class ClientError extends Error {
   code: string;

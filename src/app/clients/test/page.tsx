@@ -10,24 +10,20 @@ import { ClientResponse } from '@/types/onboarding';
 const testClient = {
   first_name: "Eduardo",
   last_name: "Marques",
-  name: "Eduardo Marques",
-  type: "personal" as const,
   identification: "95466020",
   email: "ecucondor@example.com",
   phone: "1124099147",
-  address: "Sarandi328",
-  created_by: 'user-id-here' // Replace with actual user ID
+  type: "personal" as const,
+  created_by: 'user-id-here' // Required field
 };
 
 const minimalClient = {
   first_name: "Ana",
   last_name: "López",
-  name: "Ana López",
-  type: "personal" as const,
   identification: "0987654321",
   email: "ana@example.com",
-  phone: "1234567890",
-  address: ""
+  type: "personal" as const,
+  created_by: 'user-id-here' // Required field
 };
 
 export default function TestPage() {
@@ -73,56 +69,50 @@ export default function TestPage() {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-2xl font-bold">Pruebas de Implementación de Clientes</h1>
-      
-      <Button onClick={runTests}>Ejecutar Pruebas</Button>
+    <div className="container mx-auto p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Pruebas de Cliente</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button onClick={runTests}>Ejecutar Pruebas</Button>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Resultados:</h2>
-        {results.map((result, index) => (
-          <Card key={index} className={result.success ? "border-green-500" : "border-red-500"}>
-            <CardHeader>
-              <CardTitle className={result.success ? "text-green-700" : "text-red-700"}>
-                {result.message}
-              </CardTitle>
-            </CardHeader>
-            {result.data && (
-              <CardContent>
-                <pre className="bg-gray-100 p-2 rounded">
-                  {JSON.stringify(result.data, null, 2)}
-                </pre>
-              </CardContent>
-            )}
-          </Card>
-        ))}
-      </div>
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">Resultados:</h3>
+            {results.map((result, index) => (
+              <div
+                key={index}
+                className={`p-2 mb-2 rounded ${
+                  result.success ? 'bg-green-100' : 'bg-red-100'
+                }`}
+              >
+                <p>{result.message}</p>
+                {result.data && (
+                  <pre className="mt-2 text-sm">
+                    {JSON.stringify(result.data, null, 2)}
+                  </pre>
+                )}
+              </div>
+            ))}
+          </div>
 
-      {clients.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Clientes en Base de Datos:</h2>
-          {clients.map((client) => (
-            <Card key={client.id}>
-              <CardContent className="p-4">
-                <h3 className="font-bold">
-                  {client.name}
-                </h3>
-                <p className="text-sm text-gray-500">{client.identification}</p>
-                <p className="text-sm">{client.email}</p>
-                {client.phone && (
-                  <p className="text-sm">{client.phone}</p>
-                )}
-                {client.address && (
-                  <p className="text-sm text-gray-600">{client.address}</p>
-                )}
-                <p className="text-xs text-gray-400 mt-2">
-                  Creado: {new Date(client.created_at).toLocaleString()}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+          {clients.length > 0 && (
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Clientes:</h3>
+              {clients.map((client) => (
+                <div key={client.id} className="p-2 mb-2 border rounded">
+                  <p>
+                    {client.first_name} {client.last_name}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    ID: {client.identification}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['zustand'],
-  experimental: {},
+  experimental: {
+    // Add case-sensitive paths handling
+    caseSensitiveRoutes: true,
+    // Improve module resolution
+    esmExternals: 'loose'
+  },
   images: {
     remotePatterns: [
       {
@@ -21,7 +26,10 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   webpack: (config, { isServer }) => {
-    // Optimizaciones para el cliente
+    // Optimizations for Windows paths
+    config.resolve.symlinks = false;
+    
+    // Client-side optimizations
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
