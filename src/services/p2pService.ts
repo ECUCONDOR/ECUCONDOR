@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { create } from 'zustand';
 import type { Database } from '@/types/supabase';
 import { 
@@ -11,7 +11,6 @@ import {
 } from '@/types/p2p';
 import { validateOrder } from '@/utils/validation';
 import { handleServiceError, P2PServiceError, P2PErrorCodes } from '@/utils/errors';
-import { supabase } from '@/config/supabase';
 
 interface P2PState {
   orders: P2POrder[];
@@ -40,7 +39,10 @@ export const useP2PStore = create<P2PState>((set) => ({
 }));
 
 class P2PService {
-  private supabase = supabase;
+  private supabase = createBrowserClient<Database>({
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  });
 
   async getOrders(filters?: {
     currency?: Currency;

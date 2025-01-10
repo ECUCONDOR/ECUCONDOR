@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/supabase';
+import Link from 'next/link';
+import { useToast } from '@/components/ui/use-toast';
+import Image from 'next/image';
 import { Checkbox } from '@/components/ui/checkbox';
 
 export default function RegisterForm() {
@@ -17,9 +18,8 @@ export default function RegisterForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const supabase = createClientComponentClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -67,6 +67,18 @@ export default function RegisterForm() {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleTermsChange = (checked: boolean) => {
+    setAcceptedTerms(checked);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1E2026] p-4">
       <div className="w-full max-w-md space-y-8">
@@ -96,7 +108,7 @@ export default function RegisterForm() {
                 type="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
                 className="bg-[#2B2F36] border-[#40444C] text-white placeholder-gray-400"
               />
@@ -106,7 +118,7 @@ export default function RegisterForm() {
                 type="password"
                 placeholder="Contraseña"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
                 className="bg-[#2B2F36] border-[#40444C] text-white placeholder-gray-400"
               />
@@ -117,7 +129,7 @@ export default function RegisterForm() {
             <Checkbox
               id="terms"
               checked={acceptedTerms}
-              onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+              onCheckedChange={handleTermsChange}
               className="border-[#40444C] data-[state=checked]:bg-yellow-400"
             />
             <label

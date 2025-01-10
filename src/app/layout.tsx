@@ -4,26 +4,11 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider, useAuth } from '@/contexts/auth-context';
+import { AuthProvider } from '@/contexts/auth-context';
 import { DashboardProvider } from '@/contexts/dashboard-context';
-import TermsAndConditions from '@/components/TermsAndConditions';
+import { TermsWrapper } from '@/components/TermsWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
-
-function TermsWrapper({ children }: { children: React.ReactNode }) {
-  const { showTermsModal, setShowTermsModal, acceptTerms } = useAuth();
-
-  return (
-    <>
-      {children}
-      <TermsAndConditions
-        open={showTermsModal}
-        onClose={() => setShowTermsModal(false)}
-        onAccept={acceptTerms}
-      />
-    </>
-  );
-}
 
 export default function RootLayout({
   children,
@@ -38,18 +23,18 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <DashboardProvider>
+          <TermsWrapper>
             <Providers>
-              <div className="min-h-screen relative overflow-hidden bg-[#000B1F]">
-                <div className="relative z-10">
-                  <TermsWrapper>
+              <DashboardProvider>
+                <div className="min-h-screen relative overflow-hidden bg-[#000B1F]">
+                  <div className="relative z-10">
                     {children}
-                  </TermsWrapper>
+                  </div>
                 </div>
-              </div>
-              <Toaster />
+                <Toaster />
+              </DashboardProvider>
             </Providers>
-          </DashboardProvider>
+          </TermsWrapper>
         </AuthProvider>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { UserRecord, SelectResponse, SingleResponse } from '../types/supabase.types';
 
 export interface User {
   id: string;
@@ -7,44 +8,44 @@ export interface User {
   created_at: string;
 }
 
-export const userService = {
-  async getUsers() {
-    const { data, error } = await supabase
+export class UserService {
+  static async getUsers(): Promise<SelectResponse<UserRecord>> {
+    const users = await supabase
       .from('users')
       .select('*');
 
-    if (error) throw error;
-    return data as User[];
-  },
+    return users;
+  }
 
-  async createUser(user: Omit<User, 'id' | 'created_at'>) {
-    const { data, error } = await supabase
+  static async createUser(user: Omit<User, 'id' | 'created_at'>): Promise<SingleResponse<UserRecord>> {
+    const userResponse = await supabase
       .from('users')
       .insert([user])
-      .select();
+      .select()
+      .single();
 
-    if (error) throw error;
-    return data[0] as User;
-  },
+    return userResponse;
+  }
 
-  async updateUser(id: string, updates: Partial<User>) {
-    const { data, error } = await supabase
+  static async updateUser(id: string, updates: Partial<User>): Promise<SingleResponse<UserRecord>> {
+    const userResponse = await supabase
       .from('users')
       .update(updates)
       .eq('id', id)
-      .select();
+      .select()
+      .single();
 
-    if (error) throw error;
-    return data[0] as User;
-  },
+    return userResponse;
+  }
 
-  async deleteUser(id: string) {
-    const { error } = await supabase
+  static async deleteUser(id: string): Promise<SingleResponse<UserRecord>> {
+    const userResponse = await supabase
       .from('users')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (error) throw error;
-    return true;
+    return userResponse;
   }
-};
+}

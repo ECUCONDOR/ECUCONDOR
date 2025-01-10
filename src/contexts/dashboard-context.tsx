@@ -1,130 +1,133 @@
-'use client';
-
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import type { Database } from '@/types/supabase';
+import { type SupabaseClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from '@/components/ui/use-toast';
 
+interface Client {
+  id: number;
+  name: string;
+  created_at: string;
+  // Add other client fields as needed
+}
+
 interface DashboardContextType {
   clientId: number | null;
+  clients: Client[];
   loading: boolean;
   error: Error | null;
   refreshClientData: () => Promise<void>;
   refetchTransactions: () => Promise<void>;
+  fetchClients: () => Promise<void>;
+  supabase: SupabaseClient<Database>;
 }
 
-const DashboardContext = createContext<DashboardContextType>({
-  clientId: null,
-  loading: true,
-  error: null,
-  refreshClientData: async () => {},
-  refetchTransactions: async () => {}
-});
-
-interface DashboardProviderProps {
-  children: ReactNode;
+interface ProviderProps {
+  children: React.ReactNode;
 }
 
-export function DashboardProvider({ children }: DashboardProviderProps) {
+const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
+
+export function DashboardProvider({ children }: ProviderProps) {
   const [clientId, setClientId] = useState<number | null>(null);
+  const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
   const router = useRouter();
-  const { user } = useAuth();
-  const supabase = createClientComponentClient();
+  const { user, supabase } = useAuth();
 
   const fetchClientData = async () => {
     if (!user) {
-      console.log('No user found, redirecting to login');
-      router.replace('/auth/login');
+      setClientId(null);
       return;
     }
 
     try {
       console.log('Fetching client relation for user:', user.id);
-      
-      // Primero intentamos obtener mediante RPC
-      const { data: rpcData, error: rpcError } = await supabase
-        .rpc('get_current_user_client_id');
 
-      console.log('RPC response:', { data: rpcData, error: rpcError });
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_current_user_client_id');
 
-      if (!rpcError && rpcData !== null) {
-        console.log('Client ID obtained via RPC:', rpcData);
+      if (rpcError) {
+        throw rpcError;
+      }
+
+      if (rpcData) {
         setClientId(rpcData);
         setError(null);
-        return;
+      } else {
+        setClientId(null);
       }
-
-      // Si falla el RPC o devuelve null, intentamos con la consulta directa
-      console.log('RPC failed or returned null, trying direct query');
-      const { data: relation, error: relationError } = await supabase
-        .from('user_client_relation')
-        .select('client_id, status')
-        .eq('user_id', user.id)
-        .eq('status', 'ACTIVE')
-        .single();
-
-      console.log('Direct query result:', { relation, error: relationError });
-
-      if (relationError) {
-        if (relationError.code === 'PGRST116') {
-          console.log('No active client relation found');
-          router.replace('/onboarding');
-          return;
-        }
-        throw relationError;
-      }
-
-      if (!relation?.client_id) {
-        console.log('No client ID found');
-        router.replace('/onboarding');
-        return;
-      }
-
-      console.log('Setting client ID:', relation.client_id);
-      setClientId(relation.client_id);
-      setError(null);
     } catch (err) {
       console.error('Error fetching client data:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
-      setError(new Error(errorMessage));
+      setError(err instanceof Error ? err : new Error('Failed to fetch client data'));
+      setClientId(null);
       toast({
         title: 'Error',
-        description: errorMessage,
-        variant: 'destructive'
+        description: err instanceof Error ? err.message : 'Failed to fetch client data',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      setLoading(true);
+      const { data, error: queryError } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      setClients(data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching clients:', err);
+      setError(err instanceof Error ? err : new Error('Failed to fetch clients'));
+      setClients([]);
+      toast({
+        title: 'Error',
+        description: err instanceof Error ? err.message : 'Failed to fetch clients',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchClientData();
-  }, [user?.id]);
-
-  const value = {
-    clientId,
-    loading,
-    error,
-    refreshClientData: fetchClientData,
-    refetchTransactions: async () => {}
+  const refreshClientData = async () => {
+    setLoading(true);
+    await fetchClientData();
+    setLoading(false);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
+  const refetchTransactions = async () => {
+    // Implement transaction refetch logic here
+    await Promise.resolve();
+  };
 
-  return (
-    <DashboardContext.Provider value={value}>
-      {children}
-    </DashboardContext.Provider>
-  );
+  useEffect(() => {
+    fetchClientData();
+    fetchClients();
+  }, [user]);
+
+  const value: DashboardContextType = {
+    clientId,
+    clients,
+    loading,
+    error,
+    refreshClientData,
+    refetchTransactions,
+    fetchClients,
+    supabase,
+  };
+
+  return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
 }
 
 export function useDashboardContext() {
@@ -135,4 +138,5 @@ export function useDashboardContext() {
   return context;
 }
 
-export default DashboardContext;
+// Exportar también como alias para mantener compatibilidad
+export const useDashboard = useDashboardContext;

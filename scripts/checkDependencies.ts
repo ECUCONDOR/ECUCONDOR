@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import * as fs from 'fs';
 
 interface PackageJson {
@@ -33,7 +32,8 @@ function checkDependencies(): void {
 
   // Verificar versiones de Node y pnpm
   const nodeVersion: string = process.version;
-  const majorVersion: number = parseInt(nodeVersion.slice(1).split('.')[0], 10);
+  const versionParts = nodeVersion.slice(1).split('.');
+  const majorVersion: number = versionParts[0] ? parseInt(versionParts[0], 10) : 0;
   
   if (majorVersion < 20) {
     console.error('Se requiere Node.js versión 20+');

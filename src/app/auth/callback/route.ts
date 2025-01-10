@@ -1,7 +1,8 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import type { Database } from '@/types/supabase'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,23 @@ export async function GET(request: NextRequest) {
 
     if (code) {
       const cookieStore = cookies()
-      const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+      const supabase = createServerClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return cookieStore.get(name)?.value
+            },
+            set(name: string, value: string, options: { path: string }) {
+              cookieStore.set({ name, value, ...options })
+            },
+            remove(name: string, options: { path: string }) {
+              cookieStore.delete({ name, ...options })
+            },
+          },
+        }
+      )
       await supabase.auth.exchangeCodeForSession(code)
     }
 
@@ -19,8 +36,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL(next, request.url))
   } catch (error) {
     console.error('Error en el callback de autenticación:', error)
-    return NextResponse.redirect(
-      new URL('/auth/login?error=callback_error', request.url)
-    )
+    return NextResponse.redirect(new URL('/auth/error', request.url))
   }
 }

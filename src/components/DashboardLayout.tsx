@@ -29,7 +29,7 @@ interface NavItem {
   group?: string;
 }
 
-export default function DashboardLayout({
+export function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;

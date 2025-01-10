@@ -17,39 +17,72 @@ interface Transaction {
   moneda_destino: string;
   estado: 'pendiente' | 'completado' | 'rechazado';
   alias: string;
+  user_id: string;
 }
 
 export function RecentActivity() {
   const { user } = useAuth();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState([] as Transaction[]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
+  const [error, setError] = useState(null as string | null);
 
   useEffect(() => {
-    async function fetchTransactions() {
+    const fetchTransactions = async () => {
       if (!user?.id) return;
 
+      const supabase = createClientComponentClient();
+      
       try {
-        const { data, error } = await supabase
+        const { data, error: supabaseError } = await supabase
           .from('transacciones')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(5);
 
-        if (error) throw error;
-        setTransactions(data || []);
+        if (supabaseError) throw supabaseError;
+        setTransactions(data as Transaction[] || []);
       } catch (err) {
         console.error('Error al obtener transacciones:', err);
         setError('No se pudieron cargar las transacciones');
       } finally {
         setIsLoading(false);
       }
-    }
+    };
 
     fetchTransactions();
-  }, [user?.id, supabase]);
+  }, [user?.id]);
+
+  const renderTransaction = (transaction: Transaction) => (
+    <div key={transaction.id} className="flex justify-between items-center">
+      <div>
+        <div className="font-medium">
+          {transaction.moneda_origen} → {transaction.moneda_destino}
+        </div>
+        <div className="text-sm text-gray-500">
+          Ref: {transaction.alias}
+        </div>
+        <div className="text-xs text-gray-400">
+          {formatDistanceToNow(new Date(transaction.created_at), {
+            addSuffix: true,
+            locale: es
+          })}
+        </div>
+      </div>
+      <div className="flex flex-col items-end">
+        <div className={
+          transaction.estado === 'completado' ? 'text-green-500' :
+          transaction.estado === 'rechazado' ? 'text-red-500' :
+          'text-yellow-500'
+        }>
+          {transaction.monto.toFixed(2)} {transaction.moneda_origen}
+        </div>
+        <div className="text-xs text-gray-400 capitalize">
+          {transaction.estado}
+        </div>
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -96,36 +129,7 @@ export function RecentActivity() {
         <CardTitle>Actividad Reciente</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {transactions.map((transaction) => (
-          <div key={transaction.id} className="flex justify-between items-center">
-            <div>
-              <div className="font-medium">
-                {transaction.moneda_origen} → {transaction.moneda_destino}
-              </div>
-              <div className="text-sm text-gray-500">
-                Ref: {transaction.alias}
-              </div>
-              <div className="text-xs text-gray-400">
-                {formatDistanceToNow(new Date(transaction.created_at), {
-                  addSuffix: true,
-                  locale: es
-                })}
-              </div>
-            </div>
-            <div className="flex flex-col items-end">
-              <div className={
-                transaction.estado === 'completado' ? 'text-green-500' :
-                transaction.estado === 'rechazado' ? 'text-red-500' :
-                'text-yellow-500'
-              }>
-                {transaction.monto.toFixed(2)} {transaction.moneda_origen}
-              </div>
-              <div className="text-xs text-gray-400 capitalize">
-                {transaction.estado}
-              </div>
-            </div>
-          </div>
-        ))}
+        {transactions.map(renderTransaction)}
       </CardContent>
     </Card>
   );

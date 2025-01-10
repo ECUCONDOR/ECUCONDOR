@@ -1,13 +1,14 @@
 import { supabase } from '@/lib/supabase/client';
+import { PaymentRecord, InsertResponse, SingleResponse } from '@/types/supabase.types';
 
 export class PaymentService {
   static async createPixPayment(data: {
     amount: number;
     description: string;
     userId: string;
-  }) {
+  }): Promise<SingleResponse<PaymentRecord>> {
     try {
-      const { data: payment, error } = await supabase
+      const payment = await supabase
         .from('payments')
         .insert({
           type: 'PIX',
@@ -19,7 +20,6 @@ export class PaymentService {
         .select()
         .single();
 
-      if (error) throw error;
       return payment;
     } catch (error) {
       throw new Error('Error creating PIX payment');
@@ -30,9 +30,9 @@ export class PaymentService {
     amount: number;
     description: string;
     userId: string;
-  }) {
+  }): Promise<SingleResponse<PaymentRecord>> {
     try {
-      const { data: payment, error } = await supabase
+      const payment = await supabase
         .from('payments')
         .insert({
           type: 'QR',
@@ -44,7 +44,6 @@ export class PaymentService {
         .select()
         .single();
 
-      if (error) throw error;
       return payment;
     } catch (error) {
       throw new Error('Error creating QR payment');
@@ -60,9 +59,9 @@ export class PaymentService {
       expiry: string;
       cvc: string;
     };
-  }) {
+  }): Promise<SingleResponse<PaymentRecord>> {
     try {
-      const { data: payment, error } = await supabase
+      const payment = await supabase
         .from('payments')
         .insert({
           type: 'CARD',
@@ -75,7 +74,6 @@ export class PaymentService {
         .select()
         .single();
 
-      if (error) throw error;
       return payment;
     } catch (error) {
       throw new Error('Error creating card payment');
@@ -86,9 +84,9 @@ export class PaymentService {
     paymentId: string;
     reason: string;
     userId: string;
-  }) {
+  }): Promise<SingleResponse<PaymentRecord>> {
     try {
-      const { data: dispute, error } = await supabase
+      const dispute = await supabase
         .from('disputes')
         .insert({
           paymentId: data.paymentId,
@@ -99,7 +97,6 @@ export class PaymentService {
         .select()
         .single();
 
-      if (error) throw error;
       return dispute;
     } catch (error) {
       throw new Error('Error creating dispute');

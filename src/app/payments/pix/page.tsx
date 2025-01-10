@@ -1,6 +1,7 @@
 'use client';
 
-import { createClientComponentClient, Session } from '@supabase/auth-helpers-nextjs';
+import { createClientComponentClient } from '@supabase/ssr';
+import { Session } from '@supabase/supabase-js';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { QrCode } from 'lucide-react';

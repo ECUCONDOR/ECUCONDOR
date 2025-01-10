@@ -1,24 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  CreditCard, 
-  Shield, 
-  CheckCircle 
-} from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/database.types';
-
-const COLORS = {
-  primary: '#8B4513',
-  secondary: '#D2691E',
-  background: '#FFF8DC',
-  text: '#4A4A4A',
-  border: '#DEB887',
-  success: '#059669'
-};
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabase';
+import { useDashboardContext } from '@/contexts/dashboard-context';
+import type { Database } from '@/types/supabase';
 
 type FormField = 
   | 'nombres'
@@ -46,8 +36,40 @@ interface ValidationErrors {
   [key: string]: string;
 }
 
-const FormularioRegistroBancario = () => {
-  const supabase = createClientComponentClient<Database>();
+const COLORS = {
+  primary: '#8B4513',
+  secondary: '#D2691E',
+  background: '#FFF8DC',
+  text: '#4A4A4A',
+  border: '#DEB887',
+  success: '#059669'
+};
+
+const steps = [
+  {
+    title: 'Información Personal',
+    icon: 'User',
+    fields: ['nombres', 'apellidos', 'numeroDocumento', 'fechaNacimiento', 'nacionalidad', 'genero']
+  },
+  {
+    title: 'Información de Contacto',
+    icon: 'CreditCard',
+    fields: ['celular', 'email', 'direccion', 'ciudad', 'provincia']
+  },
+  {
+    title: 'Información Financiera',
+    icon: 'Shield',
+    fields: ['origenFondos', 'montoEstimadoTransacciones', 'frecuenciaTransacciones']
+  },
+  {
+    title: 'Documentación',
+    icon: 'CheckCircle',
+    fields: ['documentoIdentidad']
+  }
+];
+
+export function FormularioRegistroBancario() {
+  const { clientId } = useDashboardContext();
   const [formData, setFormData] = useState<FormData>({
     nombres: '',
     apellidos: '',
@@ -98,29 +120,6 @@ const FormularioRegistroBancario = () => {
     fetchUserData();
   }, []);
 
-  const steps = [
-    {
-      title: 'Información Personal',
-      icon: User,
-      fields: ['nombres', 'apellidos', 'numeroDocumento', 'fechaNacimiento', 'nacionalidad', 'genero']
-    },
-    {
-      title: 'Información de Contacto',
-      icon: CreditCard,
-      fields: ['celular', 'email', 'direccion', 'ciudad', 'provincia']
-    },
-    {
-      title: 'Información Financiera',
-      icon: Shield,
-      fields: ['origenFondos', 'montoEstimadoTransacciones', 'frecuenciaTransacciones']
-    },
-    {
-      title: 'Documentación',
-      icon: CheckCircle,
-      fields: ['documentoIdentidad']
-    }
-  ];
-
   const validateField = (field: string, value: string | null): string | null => {
     if (!value && field !== 'documentoIdentidad') return 'Este campo es requerido';
     
@@ -157,7 +156,7 @@ const FormularioRegistroBancario = () => {
   const handleNextStep = () => {
     const currentFields = steps[currentStep - 1].fields;
     let hasErrors = false;
-    let newErrors: ValidationErrors = {};
+    const newErrors: ValidationErrors = {};
 
     currentFields.forEach(field => {
       const value = formData[field] ?? null;
@@ -188,7 +187,7 @@ const FormularioRegistroBancario = () => {
 
       // Validar todos los campos
       let hasErrors = false;
-      let newErrors: ValidationErrors = {};
+      const newErrors: ValidationErrors = {};
 
       Object.keys(formData).forEach(field => {
         const value = formData[field] ?? null;
@@ -344,7 +343,7 @@ const FormularioRegistroBancario = () => {
             }`}
           >
             <div className="relative">
-              <step.icon className="w-8 h-8" />
+              <i className={`bi bi-${step.icon} w-8 h-8`}></i>
               {index < steps.length - 1 && (
                 <div
                   className={`absolute top-1/2 h-0.5 w-[100px] -right-[100px] ${
@@ -359,11 +358,9 @@ const FormularioRegistroBancario = () => {
       </div>
 
       {/* Current Step Form */}
-      <Card className="p-6">
+      <div className="p-6">
         {renderCurrentStep()}
-      </Card>
+      </div>
     </div>
   );
 };
-
-export default FormularioRegistroBancario;

@@ -1,8 +1,8 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { ClientFormData, ClientResponse } from '@/types/onboarding';
 
 export class ClientService {
-  private supabase = createClientComponentClient();
+  private supabase = createBrowserClient();
 
   private validateClientData(data: ClientFormData) {
     console.log('Validando datos del cliente:', data);

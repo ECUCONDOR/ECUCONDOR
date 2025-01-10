@@ -137,6 +137,41 @@ export type Database = DatabaseGenerated & {
           reference?: string
         }
       }
+      transacciones: {
+        Row: {
+          id: string;
+          created_at: string;
+          tipo: 'exchange';
+          monto: number;
+          moneda_origen: string;
+          moneda_destino: string;
+          estado: 'pendiente' | 'completado' | 'rechazado';
+          alias: string;
+          user_id: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          tipo: 'exchange';
+          monto: number;
+          moneda_origen: string;
+          moneda_destino: string;
+          estado: 'pendiente' | 'completado' | 'rechazado';
+          alias: string;
+          user_id: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          tipo?: 'exchange';
+          monto?: number;
+          moneda_origen?: string;
+          moneda_destino?: string;
+          estado?: 'pendiente' | 'completado' | 'rechazado';
+          alias?: string;
+          user_id?: string;
+        };
+      }
     }
     Views: {
       transfer_history: {

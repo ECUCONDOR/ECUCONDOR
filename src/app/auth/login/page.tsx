@@ -102,7 +102,7 @@ function LoginFormContent() {
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
             placeholder="tu@email.com"
           />
@@ -117,7 +117,7 @@ function LoginFormContent() {
             type="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
             placeholder="••••••••"
           />

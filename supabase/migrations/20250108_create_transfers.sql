@@ -24,8 +24,8 @@ SELECT
     t.status,
     t.created_at,
     t.reference_code,
-    th.from_client_id,
-    th.to_client_id
+    from_wallet.from_client_id,
+    to_wallet.to_client_id
 FROM transfers t
 JOIN (
     SELECT 
@@ -111,36 +111,32 @@ BEGIN
         );
     END IF;
 
-    -- Begin transaction
-    BEGIN
-        -- Create transfer record
-        INSERT INTO transfers (from_wallet_id, to_wallet_id, amount, description, status)
-        VALUES (p_from_wallet_id, p_to_wallet_id, p_amount, p_description, 'completed')
-        RETURNING id INTO v_transfer_id;
+    -- Create transfer record
+    INSERT INTO transfers (from_wallet_id, to_wallet_id, amount, description)
+    VALUES (p_from_wallet_id, p_to_wallet_id, p_amount, p_description)
+    RETURNING id INTO v_transfer_id;
 
-        -- Update source wallet balance
-        UPDATE wallets
-        SET balance = balance - p_amount
-        WHERE id = p_from_wallet_id;
+    -- Update balances
+    UPDATE wallets
+    SET balance = balance - p_amount
+    WHERE id = p_from_wallet_id;
 
-        -- Update destination wallet balance
-        UPDATE wallets
-        SET balance = balance + p_amount
-        WHERE id = p_to_wallet_id;
+    UPDATE wallets
+    SET balance = balance + p_amount
+    WHERE id = p_to_wallet_id;
 
-        -- Return success
-        RETURN jsonb_build_object(
-            'status', 'success',
-            'transfer_id', v_transfer_id,
-            'message', 'Transferencia completada exitosamente'
-        );
-    EXCEPTION WHEN OTHERS THEN
-        -- If any error occurs, rollback and return error
-        RAISE NOTICE 'Error en la transferencia: %', SQLERRM;
-        RETURN jsonb_build_object(
-            'status', 'error',
-            'message', SQLERRM
-        );
-    END;
+    -- Return success response
+    RETURN jsonb_build_object(
+        'status', 'success',
+        'message', 'Transferencia creada exitosamente',
+        'transfer_id', v_transfer_id
+    );
+
+EXCEPTION WHEN OTHERS THEN
+    -- Return error response
+    RETURN jsonb_build_object(
+        'status', 'error',
+        'message', SQLERRM
+    );
 END;
 $$;

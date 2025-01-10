@@ -10,6 +10,11 @@ import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { formatNumber } from '@/utils/numberUtils';
 import { exchangeOptions } from '@/constants/exchangeOptions';
 
+interface PriceData {
+  symbol: string;
+  price: string;
+}
+
 const ExchangePage = () => {
   const [selectedTab, setSelectedTab] = useState('buy');
   const [amount, setAmount] = useState('');
@@ -17,7 +22,7 @@ const ExchangePage = () => {
   const { prices } = useBinanceWebSocket(exchangeOptions.map(opt => opt.symbol));
 
   const getRate = (pair: string) => {
-    const price = prices?.find(p => p.symbol === pair);
+    const price = prices?.find((p: PriceData) => p.symbol === pair);
     return price ? parseFloat(price.price) : 0;
   };
 
@@ -54,11 +59,11 @@ const ExchangePage = () => {
           <CardContent>
             <div className="mb-4">
               <label htmlFor="amount">Amount:</label>
-              <Input 
+              <Input
                 id="amount"
                 type="number"
                 value={amount}
-                onChange={(e) => {
+                onChange={(e: { target: { value: string } }) => {
                   setAmount(e.target.value);
                   calculateTotal();
                 }}

@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/supabase';
 import { useAuth } from '@/contexts/auth-context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -14,14 +16,20 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface Transaction {
+type Transaction = {
   id: string;
+  status: string;
+  amount: number;
   created_at: string;
-  estado: 'pendiente' | 'completado' | 'rechazado';
-  monto: number;
-  moneda_origen: string;
-  moneda_destino: string;
-}
+  from_wallet_id: string;
+  to_wallet_id: string;
+};
+
+type RealtimePayload = {
+  new: Transaction;
+  old: Transaction;
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+};
 
 const getStatusMessage = (status: string, amount: number, from: string, to: string) => {
   const messages = {
@@ -44,23 +52,21 @@ const getStatusMessage = (status: string, amount: number, from: string, to: stri
 export function StatusNotification() {
   const { user } = useAuth();
   const [notification, setNotification] = useState<Transaction | null>(null);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     if (!user?.id) return;
 
-    // Suscribirse a cambios en las transacciones
     const channel = supabase
       .channel('transaction-updates')
-      .on(
+      .on<Database['public']['Tables']['transacciones']['Row']>(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'transacciones',
-          filter: `user_id=eq.${user.id}`
+          filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
+        (payload: RealtimePayload) => {
           const transaction = payload.new as Transaction;
           setNotification(transaction);
           
@@ -75,7 +81,7 @@ export function StatusNotification() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, supabase]);
+  }, [user?.id]);
 
   if (!notification) return null;
 
@@ -86,10 +92,10 @@ export function StatusNotification() {
   };
 
   const message = getStatusMessage(
-    notification.estado,
-    notification.monto,
-    notification.moneda_origen,
-    notification.moneda_destino
+    notification.status,
+    notification.amount,
+    notification.from_wallet_id,
+    notification.to_wallet_id
   );
 
   return (
@@ -103,13 +109,13 @@ export function StatusNotification() {
         >
           <Alert
             className={`
-              ${notification.estado === 'pendiente' && 'bg-yellow-50 border-yellow-200'}
-              ${notification.estado === 'completado' && 'bg-green-50 border-green-200'}
-              ${notification.estado === 'rechazado' && 'bg-red-50 border-red-200'}
+              ${notification.status === 'pendiente' && 'bg-yellow-50 border-yellow-200'}
+              ${notification.status === 'completado' && 'bg-green-50 border-green-200'}
+              ${notification.status === 'rechazado' && 'bg-red-50 border-red-200'}
               shadow-lg
             `}
           >
-            {statusIcons[notification.estado as keyof typeof statusIcons]}
+            {statusIcons[notification.status as keyof typeof statusIcons]}
             <div className="ml-3">
               <AlertTitle className="font-medium mb-1">
                 {message.title}

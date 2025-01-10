@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 export default function ErrorPage() {
   const router = useRouter();
-  const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = React.useState(null as string | null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Get error details from localStorage if available
     const details = localStorage.getItem('errorDetails');
     if (details) {
@@ -50,10 +50,11 @@ export default function ErrorPage() {
             </Button>
             
             <Button
-              onClick={() => router.refresh()}
-              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => window.location.reload()}
+              variant="outline"
+              className="border-white/10 hover:bg-white/5"
             >
-              Intentar nuevamente
+              Reintentar
             </Button>
           </div>
         </div>

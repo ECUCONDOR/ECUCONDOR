@@ -27,19 +27,23 @@ const minimalClient = {
 };
 
 export default function TestPage() {
-  const [results, setResults] = useState<{
+  const [results, setResults] = useState(null as {
     success: boolean;
     message: string;
     data?: any;
-  }[]>([]);
-  const [clients, setClients] = useState<ClientResponse[]>([]);
+  } | null);
+  const [clients, setClients] = useState([] as ClientResponse[]);
 
   const addResult = (success: boolean, message: string, data?: any) => {
-    setResults(prev => [...prev, { success, message, data }]);
+    setResults({
+      success,
+      message,
+      data
+    });
   };
 
   const runTests = async () => {
-    setResults([]);
+    setResults(null);
     const clientService = new ClientService();
 
     // Test 1: Crear cliente con todos los campos
@@ -79,27 +83,29 @@ export default function TestPage() {
 
           <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Resultados:</h3>
-            {results.map((result, index) => (
+            {results && (
               <div
-                key={index}
                 className={`p-2 mb-2 rounded ${
-                  result.success ? 'bg-green-100' : 'bg-red-100'
+                  results.success ? "bg-green-100" : "bg-red-100"
                 }`}
               >
-                <p>{result.message}</p>
-                {result.data && (
-                  <pre className="mt-2 text-sm">
-                    {JSON.stringify(result.data, null, 2)}
+                <p className="font-medium">
+                  {results.success ? "✅ Éxito:" : "❌ Error:"}
+                </p>
+                <p>{results.message}</p>
+                {results.data && (
+                  <pre className="mt-2 p-2 bg-gray-100 rounded">
+                    {JSON.stringify(results.data, null, 2)}
                   </pre>
                 )}
               </div>
-            ))}
+            )}
           </div>
 
           {clients.length > 0 && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-2">Clientes:</h3>
-              {clients.map((client) => (
+              {clients.map((client: ClientResponse) => (
                 <div key={client.id} className="p-2 mb-2 border rounded">
                   <p>
                     {client.first_name} {client.last_name}

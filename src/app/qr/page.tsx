@@ -1,13 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import DashboardLayout from '@/components/DashboardLayout';
+import { createClient } from '@supabase/supabase-js';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import QRCode from 'react-qr-code';
+import dynamic from 'next/dynamic';
+
+const QRCode = dynamic(() => import('react-qr-code'), { ssr: false });
 
 export default function QRCodePage() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const [qrData, setQrData] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,12 +35,13 @@ export default function QRCodePage() {
           </CardHeader>
           <CardContent className="flex justify-center">
             {qrData && (
-              <QRCode
-                value={qrData}
-                size={256}
-                level="H"
-                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-              />
+              <div style={{ height: "auto", maxWidth: "100%", width: "100%" }}>
+                <QRCode
+                  value={qrData}
+                  size={256}
+                  level="H"
+                />
+              </div>
             )}
           </CardContent>
         </Card>

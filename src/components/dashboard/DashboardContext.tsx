@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress'
 import { useDashboardContext } from '@/contexts/dashboard-context'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import DashboardChart from '@/components/dashboard/DashboardChart'
 
 export default function DashboardContent() {
   const router = useRouter()
@@ -163,6 +164,23 @@ export default function DashboardContent() {
               <p className="text-xs text-muted-foreground">
                 Transferencias en proceso
               </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Gráfico de Movimientos */}
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Historial de Movimientos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DashboardChart 
+                data={transactions.slice(-5).map(tx => ({
+                  month: new Date(tx.created_at).toLocaleDateString('es-AR', { month: 'short' }),
+                  value: tx.tipo === 'ingreso' ? tx.amount : -tx.amount
+                }))}
+              />
             </CardContent>
           </Card>
         </div>

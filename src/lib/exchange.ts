@@ -1,5 +1,5 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/supabase';
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 import { Decimal } from 'decimal.js';
 
 export type Currency = 'USD' | 'ARS';
@@ -17,7 +17,7 @@ export interface ExchangeTransaction {
   monto: number;
   moneda_origen: Currency;
   moneda_destino: Currency;
-  cuenta_bancaria?: string | null;
+  cuenta_bancaria: string | null;
   comprobante: string;
   alias: string;
   estado: 'pendiente' | 'completado' | 'rechazado';
@@ -33,7 +33,10 @@ export interface ExchangeFormData {
 }
 
 export class ExchangeService {
-  private supabase = createClientComponentClient<Database>();
+  private supabase = createBrowserClient({
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  });
   private static BINANCE_API_URL = 'https://api.binance.com/api/v3/klines?symbol=USDTARS&interval=1d&limit=1';
   private static RATE_ADJUSTMENT = 50; // Ajuste para compra de dólares
   private static DEFAULT_RATE = 1315;

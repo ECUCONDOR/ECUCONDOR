@@ -1,207 +1,143 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
-import type { Database } from '@/types/supabase';
-import type { ClientFormData } from '@/types/onboarding';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+import type { Database } from '@/types/database.types'
 
-interface DatabaseError {
-  code: string;
-  message: string;
+// Define more specific types for our database operations
+type Tables = Database['public']['Tables']
+type ClientInsert = Tables['clients']['Insert']
+type UserClientRelationRow = Tables['user_client_relation']['Row']
+
+// Helper function to create a properly typed Supabase client
+function createTypedClient() {
+  const cookieStore = cookies()
+  return createRouteHandlerClient({ cookies: () => cookieStore })
 }
 
-type RequiredClientFields = Pick<Required<ClientFormData>, 'identification' | 'email' | 'phone' | 'first_name' | 'last_name'>;
+// Helper function to get authenticated user
+async function getAuthUser() {
+  const supabase = createTypedClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  
+  if (error) {
+    throw new Error(`Error de autenticación: ${error.message}`)
+  }
+  if (!user) {
+    throw new Error('No se encontró usuario autenticado')
+  }
+  
+  return user
+}
 
 export async function POST(request: Request): Promise<NextResponse> {
-  const supabase = createRouteHandlerClient<Database>({ cookies });
-  
   try {
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const supabase = createTypedClient()
+    const user = await getAuthUser()
     
-    if (authError) {
-      console.error('Authentication error:', authError);
-      return NextResponse.json(
-        { error: 'Error de autenticación' },
-        { status: 401 }
-      );
-    }
-
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'No autorizado - Sesión no encontrada' },
-        { status: 401 }
-      );
-    }
-
-    const userId = session.user.id;
+    const formData = await request.json()
     
-    const formData = await request.json() as ClientFormData;
+    // Validate required fields with proper typing
+    const requiredFields = ['first_name', 'last_name', 'identification', 'email'] as const
+    const missingFields = requiredFields.filter(field => !formData[field])
     
-    // Validate required fields
-    if (!formData.identification?.trim() || 
-        !formData.email?.trim() || 
-        !formData.phone?.trim() ||
-        !formData.first_name?.trim() ||
-        !formData.last_name?.trim()) {
+    if (missingFields.length > 0) {
       return NextResponse.json(
-        { error: 'Campos requeridos faltantes: identificación, email, teléfono, nombre o apellido' },
+        { error: 'Campos requeridos faltantes', details: `Falta: ${missingFields.join(', ')}` },
         { status: 400 }
-      );
+      )
     }
 
+    const clientData: ClientInsert = {
+      first_name: formData.first_name,
+      last_name: formData.last_name,
+      identification: formData.identification,
+      email: formData.email,
+      phone: formData.phone ?? null,
+      address: formData.address ?? null,
+      created_by: user.id,
+    }
+
+    // Check for existing client with proper error handling
     const { data: existingClient, error: searchError } = await supabase
       .from('clients')
-      .select('*')
-      .eq('identification', formData.identification.trim())
-      .single();
+      .select()
+      .eq('identification', formData.identification)
+      .single()
 
     if (searchError && searchError.code !== 'PGRST116') {
-      throw searchError;
+      throw new Error(`Error al buscar cliente existente: ${searchError.message}`)
     }
 
     if (existingClient) {
-      try {
-        const { data: relations, error: relationCheckError } = await supabase
-          .from('user_client_relation')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('client_id', existingClient.id);
-
-        if (relationCheckError) {
-          throw relationCheckError;
-        }
-
-        if (!relations?.length) {
-          const { error: relationError } = await supabase
-            .from('user_client_relation')
-            .insert([{
-              user_id: userId,
-              client_id: existingClient.id,
-              status: 'ACTIVE'
-            }]);
-
-          if (relationError) {
-            throw relationError;
-          }
-        }
-
-        return NextResponse.json({ 
-          client: existingClient,
-          isExisting: true 
-        });
-
-      } catch (error) {
-        if (error && typeof error === 'object' && 'code' in error) {
-          throw error;
-        }
-        throw new Error('Error handling client relation');
-      }
+      return NextResponse.json(
+        { error: 'Cliente ya existe', details: 'Ya existe un cliente con esta identificación' },
+        { status: 400 }
+      )
     }
 
-    const clientData: ClientFormData = {
-      first_name: formData.first_name.trim(),
-      last_name: formData.last_name.trim(),
-      identification: formData.identification.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
-      created_by: userId
-    };
-
-    const { data: newClient, error: clientError } = await supabase
+    // Create new client with proper typing
+    const { data: newClient, error: insertError } = await supabase
       .from('clients')
-      .insert([clientData])
+      .insert(clientData)
       .select()
-      .single();
+      .single()
 
-    if (clientError) {
-      throw clientError;
+    if (insertError) {
+      throw new Error(`Error al crear el cliente: ${insertError.message}`)
     }
 
-    try {
+    // Create user-client relation with proper typing
+    if (newClient) {
+      const relationData: Omit<UserClientRelationRow, 'id'> = {
+        user_id: user.id,
+        client_id: newClient.id,
+      }
+
       const { error: relationError } = await supabase
         .from('user_client_relation')
-        .insert([{
-          user_id: userId,
-          client_id: newClient.id,
-          status: 'ACTIVE'
-        }]);
+        .insert(relationData)
 
       if (relationError) {
-        throw relationError;
+        // Rollback client creation if relation fails
+        await supabase.from('clients').delete().eq('id', newClient.id)
+        throw new Error(`Error al crear relación usuario-cliente: ${relationError.message}`)
       }
-
-      return NextResponse.json({ 
-        client: newClient,
-        isExisting: false 
-      }, { status: 201 });
-
-    } catch (error) {
-      if (error && typeof error === 'object' && 'code' in error) {
-        throw error;
-      }
-      throw new Error('Error creating client relation');
     }
 
-  } catch (error: unknown) {
-    console.error('API Error:', error instanceof Error ? error.message : 'Unknown error');
-    
-    if (error && typeof error === 'object' && 'code' in error) {
-      const dbError = error as DatabaseError;
-      if (dbError.code === '22P02') {
-        return NextResponse.json(
-          { error: 'Error al procesar la relación cliente-usuario. Por favor, intente nuevamente.' },
-          { status: 400 }
-        );
-      }
-      return NextResponse.json(
-        { error: dbError.message },
-        { status: 400 }
-      );
-    }
-
+    return NextResponse.json(newClient)
+  } catch (error) {
+    console.error('Error inesperado:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error desconocido' },
+      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Error desconocido' },
       { status: 500 }
-    );
+    )
   }
 }
 
-export async function GET(request: Request): Promise<NextResponse> {
-  const supabase = createRouteHandlerClient<Database>({ cookies });
-
+export async function GET(): Promise<NextResponse> {
   try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !session) {
-      return NextResponse.json(
-        { error: 'No autorizado' },
-        { status: 401 }
-      );
-    }
+    const supabase = createTypedClient()
+    const user = await getAuthUser()
 
-    const { data: clients, error: queryError } = await supabase
+    const { data: clients, error } = await supabase
       .from('clients')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select(`
+        *,
+        user_client_relation!inner(*)
+      `)
+      .eq('user_client_relation.user_id', user.id)
+      .order('created_at', { ascending: false })
 
-    if (queryError) {
-      throw queryError;
+    if (error) {
+      throw new Error(`Error al obtener clientes: ${error.message}`)
     }
 
-    return NextResponse.json(clients);
-
-  } catch (error: unknown) {
-    console.error('Error:', error instanceof Error ? error.message : 'Unknown error');
-    
-    if (error && typeof error === 'object' && 'code' in error) {
-      const dbError = error as DatabaseError;
-      return NextResponse.json(
-        { error: dbError.message },
-        { status: 400 }
-      );
-    }
-
+    return NextResponse.json(clients)
+  } catch (error) {
+    console.error('Error inesperado:', error)
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: 'Error interno del servidor', details: error instanceof Error ? error.message : 'Error desconocido' },
       { status: 500 }
-    );
+    )
   }
 }

@@ -1,4 +1,4 @@
-import DashboardLayout from '@/components/DashboardLayout'
+import { DashboardLayout } from '@/components/DashboardLayout'
 import DepositMethods from '@/components/payments/DepositMethods'
 
 export default function DepositPage() {

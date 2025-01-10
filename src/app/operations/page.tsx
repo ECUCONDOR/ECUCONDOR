@@ -1,13 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import DashboardLayout from '@/components/DashboardLayout';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card } from '@/components/ui/card';
-import { COLORS } from '@/constants/colors';
-import { Activity, ArrowUpRight, ArrowDownRight, Clock, Filter } from 'lucide-react';
+import { Activity, ArrowUpRight, ArrowDownRight, Filter } from 'lucide-react';
 import { useOperations } from '@/hooks/useOperations';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+
+interface Operation {
+  id: string;
+  tipo: string;
+  estado: string;
+  descripcion: string;
+  fecha_operacion: string;
+  monto: number;
+  moneda_origen: string;
+  moneda_destino?: string;
+}
 
 const OperationsPage = () => {
   const { operations, loading, error } = useOperations();
@@ -51,10 +61,15 @@ const OperationsPage = () => {
     }).format(amount);
   };
 
-  const filteredOperations = operations.filter(op => {
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(event.target.value as 'all' | 'completed' | 'pending');
+  };
+
+  const filteredOperations = operations?.filter((operation: Operation) => {
     if (filter === 'all') return true;
-    if (filter === 'completed') return op.estado === 'completado';
-    return op.estado === 'pendiente';
+    if (filter === 'completed') return operation.estado === 'completado';
+    if (filter === 'pending') return operation.estado === 'pendiente';
+    return true;
   });
 
   if (loading) {
@@ -80,13 +95,13 @@ const OperationsPage = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Operaciones</h1>
           <div className="flex items-center space-x-2">
             <Filter className="h-5 w-5 text-gray-500" />
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value as any)}
+              onChange={handleFilterChange}
               className="border-2 border-gray-300 rounded-md px-3 py-1"
             >
               <option value="all">Todas</option>
@@ -97,7 +112,7 @@ const OperationsPage = () => {
         </div>
 
         <div className="grid gap-4">
-          {filteredOperations.map((operation) => (
+          {filteredOperations.map((operation: Operation) => (
             <Card key={operation.id} className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">

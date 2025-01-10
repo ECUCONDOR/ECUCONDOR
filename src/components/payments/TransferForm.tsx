@@ -6,14 +6,22 @@ import { useDashboardContext } from '@/contexts/dashboard-context';
 import { Card } from '@/components/ui/card';
 import TransferCalculator from './TransferCalculator';
 import { toast } from '@/components/ui/use-toast';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Database } from '@/types/supabase';
+import { supabase } from '@/lib/supabase';
+import type { Database } from '@/types/supabase';
 import { Loader2 } from 'lucide-react';
 
-export function TransferForm() {
+interface TransferFormProps {
+  clientId: number;
+  onTransferAction: (transferDetails: { 
+    amount: number; 
+    fromWalletId: string; 
+    toWalletId: string; 
+    description: string; 
+  }) => Promise<void>;
+}
+
+export function TransferForm({ clientId, onTransferAction }: TransferFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { clientId, refetchTransactions } = useDashboardContext();
-  const supabase = createClientComponentClient<Database>();
 
   const handleTransfer = async (transferDetails: {
     amount: number;
@@ -40,7 +48,7 @@ export function TransferForm() {
         description: 'La transferencia se ha realizado correctamente.',
       });
 
-      await refetchTransactions();
+      await onTransferAction(transferDetails);
     } catch (error) {
       console.error('Error en la transferencia:', error);
       toast({
@@ -71,7 +79,7 @@ export function TransferForm() {
           <span className="ml-2">Procesando transferencia...</span>
         </div>
       ) : (
-        <TransferCalculator onTransfer={handleTransfer} clientId={clientId} />
+        <TransferCalculator onTransferAction={handleTransfer} clientId={clientId} />
       )}
     </Card>
   );

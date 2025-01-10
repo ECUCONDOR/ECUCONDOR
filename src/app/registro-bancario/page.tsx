@@ -1,7 +1,7 @@
 'use client';
 
-import DashboardLayout from '@/components/DashboardLayout';
-import FormularioRegistroBancario from '@/components/FormularioRegistroBancario';
+import { DashboardLayout } from '@/components/DashboardLayout';
+import { FormularioRegistroBancario } from '@/components/FormularioRegistroBancario';
 import React from 'react';
 
 export default function RegistroBancarioPage() {

@@ -1,10 +1,38 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import type { Database } from '@/types/supabase';
 
 export async function POST(request: Request) {
   console.log('POST /api/verify-documents - Iniciando solicitud');
-  const supabase = createRouteHandlerClient({ cookies });
+  
+  const cookieStore = cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {
+            console.error('Error al establecer cookie:', error);
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.delete({ name, ...options });
+          } catch (error) {
+            console.error('Error al eliminar cookie:', error);
+          }
+        },
+      },
+    }
+  );
 
   try {
     // 1. Verificar autenticación
@@ -48,7 +76,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const uploadedFileNames = files.map(file => `${userId}/${file.name}`);
+    interface StorageFile {
+      name: string;
+      id: string;
+      created_at: string;
+      last_accessed_at: string;
+      metadata: any;
+      updated_at: string;
+    }
+
+    const uploadedFileNames = files.map((file: StorageFile) => `${userId}/${file.name}`);
     const allDocumentsExist = documents.every(doc => 
       uploadedFileNames.includes(doc)
     );

@@ -18,7 +18,7 @@ import { formatTime } from '@/utils/timeUtils';
 import dynamic from 'next/dynamic';
 import Icon from '@/components/ui/icon';
 import { PublicNavbar } from '@/components/public-navbar';
-import { Shield, Bolt, Globe } from 'lucide-react';
+import { Shield, Zap, Globe } from 'lucide-react';
 import NewYearFireworks from '@/components/NewYearFireworks';
 
 interface BinancePrice {
@@ -234,7 +234,7 @@ export default function Home() {
             {
               title: 'Rápido',
               description: 'Transferencias instantáneas entre diferentes monedas',
-              icon: Bolt,
+              icon: Zap,
             },
             {
               title: 'Global',

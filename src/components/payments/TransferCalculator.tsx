@@ -12,7 +12,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Decimal } from 'decimal.js';
 
 interface TransferCalculatorProps {
-  onTransferCalculated?: (transferDetails: any) => void;
+  clientId: number;
+  onTransferAction: (transferDetails: { 
+    amount: number; 
+    fromWalletId: string; 
+    toWalletId: string; 
+    description: string; 
+  }) => Promise<void>;
 }
 
 interface CalculatorData {
@@ -24,7 +30,23 @@ interface CalculatorData {
   defaultExchangeRate: number;
 }
 
-const TransferCalculator: React.FC<TransferCalculatorProps> = ({ onTransferCalculated }) => {
+interface TransferCalculatorState {
+  originalAmount: number;
+  exchangeRate: number;
+  commission: number;
+  totalAmount: number;
+  result: string;
+}
+
+const initialCalculatorState: TransferCalculatorState = {
+  originalAmount: 0,
+  exchangeRate: 0,
+  commission: 0,
+  totalAmount: 0,
+  result: ''
+};
+
+const TransferCalculator: React.FC<TransferCalculatorProps> = ({ clientId, onTransferAction }) => {
   // Constants
   const DEFAULT_EXCHANGE_RATE = 1315;
   const COMMISSION_RATE = 0.03;
@@ -40,6 +62,8 @@ const TransferCalculator: React.FC<TransferCalculatorProps> = ({ onTransferCalcu
     includeCommission: false,
     defaultExchangeRate: DEFAULT_EXCHANGE_RATE
   });
+
+  const [transferCalculatorState, setTransferCalculatorState] = useState<TransferCalculatorState>(initialCalculatorState);
 
   const [loading, setLoading] = useState(false);
 
@@ -249,8 +273,13 @@ CUIT/CUIL: 20963144769
       }
 
       setCalculatorData(prev => ({ ...prev, result: message }));
-      if (onTransferCalculated) {
-        onTransferCalculated(transferDetails);
+      if (onTransferAction) {
+        onTransferAction({
+          amount: transferDetails.originalAmount,
+          fromWalletId: '',
+          toWalletId: '',
+          description: ''
+        });
       }
     } catch (error) {
       console.error('Error en el cálculo:', error);
@@ -279,6 +308,27 @@ CUIT/CUIL: 20963144769
         variant: 'destructive'
       });
     }
+  };
+
+  const handleAmountChange = (value: string) => {
+    setCalculatorData(prev => ({
+      ...prev,
+      amount: value
+    }));
+  };
+
+  const handleExchangeRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCalculatorData(prev => ({
+      ...prev,
+      defaultExchangeRate: parseFloat(e.target.value) || 0
+    }));
+  };
+
+  const handleCommissionToggle = (checked: boolean) => {
+    setCalculatorData(prev => ({
+      ...prev,
+      includeCommission: Boolean(checked)
+    }));
   };
 
   return (
@@ -312,7 +362,7 @@ CUIT/CUIL: 20963144769
             type="number"
             placeholder="Ingrese el monto"
             value={calculatorData.amount}
-            onChange={(e) => setCalculatorData(prev => ({ ...prev, amount: e.target.value }))}
+            onChange={(e) => handleAmountChange(e.target.value)}
           />
         </div>
 
@@ -321,7 +371,7 @@ CUIT/CUIL: 20963144769
             <Checkbox
               id="commission"
               checked={calculatorData.includeCommission}
-              onCheckedChange={(checked) => setCalculatorData(prev => ({ ...prev, includeCommission: Boolean(checked) }))}
+              onCheckedChange={(checked) => handleCommissionToggle(checked)}
             />
             <Label htmlFor="commission">Comisión incluida</Label>
           </div>
