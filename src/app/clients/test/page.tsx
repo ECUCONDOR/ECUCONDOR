@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClientService } from '@/services/clients';
-import { Client } from '@/types/database';
 import { ClientResponse } from '@/types/onboarding';
 
 const testClient = {

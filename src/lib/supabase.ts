@@ -1,14 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from '@/types/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = 'https://adhivizuhfdxthpgqlxw.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkaGl2aXp1aGZkeHRocGdxbHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3MzQ0NjIsImV4cCI6MjA0NjMxMDQ2Mn0.kUsTt-JMqWsLiLzzx1ET-Js_r_x5qLnppSeSiKP9Q7E';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  db: {
-    schema: 'public',
-  },
-});
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing environment variables for Supabase. Please check your .env file.'
+  );
+}
+
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+
+export const createBrowserSupabaseClient = () => {
+  return createBrowserClient<Database>({
+    supabaseUrl,
+    supabaseKey: supabaseAnonKey,
+  });
+};
 
 // Manejador de errores de Supabase
 export function handleSupabaseError(error: unknown): string {

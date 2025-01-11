@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, type FC } from 'react';
-import Image from 'next/image';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -14,8 +13,8 @@ import { useNotifications } from '@/contexts/NotificationContext';
 import NewYearFireworks from '@/components/NewYearFireworks';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env['NEXT_PUBLIC_SUPABASE_URL']!,
+  process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY']!
 );
 
 export default function RegisterPage() {

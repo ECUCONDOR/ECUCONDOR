@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DashboardProvider } from '@/contexts/dashboard-context';
 
 export default function DashboardLayout({
@@ -11,9 +11,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    setAuthLoading(false);
     if (!authLoading && !user) {
       console.log('No authenticated user, redirecting to login');
       router.replace('/auth/login');

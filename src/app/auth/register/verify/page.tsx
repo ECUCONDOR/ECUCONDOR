@@ -7,7 +7,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { PublicNavbar } from '@/components/public-navbar';
-import { useNotifications } from '@/contexts/NotificationContext';
 import { showNotification } from '@/components/Notification';
 import { ToastProvider, ToastViewport } from '@/components/ui/toast';
 

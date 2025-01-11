@@ -88,9 +88,13 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // Create user-client relation with proper typing
     if (newClient) {
+      const now = new Date().toISOString()
       const relationData: Omit<UserClientRelationRow, 'id'> = {
         user_id: user.id,
         client_id: newClient.id,
+        status: 'ACTIVE',
+        created_at: now,
+        updated_at: now
       }
 
       const { error: relationError } = await supabase

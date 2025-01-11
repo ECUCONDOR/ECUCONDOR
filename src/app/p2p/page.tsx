@@ -22,15 +22,17 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/lib/supabase';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Loader2 } from 'lucide-react';
 
-const P2PPage = () => {
-  const supabase = createClientComponentClient();
+export const dynamic = 'force-dynamic';
+
+function P2PPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [isClient, setIsClient] = useState(false);
   const [orderType, setOrderType] = useState<OrderTypeEnum>(OrderTypeEnum.Buy);
   const [currency, setCurrency] = useState<Currency>({
     code: CurrencyCode.USD,
@@ -42,6 +44,18 @@ const P2PPage = () => {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<P2POrder[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   useEffect(() => {
     loadOrders();

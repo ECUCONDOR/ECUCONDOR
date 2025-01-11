@@ -143,8 +143,6 @@ function LoginFormContent() {
 }
 
 export default function LoginPage() {
-  const { addNotification } = useNotifications();
-
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-blue-950 via-blue-900 to-black text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
