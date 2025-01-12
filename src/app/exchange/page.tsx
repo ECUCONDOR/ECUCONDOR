@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import { formatNumber } from '@/utils/numberUtils';
-import { exchangeOptions } from '@/constants/exchangeOptions';
+import { exchangeOptions } from '@/contexts/constants/exchangeOptions';
 
 interface PriceData {
   symbol: string;

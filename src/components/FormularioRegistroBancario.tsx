@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
-import { useDashboardContext } from '@/contexts/dashboard-context';
+import { usePanelControl } from '@/contexts/dashboard-context';
 import type { Database } from '@/types/supabase';
 
 type FormField = 
@@ -69,7 +69,7 @@ const steps = [
 ];
 
 export function FormularioRegistroBancario() {
-  const { clientId } = useDashboardContext();
+  const { clienteId } = usePanelControl();
   const [formData, setFormData] = useState<FormData>({
     nombres: '',
     apellidos: '',

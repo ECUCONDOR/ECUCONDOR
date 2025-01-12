@@ -1,9 +1,9 @@
 'use client';
 
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { DashboardProvider } from '@/contexts/dashboard-context';
+import { useEffect } from 'react';
+import { PanelControlProvider } from '@/contexts/dashboard-context';
 
 export default function DashboardLayout({
   children,
@@ -11,32 +11,33 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { user } = useAuth();
-  const [authLoading, setAuthLoading] = useState(true);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    setAuthLoading(false);
-    if (!authLoading && !user) {
+    if (!loading && !user) {
       console.log('No authenticated user, redirecting to login');
       router.replace('/auth/login');
     }
-  }, [authLoading, user, router]);
+  }, [loading, user, router]);
 
-  if (authLoading) {
+  // Mientras se verifica la autenticación, mostramos un loader
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#0f1421]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
+  // Si no hay usuario autenticado, no renderizamos nada
   if (!user) {
     return null;
   }
 
+  // Si hay usuario autenticado, renderizamos el panel de control
   return (
-    <DashboardProvider>
+    <PanelControlProvider>
       {children}
-    </DashboardProvider>
+    </PanelControlProvider>
   );
 }

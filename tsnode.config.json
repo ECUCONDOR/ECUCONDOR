@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs"
-  }
+    "module": "CommonJS",
+    "types": ["@types/node", "node"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

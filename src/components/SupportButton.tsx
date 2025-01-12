@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
-import { COLORS } from '@/constants/colors';
+import { COLORS } from '@/contexts/constants/colors';
 
 const SupportButton = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 import { createBrowserClient } from '@supabase/ssr';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';

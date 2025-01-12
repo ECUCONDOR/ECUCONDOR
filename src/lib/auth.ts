@@ -1,6 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { type NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables');
@@ -15,118 +13,165 @@ export interface AuthResponse {
   error: any | null
   success: boolean
   message?: string
+  code?: string
 }
 
 export const auth = {
+  async signInWithEmail(email: string, password: string): Promise<AuthResponse> {
+    try {
+      if (!email || !password) {
+        return {
+          error: new Error('Credenciales incompletas'),
+          success: false,
+          message: 'Por favor ingrese email y contraseña',
+          code: 'AUTH_INCOMPLETE_CREDENTIALS'
+        };
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        let message = 'Error al iniciar sesión';
+        let code = 'AUTH_UNKNOWN_ERROR';
+        
+        if (error.message.includes('Invalid login credentials')) {
+          message = 'Credenciales inválidas';
+          code = 'AUTH_INVALID_CREDENTIALS';
+        } else if (error.message.includes('Email not confirmed')) {
+          message = 'Email no confirmado';
+          code = 'AUTH_EMAIL_NOT_CONFIRMED';
+        }
+        
+        throw { ...error, code, message };
+      }
+
+      return {
+        error: null,
+        success: true,
+        message: 'Inicio de sesión exitoso',
+        code: 'AUTH_SUCCESS'
+      };
+    } catch (error: any) {
+      console.error('Error en signInWithEmail:', error);
+      return {
+        error,
+        success: false,
+        message: error.message || 'Error al iniciar sesión',
+        code: error.code || 'AUTH_UNKNOWN_ERROR'
+      };
+    }
+  },
+
   async signInWithGoogle(): Promise<AuthResponse> {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
         }
-      })
+      });
 
-      if (error) throw error
+      if (error) {
+        throw {
+          ...error,
+          code: 'AUTH_GOOGLE_ERROR',
+          message: 'Error al iniciar sesión con Google'
+        };
+      }
 
       return {
         error: null,
-        success: true
-      }
-    } catch (error) {
-      console.error('Error en signInWithGoogle:', error)
+        success: true,
+        code: 'AUTH_GOOGLE_SUCCESS'
+      };
+    } catch (error: any) {
+      console.error('Error en signInWithGoogle:', error);
       return {
-        error: error,
+        error,
         success: false,
-        message: 'Error al iniciar sesión con Google'
-      }
+        message: error.message || 'Error al iniciar sesión con Google',
+        code: error.code || 'AUTH_GOOGLE_ERROR'
+      };
     }
   },
 
   async signOut(): Promise<AuthResponse> {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw {
+          ...error,
+          code: 'AUTH_SIGNOUT_ERROR',
+          message: 'Error al cerrar sesión'
+        };
+      }
 
       return {
         error: null,
-        success: true
-      }
-    } catch (error) {
-      console.error('Error en signOut:', error)
+        success: true,
+        message: 'Sesión cerrada correctamente',
+        code: 'AUTH_SIGNOUT_SUCCESS'
+      };
+    } catch (error: any) {
+      console.error('Error en signOut:', error);
       return {
-        error: error,
+        error,
         success: false,
-        message: 'Error al cerrar sesión'
-      }
+        message: error.message || 'Error al cerrar sesión',
+        code: error.code || 'AUTH_SIGNOUT_ERROR'
+      };
     }
   },
 
   async getSession() {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    if (error) {
-      console.error('Error al obtener sesión:', error)
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error al obtener sesión:', error);
+        throw error;
+      }
+      return session;
+    } catch (error) {
+      console.error('Error al obtener sesión:', error);
+      return null;
     }
-    return session
   },
 
   async getUser() {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    if (error) {
-      console.error('Error al obtener usuario:', error)
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error al obtener usuario:', error);
+        throw error;
+      }
+      return user;
+    } catch (error) {
+      console.error('Error al obtener usuario:', error);
+      return null;
     }
-    return user
+  },
+
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      const session = await this.getSession();
+      return !!session;
+    } catch (error) {
+      console.error('Error al verificar autenticación:', error);
+      return false;
+    }
+  },
+
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session);
+      callback(event, session);
+    });
   }
-}
-
-export const authOptions: NextAuthOptions = {
-  pages: {
-    signIn: '/login',
-  },
-  session: {
-    strategy: 'jwt',
-  },
-  providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials, req) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const { data: { user }, error } = await supabase.auth.signInWithPassword({
-          email: credentials.email,
-          password: credentials.password,
-        });
-
-        if (error || !user) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email || '',
-          name: user.user_metadata?.name
-        };
-      },
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string
-      }
-      return session
-    },
-  },
 }

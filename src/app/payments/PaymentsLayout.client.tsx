@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 import { redirect } from 'next/navigation';
 import { GuideNotification } from '@/components/notifications/GuideNotification';
 import { StatusNotification } from '@/components/notifications/StatusNotification';

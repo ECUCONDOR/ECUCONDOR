@@ -10,15 +10,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/components/ui/use-toast';
 import { useBinanceWebSocket } from '@/hooks/useBinanceWebSocket';
 import TrendIndicator from '@/components/TrendIndicator';
-import { COLORS } from '@/constants/colors';
-import { exchangeOptions as initialExchangeOptions, initialRates } from '@/constants/exchangeOptions';
+import { COLORS } from '@/contexts/constants/colors';
+import { exchangeOptions as initialExchangeOptions, initialRates } from '@/contexts/constants/exchangeOptions';
 import type { ExchangePair, ExchangeRate } from '@/types/exchange';
 import type { ExchangeOption } from '@/types/exchange';
 import { formatTime } from '@/utils/timeUtils';
 import dynamic from 'next/dynamic';
 import Icon from '@/components/ui/icon';
 import { PublicNavbar } from '@/components/public-navbar';
-import { Shield, Zap, Globe } from 'lucide-react';
+import { Shield, Zap, Globe, MessageSquare } from 'lucide-react';
 import NewYearFireworks from '@/components/NewYearFireworks';
 
 interface BinancePrice {
@@ -145,6 +145,19 @@ export default function Home() {
       currency: 'USD'
     }).format(parseFloat(prices.find(p => p.symbol === currentSymbol.symbol)?.p));
   }, [prices, currentSymbol]);
+  
+  const whatsappNumber = '+593999999999'; // Replace with your WhatsApp number
+  const pixKey = 'your_pix_key'; // Replace with your PIX key
+
+  const handleWhatsAppClick = () => {
+    window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+  };
+
+    const handlePixClick = () => {
+        // Here you would typically open a modal or redirect to a payment page
+        // For now, we'll just show an alert
+        alert(`PIX Key: ${pixKey}\n\nCopy this key to make a payment.`);
+    };
 
   return (
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-blue-950 via-blue-900 to-black text-white relative overflow-hidden">
@@ -227,18 +240,18 @@ export default function Home() {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              title: 'Seguro',
-              description: 'Transacciones protegidas con la última tecnología en seguridad',
+              title: 'Seguridad Garantizada',
+              description: 'Operaciones protegidas con los más altos estándares de seguridad bancaria',
               icon: Shield,
             },
             {
-              title: 'Rápido',
-              description: 'Transferencias instantáneas entre diferentes monedas',
+              title: 'Servicio Personalizado',
+              description: 'Atención dedicada y asesoramiento financiero especializado',
               icon: Zap,
             },
             {
-              title: 'Global',
-              description: 'Conectamos personas y negocios en todo el mundo',
+              title: 'Alcance Internacional',
+              description: 'Presencia en múltiples países con soporte local',
               icon: Globe,
             },
           ].map((feature) => (
@@ -249,17 +262,75 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </div>
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/5 backdrop-blur-sm border-t border-white/10">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">{currentSymbol.name}</h2>
-          <div className={`h-2 w-2 rounded-full ${prices ? 'bg-green-500' : 'bg-red-500'}`} />
+        
+          {/* Payment Options */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+              <h3 className="text-xl font-semibold mb-4">¿Necesitas Ayuda?</h3>
+              <p className="text-gray-300 mb-4">
+                Comunícate con nosotros a través de WhatsApp para obtener soporte personalizado.
+              </p>
+                <Button onClick={handleWhatsAppClick} className="bg-green-500 hover:bg-green-600 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
+                    <MessageSquare className="w-5 h-5"/>
+                    <span>Chatea con nosotros</span>
+                </Button>
+            </div>
+          
+          <div className="bg-white/5 p-6 rounded-lg backdrop-blur-sm">
+            <h3 className="text-xl font-semibold mb-4">Opciones de Pago</h3>
+            <p className="text-gray-300 mb-4">
+                Facilitamos tus transacciones con opciones de pago locales.
+            </p>
+            <div className="space-y-2">
+              <Button onClick={handlePixClick} className="bg-yellow-500 hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105">
+                Pagar con PIX (Brasil)
+              </Button>
+            </div>
+          </div>
+          
         </div>
-        <p className="text-3xl font-mono text-center">{formattedPrice}</p>
-        <p className="text-sm text-gray-400 text-center">
-          Auto-rotating every 5 seconds
-        </p>
+
+        {/* Footer con Derechos Reservados y Enlaces */}
+        <footer className="mt-16 border-t border-white/10 pt-8 pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-lg font-semibold mb-4">EcuCondor S.A.S</h4>
+              <p className="text-sm text-gray-300">
+                © 2024 EcuCondor. Todos los derechos reservados.<br/>
+                Registro Nacional de Bases de Datos N° 0000000
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Enlaces Importantes</h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/terms" className="text-sm text-gray-300 hover:text-white">
+                    Términos y Condiciones
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="text-sm text-gray-300 hover:text-white">
+                    Política de Privacidad
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/compliance" className="text-sm text-gray-300 hover:text-white">
+                    Cumplimiento Normativo
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Información Legal</h4>
+              <p className="text-sm text-gray-300">
+                EcuCondor S.A.S está regulada por la Superintendencia Financiera.<br/>
+                NIT: 000000000-0
+              </p>
+            </div>
+          </div>
+        </footer>
       </div>
+      {/* Eliminamos el div fijo del footer que muestra las tasas rotativas */}
     </main>
   );
 }

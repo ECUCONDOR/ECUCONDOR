@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/supabase';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { 

@@ -1,5 +1,7 @@
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
+
+const supabase = createClient();
 
 // Tipos y interfaces
 export interface MetodoPago {

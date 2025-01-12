@@ -3,9 +3,9 @@
 import React from 'react'
 import { ExchangePair, ExchangeRate } from '@/types/exchange'
 import { Input } from '@/components/ui/input'
-import { COLORS } from '@/constants/colors'
+import { COLORS } from '@/contexts/constants/colors'
 import TrendIndicator from './TrendIndicator'
-import { exchangeOptions } from '@/constants/exchangeOptions'
+import { exchangeOptions } from '@/contexts/constants/exchangeOptions'
 import CurrencyIcon from './CurrencyIcon'
 
 interface ExchangePanelProps {

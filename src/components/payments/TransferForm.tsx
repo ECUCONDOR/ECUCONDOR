@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useDashboardContext } from '@/contexts/dashboard-context';
+import { usePanelControl } from '@/contexts/dashboard-context';
 import { Card } from '@/components/ui/card';
 import TransferCalculator from './TransferCalculator';
 import { toast } from '@/components/ui/use-toast';

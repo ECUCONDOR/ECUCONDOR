@@ -1,152 +1,135 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { toast } from '@/components/ui/use-toast'
-import { createClient } from '@supabase/supabase-js'
-import type {
-  User,
-  Session,
-  SupabaseClient,
-  AuthError,
-  AuthChangeEvent,
-  PostgrestError,
-} from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase'
+import { createContext, useContext, useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { User, Session } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 
-export type AuthContextType = {
-  user: User | null
-  session: Session | null
-  supabase: SupabaseClient<Database>
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
-  signOut: () => Promise<void>
-  updateProfile: (data: { first_name: string; last_name: string }) => Promise<void>
+// Define the type for our context
+export interface AuthContextProps {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  isAuthenticated: boolean;
 }
 
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// Create and export the context
+export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthContext = createContext<AuthContextType | null>(null)
-
-type AuthProviderProps = {
-  children: ReactNode
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
+// Create and export the provider component
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, currentSession: Session | null) => {
-        setSession(currentSession)
-        setUser(currentSession?.user ?? null)
-        setLoading(false)
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error('Error getting session:', error);
+      } finally {
+        setLoading(false);
       }
-    )
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event: string, session: Session | null) => {
+        console.log('Auth state changed:', event, session);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+
+        if (event === 'SIGNED_IN') {
+          router.refresh();
+          router.push('/dashboard');
+        }
+        if (event === 'SIGNED_OUT') {
+          router.refresh();
+          router.push('/');
+        }
+      }
+    );
 
     return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
+      subscription.unsubscribe();
+    };
+  }, [supabase, router]);
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
-      if (error) throw error
+      });
+      if (error) throw error;
     } catch (error) {
-      if (error instanceof AuthError || error instanceof PostgrestError) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
+      console.error('Error signing in:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  const signUp = async (email: string, password: string) => {
+  const signInWithGoogle = async () => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
-      if (error) throw error
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
     } catch (error) {
-      if (error instanceof AuthError || error instanceof PostgrestError) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
+      console.error('Error signing in with Google:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error) {
-      console.error('Error signing out:', error)
+      console.error('Error signing out:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
-  }
-
-  const updateProfile = async (data: { first_name: string; last_name: string }) => {
-    try {
-      if (!user) throw new Error('No user logged in')
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(data)
-        .eq('id', user.id)
-
-      if (error) throw error
-    } catch (error) {
-      if (error instanceof PostgrestError) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        })
-      }
-    }
-  }
+  };
 
   const value = {
     user,
     session,
-    supabase,
+    loading,
     signIn,
-    signUp,
+    signInWithGoogle,
     signOut,
-    updateProfile,
-  }
+    isAuthenticated: !!session,
+  };
 
-  if (loading) {
-    return null
-  }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth(): AuthContextType {
+// Export the hook for using the auth context
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

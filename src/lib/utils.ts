@@ -17,3 +17,13 @@ export function formatDate(input: string | number): string {
 export function absoluteUrl(path: string) {
   return `${process.env.NEXT_PUBLIC_APP_URL}${path}`
 }
+
+export function formatCurrency(amount: number, currency: string = 'USD'): string {
+  const formatter = new Intl.NumberFormat(currency === 'ARS' ? 'es-AR' : 'en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  return formatter.format(amount)
+}

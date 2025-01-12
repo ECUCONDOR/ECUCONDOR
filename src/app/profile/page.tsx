@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 import { createClient } from '@supabase/supabase-js';
 import { useToast } from '@/components/ui/use-toast';
 import { DashboardLayout } from '@/components/DashboardLayout';

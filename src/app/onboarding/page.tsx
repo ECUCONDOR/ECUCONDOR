@@ -10,7 +10,7 @@ import { ClientSelectionStep } from './components/ClientSelectionStep';
 import { Steps } from '@/types/onboarding';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { toast } from '@/components/ui/use-toast';
-import { createClientComponentClient } from '@supabase/ssr';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.Welcome);

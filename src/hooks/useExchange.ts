@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ExchangeService, ExchangeRate, ExchangeTransaction, ExchangeDirection } from '@/lib/exchange';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/hooks/useAuth';
 
 export function useExchange() {
   const { user } = useAuth();

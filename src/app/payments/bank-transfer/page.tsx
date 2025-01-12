@@ -1,6 +1,6 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/ssr';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BankTransferForm } from "@/components/payments/BankTransferForm";
 import { PageHeader } from "@/components/ui/page-header";
